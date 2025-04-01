@@ -14,13 +14,13 @@ namespace LuciReality.EMS
   {
     protected async void Start()
     {
-      var devices = await ScanForDevices(20);
+      // var devices = await ScanForDevices(20);
 
-      LogInfo("Devices returned: ");
-      foreach (var device in devices)
-      {
-        LogInfo(device.Uuid);
-      }
+      // LogInfo("Devices returned: ");
+      // foreach (var device in devices)
+      // {
+      //   LogInfo(device.Uuid);
+      // }
     }
 
     /// <summary>

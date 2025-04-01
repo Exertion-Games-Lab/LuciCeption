@@ -21,6 +21,7 @@ namespace LuciReality.EMS
     /// <returns></returns>
     public async Task<bool> Subscribe(string serviceId, string characteristicId) => await Task.Run(() => BleApi.SubscribeCharacteristic(Uuid, serviceId, characteristicId, true));
 
+    // TODO: Make this only return when done.
     /// <summary>
     /// 
     /// </summary>
@@ -35,6 +36,6 @@ namespace LuciReality.EMS
       deviceId = Uuid,
       serviceUuid = serviceUuid,
       characteristicUuid = characteristicUuid
-    }, true));
+    }, false));
   }
 }

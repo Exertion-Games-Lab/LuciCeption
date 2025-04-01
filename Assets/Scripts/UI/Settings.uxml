@@ -23,7 +23,7 @@
                 <engine:Slider label="Intensity" high-value="1" fill="true" name="EmsIntensity" />
             </engine:VisualElement>
             <engine:VisualElement style="flex-grow: 1;">
-                <engine:Toggle label="Apple Watch" name="AppleWatchToggle" />
+                <engine:Toggle label="LRA" name="AppleWatchToggle" />
                 <engine:Slider label="Intensity" high-value="1" fill="true" name="AppleWatchIntensity" />
             </engine:VisualElement>
             <engine:VisualElement style="flex-grow: 1;">
