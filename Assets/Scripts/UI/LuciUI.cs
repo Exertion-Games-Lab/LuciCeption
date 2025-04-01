@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using LuciReality.Prompt;
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
+using LuciReality.AI;
 
 namespace LuciReality.EMS
 {
@@ -47,6 +49,8 @@ namespace LuciReality.EMS
     private UIDocument document; // View
     private VisualElement root;
 
+    private bool useApis = false;
+
     protected void Awake()
     {
       document = GetComponent<UIDocument>();
@@ -61,84 +65,74 @@ namespace LuciReality.EMS
     private void ApplyCallbacks()
     {
       var submitPrompt = root.Q<Button>("SubmitPrompt");
-      submitPrompt.clicked += async () => {
-        Debug.Log("Submitted");
-        var contents = new ChatContents();
-        var userPrompt = new Content {
-          role = "user"
-        };
-
-        var textPrompt = new Part() {
-          text = $"Fill out the JSON datastructure for a dream of: {model.Prompt}."
-        };
-
-        userPrompt.parts = new List<Part>
-        {
-          textPrompt
-        };
-
-        contents.contents = new List<Content>
-        {
-          userPrompt
-        };
-
-        var serializedPrompt = JsonUtility.ToJson(contents, true);
-
-        serializedPrompt = serializedPrompt[..^2];
-        serializedPrompt += ",\n";
-
-        using (var reader = new StreamReader("prompt.json"))
-        {
-          var promptData = reader.ReadToEnd();
-          serializedPrompt += promptData;
-        }
-
-        Debug.Log(serializedPrompt);
-
-        byte[] postData = Encoding.UTF8.GetBytes(serializedPrompt);
-
-        var request = new UnityWebRequest($"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={ApiKeys.Gemini}", "POST");
-        request.SetRequestHeader("Content-Type", "application/json");
-        request.uploadHandler = new UploadHandlerRaw(postData);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        await request.SendWebRequest();
-        if (request.isNetworkError)
-          Debug.Log("Error While Sending: " + request.error);
-        else
-          Debug.Log("Received: " + request.downloadHandler.text);
-
-        var responseData = request.downloadHandler.text;
-
-        // string responseData = "";
-        // using (var reader = new StreamReader("sample_response.json"))
-        // {
-        //   responseData = reader.ReadToEnd();
-        // }
-
-        var chat = JsonUtility.FromJson<ChatRoot>(responseData);
-
-        var serializedSettings = chat.candidates[0].content.parts[0].text;
-
-        Debug.Log(serializedSettings);
-
-        var modelResponse = JsonUtility.FromJson<ModelReponse>(serializedSettings);
-
-        model.AudioToggle = modelResponse.Audio.Enabled;
-        model.AudioVolume = (float)modelResponse.Audio.Volume;
-        model.LightsToggle = modelResponse.Light.Enabled;
-        model.LightsIntensity = (float)modelResponse.Light.Intensity;
-        model.EmsToggle = modelResponse.EMS.Enabled;
-        model.EmsIntensity = (float)modelResponse.EMS.Intensity;
-        model.AppleWatchToggle = modelResponse.AppleWatch.Enabled;
-        model.AppleWatchIntensity = (float)modelResponse.AppleWatch.Intensity;
-        model.FanToggle = modelResponse.Light.Enabled;
-        model.FanIntensity = (float)modelResponse.Fan.Intensity;
-      };
+      submitPrompt.clicked += SendAIPrompt;
 
       var startButton = root.Q<Button>("StartButton");
       startButton.clicked += () => {
-
+        var fanIntensity = 1 + Mathf.RoundToInt(model.FanIntensity * 8);
+        Task.WaitAll(SetFanIntensity(fanIntensity));
       };
+    }
+
+    // TODO: Move all of this into the gemini class.
+    private async void SendAIPrompt()
+    {
+      Debug.Log("Submitted");
+      string prompt = Gemini.MakePrompt(model.Prompt);
+      Debug.Log(prompt);
+
+      string responseData = "";
+      if (useApis)
+      {
+        responseData = await Gemini.AskAsync(prompt);
+      }
+      else
+      {
+        // Load a sample response using the same format.
+        using (var reader = new StreamReader("sample_response.json"))
+        {
+          responseData = reader.ReadToEnd();
+        }
+      }
+
+      var chat = JsonUtility.FromJson<ChatRoot>(responseData);
+      var jsonResponse = chat.candidates[0].content.parts[0].text;
+      Debug.Log(jsonResponse);
+
+      var modelResponse = JsonUtility.FromJson<ModelReponse>(jsonResponse);
+
+      UpdateModel(modelResponse);
+    }
+
+
+    private void UpdateModel(ModelReponse modelResponse)
+    {
+      model.AudioToggle = modelResponse.Audio.Enabled;
+      model.AudioVolume = (float)modelResponse.Audio.Volume;
+      model.LightsToggle = modelResponse.Light.Enabled;
+      model.LightsIntensity = (float)modelResponse.Light.Intensity;
+      model.EmsToggle = modelResponse.EMS.Enabled;
+      model.EmsIntensity = (float)modelResponse.EMS.Intensity;
+      model.AppleWatchToggle = modelResponse.AppleWatch.Enabled;
+      model.AppleWatchIntensity = (float)modelResponse.AppleWatch.Intensity;
+      model.FanToggle = modelResponse.Light.Enabled;
+      model.FanIntensity = (float)modelResponse.Fan.Intensity;
+    }
+
+    async Task SetFanIntensity(int i)
+    {
+      if (!useApis)
+      {
+        Debug.Log($"Fan intensity set to: {i}");
+        return;
+      }
+
+      var request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_intensity_{i}/with/key/88IAzsMm2FG355HNDbZjq");
+      await request.SendWebRequest();
+      if (Application.exitCancellationToken.IsCancellationRequested)
+        return;
+
+      Debug.Log($"Response: {request.downloadHandler.text}");
     }
 
     private void BindElements()

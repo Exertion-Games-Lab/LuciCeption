@@ -30,12 +30,17 @@ namespace LuciReality.EMS
     /// <param name="serviceId">The uuid of the service the characteristic is associated with.</param>
     /// <param name="characteristicId">The uuid for the characteristic.</param>
     /// <returns></returns>
-    public async Task<bool> SendData(byte[] buf, short size, string serviceUuid, string characteristicUuid) => await Task.Run(() => BleApi.SendData(new BleApi.BLEData {
-      buf = buf,
-      size = size,
-      deviceId = Uuid,
-      serviceUuid = serviceUuid,
-      characteristicUuid = characteristicUuid
-    }, false));
+    public void SendData(byte[] buf, short size, string serviceUuid, string characteristicUuid)
+    {
+      var data = new BleApi.BLEData {
+        buf = buf,
+        size = size,
+        deviceId = Uuid,
+        serviceUuid = serviceUuid,
+        characteristicUuid = characteristicUuid
+      };
+
+      BleApi.SendData(data, false);
+    }
   }
 }
