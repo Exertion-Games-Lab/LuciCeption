@@ -12,17 +12,6 @@ namespace LuciReality.EMS
 
   public class BluetoothScanner : MonoBehaviour
   {
-    protected async void Start()
-    {
-      // var devices = await ScanForDevices(20);
-
-      // LogInfo("Devices returned: ");
-      // foreach (var device in devices)
-      // {
-      //   LogInfo(device.Uuid);
-      // }
-    }
-
     /// <summary>
     /// Initiates a scan for near by bluetooth devices.
     /// </summary>

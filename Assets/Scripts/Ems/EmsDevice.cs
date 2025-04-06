@@ -1,12 +1,6 @@
 namespace LuciReality.EMS
 {
-  public enum EmsElectrodeChannel
-  {
-    A,
-    B,
-    C,
-    D,
-  };
+  
 
   public enum EmsState
   {

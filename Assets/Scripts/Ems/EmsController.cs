@@ -2,15 +2,25 @@ using UnityEngine;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
+using System;
 
 namespace LuciReality.EMS
 {
+  public enum ElectrodeChannel
+  {
+    A,
+    B,
+    C,
+    D,
+  };
+
   public class EmsController : MonoBehaviour
   {
-    public string DeviceName = "Paizo 05";
+    public string DeviceName = "Paizo";
     public string DeviceService = "19B10000-E8F2-537E-4F6C-D104768A1214";
     public string DeviceCharacteristic = "19B10001-E8F2-537E-4F6C-D104768A1214";
     private BluetoothScanner scanner;
+    private BluetoothDevice device;
 
 
     protected void Awake()
@@ -26,7 +36,7 @@ namespace LuciReality.EMS
     public async Awaitable TestDevice()
     {
       var device = (await scanner.ScanForDevices())
-        .Find(x => x.Name == DeviceName || x.Uuid.Contains("b0:e9:fe:52:8e:dc"));
+        .Find(x => x.Name == DeviceName);
       
       if (device == null)
       {
@@ -54,6 +64,34 @@ namespace LuciReality.EMS
       // await Awaitable.WaitForSecondsAsync(1);
       // success = await device.SendData(disconnectMsg, (short)disconnectMsg.Length, DeviceService, DeviceCharacteristic);
       // CheckError(success);
+    }
+
+    public async Task SetChannel(ElectrodeChannel channel, bool toggle)
+    {
+      char character = 'r';
+      switch (channel)
+      {
+        case ElectrodeChannel.A:
+          character = 'a';
+          break;
+        case ElectrodeChannel.B:
+          character = 'b';
+          break;
+        case ElectrodeChannel.C:
+          character = 'c';
+          break;
+        case ElectrodeChannel.D:
+          character = 'd';
+          break;
+      }
+
+      if (toggle)
+      {
+        character = char.ToUpper(character);
+      }
+
+      byte[] message = Encoding.ASCII.GetBytes("" + character);
+      await device.SendDataWithResponse(message, (short)(sizeof(byte) * message.Length), DeviceService, DeviceCharacteristic);
     }
 
     private void CheckError(bool success)

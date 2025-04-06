@@ -21,7 +21,6 @@ namespace LuciReality.EMS
     /// <returns></returns>
     public async Task<bool> Subscribe(string serviceId, string characteristicId) => await Task.Run(() => BleApi.SubscribeCharacteristic(Uuid, serviceId, characteristicId, true));
 
-    // TODO: Make this only return when done.
     /// <summary>
     /// 
     /// </summary>
@@ -30,7 +29,11 @@ namespace LuciReality.EMS
     /// <param name="serviceId">The uuid of the service the characteristic is associated with.</param>
     /// <param name="characteristicId">The uuid for the characteristic.</param>
     /// <returns></returns>
-    public void SendData(byte[] buf, short size, string serviceUuid, string characteristicUuid)
+    public Task SendData(byte[] buf, short size, string serviceUuid, string characteristicUuid) => SendDataAsync(buf, size, serviceUuid, characteristicUuid, false);
+
+    public Task SendDataWithResponse(byte[] buf, short size, string serviceUuid, string characteristicUuid) => SendDataAsync(buf, size, serviceUuid, characteristicUuid, true);
+
+    private Task SendDataAsync(byte[] buf, short size, string serviceUuid, string characteristicUuid, bool withResponse)
     {
       var data = new BleApi.BLEData {
         buf = buf,
@@ -39,8 +42,7 @@ namespace LuciReality.EMS
         serviceUuid = serviceUuid,
         characteristicUuid = characteristicUuid
       };
-
-      BleApi.SendData(data, false);
+      return Task.Run(() => BleApi.SendData(data, true, withResponse));
     }
   }
 }
