@@ -32,7 +32,7 @@ namespace LuciReality.Prompt
   }
 
   [System.Serializable]
-  public class ChatContents
+  public class Chat
   {
     [SerializeField] public List<Content> contents;
   }
@@ -73,7 +73,7 @@ namespace LuciReality.Prompt
   }
   
   [System.Serializable]
-  public class ModelReponse
+  public class ModelResponse
   {
     public AppleWatch AppleWatch;
     public Audio Audio;

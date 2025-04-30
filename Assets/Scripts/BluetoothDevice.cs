@@ -42,7 +42,7 @@ namespace LuciReality.EMS
         serviceUuid = serviceUuid,
         characteristicUuid = characteristicUuid
       };
-      return Task.Run(() => BleApi.SendData(data, true, withResponse));
+      return Task.Run(() => BleApi.SendData(data, true));
     }
   }
 }

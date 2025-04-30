@@ -65,7 +65,7 @@ namespace LuciReality.EMS
     private void ApplyCallbacks()
     {
       var submitPrompt = root.Q<Button>("SubmitPrompt");
-      submitPrompt.clicked += SendAIPrompt;
+      submitPrompt.clicked += OnPromptClicked;
 
       var startButton = root.Q<Button>("StartButton");
       startButton.clicked += () => {
@@ -74,38 +74,9 @@ namespace LuciReality.EMS
       };
     }
 
-    // TODO: Move all of this into the gemini class.
-    private async void SendAIPrompt()
-    {
-      Debug.Log("Submitted");
-      string prompt = Gemini.MakePrompt(model.Prompt);
-      Debug.Log(prompt);
+    private async void OnPromptClicked() => UpdateModel(await TextQuery.Query(model.Prompt));
 
-      string responseData = "";
-      if (useApis)
-      {
-        responseData = await Gemini.AskAsync(prompt);
-      }
-      else
-      {
-        // Load a sample response using the same format.
-        using (var reader = new StreamReader("sample_response.json"))
-        {
-          responseData = reader.ReadToEnd();
-        }
-      }
-
-      var chat = JsonUtility.FromJson<ChatRoot>(responseData);
-      var jsonResponse = chat.candidates[0].content.parts[0].text;
-      Debug.Log(jsonResponse);
-
-      var modelResponse = JsonUtility.FromJson<ModelReponse>(jsonResponse);
-
-      UpdateModel(modelResponse);
-    }
-
-
-    private void UpdateModel(ModelReponse modelResponse)
+    private void UpdateModel(ModelResponse modelResponse)
     {
       model.AudioToggle = modelResponse.Audio.Enabled;
       model.AudioVolume = (float)modelResponse.Audio.Volume;

@@ -244,6 +244,6 @@ public class Demo : MonoBehaviour
         for (int i = 0; i < payload.Length; i++)
             data.buf[i] = payload[i];
         // no error code available in non-blocking mode
-        BleApi.SendData(in data, false);
+        // BleApi.SendData(in data, false);
     }
 }

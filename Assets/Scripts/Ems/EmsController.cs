@@ -33,23 +33,36 @@ namespace LuciReality.EMS
       await TestDevice();
     }
 
+    // Found Device: BluetoothLE#BluetoothLE18:5e:0f:ce:f5:b7-7f:82:63:08:a8:a6 Paizo 05
+
     public async Awaitable TestDevice()
     {
-      var device = (await scanner.ScanForDevices())
-        .Find(x => x.Name == DeviceName);
+      device = new BluetoothDevice();
+      device.Uuid = "BluetoothLE#BluetoothLE18:5e:0f:ce:f5:b7-7f:82:63:08:a8:a6";
+      // device = (await scanner.ScanForDevices())
+      //   .Find(x => x.Name == DeviceName);
       
-      if (device == null)
-      {
-        Debug.LogError("Could not find device!");
-        return;
-      }
-      else
-      {
-        Debug.Log("Device found");
-      }
+      // if (device == null)
+      // {
+      //   Debug.LogError("Could not find device!");
+      //   return;
+      // }
+      // else
+      // {
+      //   Debug.Log("Device found");
+      // }
 
       // bool success = await device.Subscribe("19B10000-E8F2-537E-4F6C-D104768A1214", "19B10001-E8F2-537E-4F6C-D104768A1214");
       // CheckError(success);
+      for (int i = 0; i < 64; i++)
+      {
+      await SetChannel(ElectrodeChannel.A, true);
+      await Awaitable.WaitForSecondsAsync(0.1f);
+      await SetChannel(ElectrodeChannel.A, false);
+      }
+
+      BleApi.Quit();
+
 
       // var onMsg = Encoding.ASCII.GetBytes("" + 'A' + '\n');
       // var offMsg = Encoding.ASCII.GetBytes("" + 'a' + '\n');
