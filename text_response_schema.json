@@ -1,0 +1,87 @@
+{
+  "type": "object",
+  "properties": {
+    "Light": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "Intensity": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "Enabled",
+        "Intensity"
+      ]
+    },
+    "Audio": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "Intensity": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "Enabled",
+        "Intensity"
+      ]
+    },
+    "EMS": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "Intensity": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "Enabled",
+        "Intensity"
+      ]
+    },
+    "LRA": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "Intensity": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "Enabled",
+        "Intensity"
+      ]
+    },
+    "Fan": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "Intensity": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "Enabled",
+        "Intensity"
+      ]
+    }
+  },
+  "required": [
+    "Light",
+    "Audio",
+    "EMS",
+    "LRA",
+    "Fan"
+  ]
+}

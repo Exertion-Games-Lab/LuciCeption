@@ -1,16 +1,27 @@
+using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace LuciReality.Prompt
 {
-  [System.Serializable]
-  public class ChatRoot
+
+  [Serializable]
+  public class InlineData
+  {
+    public string mimeType;
+    public string data;
+  }
+
+  [Serializable]
+  public class GeminiMessage
   {
     public List<Candidate> candidates;
     public string modelVersion;
   }
 
-  [System.Serializable]
+  [Serializable]
   public class Candidate
   {
     public Content content;
@@ -25,57 +36,76 @@ namespace LuciReality.Prompt
     [SerializeField] public List<Part> parts;
   }
 
-  [System.Serializable]
+  [Serializable]
+  public class GenerateContentConfig
+  {
+    public List<string> responseModalities;
+    public string responseMimeType;
+    public JObject responseSchema;
+  }
+
+  [Serializable]
   public class Part
   {
-    [SerializeField] public string text;
+    public string text;
+    public InlineData inlineData;
+
+    public static Part FromText(string partText)
+    {
+      return new Part
+      {
+        text = partText
+      };
+    }
   }
 
   [System.Serializable]
-  public class Chat
+  public class GeminiQuery
   {
+    public JObject systemInstruction;
+    [SerializeField] public GenerateContentConfig generationConfig;
     [SerializeField] public List<Content> contents;
   }
 
-  [System.Serializable]
-  public class AppleWatch
+  [Serializable]
+  public class Linear
   {
     public bool Enabled;
     public double Intensity;
   }
 
-  [System.Serializable]
+  [Serializable]
   public class Audio
   {
     public bool Enabled;
     public double Volume;
   }
 
-  [System.Serializable]
+  [Serializable]
   public class EMS
   {
     public bool Enabled;
     public double Intensity;
   }
 
-  [System.Serializable]
+  [Serializable]
   public class Fan
   {
     public bool Enabled;
     public double Intensity;
   }
 
-  [System.Serializable]
+  [Serializable]
   public class Light
   {
     public bool Enabled;
     public double Intensity;
   }
   
-  [System.Serializable]
+  [Serializable]
   public class ModelResponse
   {
-    public AppleWatch AppleWatch;
+    public Linear LRA;
     public Audio Audio;
     public EMS EMS;
     public Fan Fan;

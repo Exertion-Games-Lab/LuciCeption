@@ -14,7 +14,7 @@ namespace LuciReality.EMS
   [System.Serializable]
   public class LuciModel
   {
-    [SerializeField] public string Prompt;
+    [SerializeField] public string Prompt = "The ocean";
     [SerializeField] public bool AudioToggle;
 
     [Range(0, 1)]
@@ -45,14 +45,18 @@ namespace LuciReality.EMS
   [RequireComponent(typeof(UIDocument))]
   public class LuciUI : MonoBehaviour
   {
+    [SerializeField] Texture2D tex;
     [SerializeField] LuciModel model;
     private UIDocument document; // View
     private VisualElement root;
+
+    private bool isGenerating = false;
 
     private bool useApis = false;
 
     protected void Awake()
     {
+      tex = new Texture2D(2, 2);
       document = GetComponent<UIDocument>();
     }
 
@@ -72,9 +76,44 @@ namespace LuciReality.EMS
         var fanIntensity = 1 + Mathf.RoundToInt(model.FanIntensity * 8);
         Task.WaitAll(SetFanIntensity(fanIntensity));
       };
+
+      var generateImage = root.Q<Button>("GenerateImage");
+      generateImage.clicked += OnGenerateClicked;
     }
 
-    private async void OnPromptClicked() => UpdateModel(await TextQuery.Query(model.Prompt));
+    // private async void OnPromptClicked() => UpdateModel(await TextQuery.Query(model.Prompt));
+    private async void OnPromptClicked()
+    {
+      var modelResponse = await TextQuery.Query(model.Prompt);
+      UpdateModel(modelResponse);
+      await ImageQuery.Query(model.Prompt, tex);
+      VisualElement image = root.Q("Image");
+      image.style.backgroundImage = tex;
+    }
+
+    private async void OnGenerateClicked()
+    {
+      if (isGenerating)
+      {
+        return;
+      }
+
+      isGenerating = true;
+      try
+      {
+        await ImageQuery.Query(model.Prompt, tex);
+        VisualElement image = root.Q("Image");
+        image.style.backgroundImage = tex;
+      }
+      catch (System.Exception e)
+      {
+        throw e;
+      }
+      finally
+      {
+        isGenerating = false;
+      }
+    }
 
     private void UpdateModel(ModelResponse modelResponse)
     {
@@ -84,8 +123,8 @@ namespace LuciReality.EMS
       model.LightsIntensity = (float)modelResponse.Light.Intensity;
       model.EmsToggle = modelResponse.EMS.Enabled;
       model.EmsIntensity = (float)modelResponse.EMS.Intensity;
-      model.AppleWatchToggle = modelResponse.AppleWatch.Enabled;
-      model.AppleWatchIntensity = (float)modelResponse.AppleWatch.Intensity;
+      model.AppleWatchToggle = modelResponse.LRA.Enabled;
+      model.AppleWatchIntensity = (float)modelResponse.LRA.Intensity;
       model.FanToggle = modelResponse.Light.Enabled;
       model.FanIntensity = (float)modelResponse.Fan.Intensity;
     }

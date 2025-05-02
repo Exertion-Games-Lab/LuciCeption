@@ -7,6 +7,9 @@ using LuciReality.Prompt;
 using UnityEngine;
 using UnityEngine.Networking;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace LuciReality.AI
 {
   /// <summary>
@@ -14,35 +17,42 @@ namespace LuciReality.AI
   /// </summary>
   public static class TextQuery
   {
+    private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={ApiKeys.Gemini}";
     /// <summary>Queries the Gemini model with a user prompt.</summary>
     /// <param name="promptText">The user prompt.</param>
     /// <returns>Gemini's response.</returns>
     public static async Task<ModelResponse> Query(string promptText)
     {
       Logger.Log(promptText);
-      string chat = BuildChat(promptText);
+      string chat = await BuildQuery(promptText);
       Logger.Log(chat);
 
-      return await Gemini.QueryModel(chat);
+      var textResponse = await Gemini.QueryModel<GeminiMessage>(Endpoint(), chat);
+
+      return JsonConvert.DeserializeObject<ModelResponse>(textResponse.candidates[0].content.parts[0].text);
     }
 
     /// <summary>Generates a json chat object containing a user defined prompt that can be sent to Gemini as a request.</summary>
     /// <param name="prompt">The user defined prompt.</param>
     /// <returns>The json-encoded chat object</returns>
-    private static string BuildChat(string prompt)
+    private static async Task<string> BuildQuery(string prompt)
     {
-      var chat = new Chat();
-      var content = new Content { role = "user" };
-      var userInstructions = new Part() { text = prompt };
-      content.parts = new List<Part> { userInstructions };
-      chat.contents = new List<Content> { content };
-      
-      var jsonQuery = JsonUtility.ToJson(chat, true)[..^2] + ",\n";
-      using (var reader = new StreamReader("text_query_template.json"))
-      {
-        var template = reader.ReadToEnd();
-        jsonQuery += template;
-      }
+      var query = new GeminiQuery {
+        systemInstruction = JObject.Parse(await TextQuerySchema.Instructions()),
+        contents = new List<Content>() {
+          new Content() {
+            role = "user",
+            parts = new List<Part>() { Part.FromText(prompt) }
+          }
+        },
+        generationConfig = new GenerateContentConfig {
+          responseModalities = new List<string>() { "text" },
+          responseMimeType = "application/json",
+          responseSchema = JObject.Parse(await TextQuerySchema.ResponseSchema())
+        }
+      };
+
+      var jsonQuery = JsonConvert.SerializeObject(query);
       return jsonQuery;
     }
   }
@@ -52,10 +62,77 @@ namespace LuciReality.AI
   /// </summary>
   public static class ImageQuery
   {
-    public static async void Query()
+    private static string PromptTemplate(string prompt) => $"Generate a vibrant dream-like painting to help user dream about: \"{prompt}\"";
+    private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:streamGenerateContent?key={ApiKeys.Gemini}";
+    public static async Task Query(string promptText, Texture2D img)
     {
-      
+      Logger.Log(promptText);
+      string chat = await BuildQuery(PromptTemplate(promptText));
+      Logger.Log(chat);
+
+      var messages = await Gemini.QueryModel<List<GeminiMessage>>(Endpoint(), chat);
+
+      foreach (var msg in messages)
+      {
+        var inlineData = msg.candidates[0].content.parts[0].inlineData;
+        if (inlineData != null)
+        {
+          Debug.Log(inlineData.mimeType);
+          var dataBytes = DataToBytes(inlineData.data);
+
+          switch (inlineData.mimeType)
+          {
+            case "image/png":
+            case "image/jpeg":
+              ImageConversion.LoadImage(img, dataBytes);
+              break;
+            default:
+              throw new Exception("Unsupported MIME type");
+          }
+          return;
+        }
+      }
     }
+
+    private static byte[] DataToBytes(string data) => Convert.FromBase64String(data);
+
+    private static async Task<string> BuildQuery(string prompt)
+    {
+      var query = new GeminiQuery {
+        contents = new List<Content>() {
+          new Content() {
+            role = "user",
+            parts = new List<Part>() { Part.FromText(prompt) }
+          }
+        },
+        generationConfig = new GenerateContentConfig {
+          responseModalities = new List<string>() { "text", "image" },
+          responseMimeType = "text/plain",
+        }
+      };
+
+      var jsonQuery = JsonConvert.SerializeObject(query, Formatting.Indented, new JsonSerializerSettings
+{
+    NullValueHandling = NullValueHandling.Ignore
+});
+      return jsonQuery;
+    }
+  }
+
+  /// <summary>
+  /// Allows interaction with the Gemini API.
+  /// </summary>
+  public class GeminiClient
+  {
+    private string apiKey;
+
+
+    public GeminiClient(string apiKey)
+    {
+      this.apiKey = apiKey;
+    }
+
+    private static Byte[] Encode(string text) => Encoding.UTF8.GetBytes(text);
   }
 
   /// <summary>
@@ -63,37 +140,54 @@ namespace LuciReality.AI
   /// </summary>
   public static class Gemini
   {
-    public static bool SaveToFile = false;
-    public static bool ShowDebugLogs = true;
     public static bool TestMode = false;
-
-    private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={ApiKeys.Gemini}";
     private static byte[] Encode(string text) => Encoding.UTF8.GetBytes(text);
 
     /// <summary>
-    /// Makes a request to the Gemini model and returns its response.
+    /// Makes a request to the Gemini model and returns its response as .NET object.
     /// </summary>
     /// <param name="chat">A Gemini chat history encoded in json format.</param>
-    /// <returns>The most recent chat response from the Gemini model.</returns>
-    public static async Task<ModelResponse> QueryModel(string chat)
+    /// <returns>The most recent response from the Gemini model.</returns>
+    public static async Task<T> QueryModel<T>(string endpoint, string chat) where T : class
     {
-      string responseData = await MakeRequest(chat);
+      string responseData = await MakeRequest(endpoint, chat);
 
-      var chatResponse = JsonUtility.FromJson<ChatRoot>(responseData);
-      var textResponse = chatResponse.candidates[0].content.parts[0].text;
+      Logger.Log(responseData);
+      // var chatResponse = JsonConvert.DeserializeObject<List<GeminiMessage>>(responseData);
+      // var chatResponse = JsonUtility.FromJson<GeminiResponse>(responseData);
+      // var textResponse = chatResponse.candidates[0].content.parts[0].text;
 
-      Logger.Log(textResponse);
+      JsonReader reader = new JsonTextReader(new StringReader(responseData));
+      JToken startToken = await JToken.LoadAsync(reader);
 
-      return JsonUtility.FromJson<ModelResponse>(textResponse);
+      switch (startToken.Type)
+      {
+        case JTokenType.Object:
+          if (typeof(T) != typeof(GeminiMessage))
+          {
+            throw new Exception($"Generic parameter {nameof(T)} must be {nameof(GeminiMessage)} for text responses.");
+          }
+          var msg = JsonConvert.DeserializeObject<GeminiMessage>(responseData);
+          return msg as T;
+        case JTokenType.Array:
+          if (typeof(T) != typeof(List<GeminiMessage>))
+          {
+            throw new Exception($"Generic parameter {nameof(T)} must be {nameof(List<GeminiMessage>)} for image responses.");
+          }
+          var msgList = JsonConvert.DeserializeObject<List<GeminiMessage>>(responseData);
+          return msgList as T;
+        default:
+          throw new Exception("Gemini returned an unhandled response type.");
+      }
     }
     /// <summary>Sends an API request to the Gemini API.</summary>
     /// <param name="chat">A Gemini chat history encoded in json format.</param>
     /// <returns>The Gemini model's response.</returns>
-    private static async Awaitable<string> MakeRequest(string chat)
+    private static async Awaitable<string> MakeRequest(string endpoint, string chat)
     {
       if (!TestMode)
       {
-        UnityWebRequest request = BuildRequest(Endpoint(), Encode(chat));
+        UnityWebRequest request = BuildRequest(endpoint, Encode(chat));
         await request.SendWebRequest();
         LogResponse(request);
 
