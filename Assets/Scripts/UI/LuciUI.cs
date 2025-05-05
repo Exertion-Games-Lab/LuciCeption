@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using LuciReality.AI;
+using Unity.Logging;
 
 namespace LuciReality.UI
 {
@@ -54,8 +55,42 @@ namespace LuciReality.UI
     // private async void OnPromptClicked() => UpdateModel(await TextQuery.Query(model.Prompt));
     private async void OnPromptClicked()
     {
+      if (isGenerating)
+      {
+        return;
+      }
+      
+      Log.Info("[{logType}]: The clicked submit prompt", "USER_INTERFACE");
       var modelResponse = await TextQuery.Query(model.Prompt.Text);
       UpdateModel(modelResponse);
+
+      isGenerating = true;
+      try
+      {
+        Task[] tasks = {
+          QueryModel(),
+          QueryImage()
+        };
+        await Task.WhenAll(tasks);
+      }
+      catch (System.Exception e)
+      {
+        throw e;
+      }
+      finally
+      {
+        isGenerating = false;
+      }
+    }
+
+    private async Task QueryModel()
+    {
+      var modelResponse = await TextQuery.Query(model.Prompt.Text);
+      UpdateModel(modelResponse);
+    }
+
+    private async Task QueryImage()
+    {
       await ImageQuery.Query(model.Prompt.Text, tex);
       VisualElement image = root.Q("Image");
       image.style.backgroundImage = tex;
@@ -120,27 +155,27 @@ namespace LuciReality.UI
       root = document.rootVisualElement;
 
       // TODO: Create a reusable control for these.
-      Bind(root.Q<TextField>("PromptInput"), "value", nameof(SettingsViewModel.Prompt.Text));
-      Bind(root.Q<Toggle>("AudioToggle"), "value", nameof(SettingsViewModel.Audio.Enabled));
-      Bind(root.Q<Slider>("AudioVolume"), "value", nameof(SettingsViewModel.Audio.Volume));
-      Bind(root.Q<Toggle>("LightToggle"), "value", nameof(SettingsViewModel.Lights.Enabled));
-      Bind(root.Q<Slider>("LightIntensity"), "value", nameof(SettingsViewModel.Lights.Intensity));
-      Bind(root.Q<Toggle>("EmsToggle"), "value", nameof(SettingsViewModel.Ems.Enabled));
-      Bind(root.Q<Slider>("EmsIntensity"), "value", nameof(SettingsViewModel.Ems.Intensity));
-      Bind(root.Q<Toggle>("AppleWatchToggle"), "value", nameof(SettingsViewModel.Lra.Enabled));
-      Bind(root.Q<Slider>("AppleWatchIntensity"), "value", nameof(SettingsViewModel.Lra.Intensity));
-      Bind(root.Q<Toggle>("FanToggle"), "value", nameof(SettingsViewModel.Fan.Enabled));
-      Bind(root.Q<Slider>("FanIntensity"), "value", nameof(SettingsViewModel.Fan.Intensity));
+      Bind(root.Q<TextField>("PromptInput"), "value", model.Prompt, nameof(SettingsViewModel.Prompt.Text));
+      Bind(root.Q<Toggle>("AudioToggle"), "value", model.Audio, nameof(SettingsViewModel.Audio.Enabled));
+      Bind(root.Q<Slider>("AudioVolume"), "value", model.Audio, nameof(SettingsViewModel.Audio.Volume));
+      Bind(root.Q<Toggle>("LightToggle"), "value", model.Lights, nameof(SettingsViewModel.Lights.Enabled));
+      Bind(root.Q<Slider>("LightIntensity"), "value", model.Lights, nameof(SettingsViewModel.Lights.Intensity));
+      Bind(root.Q<Toggle>("EmsToggle"), "value", model.Ems, nameof(SettingsViewModel.Ems.Enabled));
+      Bind(root.Q<Slider>("EmsIntensity"), "value", model.Ems, nameof(SettingsViewModel.Ems.Intensity));
+      Bind(root.Q<Toggle>("AppleWatchToggle"), "value", model.Lra, nameof(SettingsViewModel.Lra.Enabled));
+      Bind(root.Q<Slider>("AppleWatchIntensity"), "value", model.Lra, nameof(SettingsViewModel.Lra.Intensity));
+      Bind(root.Q<Toggle>("FanToggle"), "value", model.Fan, nameof(SettingsViewModel.Fan.Enabled));
+      Bind(root.Q<Slider>("FanIntensity"), "value", model.Fan, nameof(SettingsViewModel.Fan.Intensity));
     }
 
-    private void Bind<T>(T element, string binding, string name) where T : VisualElement
+    private void Bind<T>(T element, string binding, object source, string name) where T : VisualElement
     {
-      element.dataSource = model;
+      element.dataSource = source;
       element.SetBinding(binding, new DataBinding
       {
         bindingMode = BindingMode.TwoWay,
         updateTrigger = BindingUpdateTrigger.EveryUpdate,
-        dataSource = model,
+        dataSource = source,
         dataSourcePath = PropertyPath.FromName(name)
       });
     }
