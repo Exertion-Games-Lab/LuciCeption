@@ -9,44 +9,14 @@ using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using LuciReality.AI;
 
-namespace LuciReality.EMS
+namespace LuciReality.UI
 {
-  [System.Serializable]
-  public class LuciModel
-  {
-    [SerializeField] public string Prompt = "The ocean";
-    [SerializeField] public bool AudioToggle;
-
-    [Range(0, 1)]
-    [SerializeField] public float AudioVolume;
-    [SerializeField] public bool LightsToggle;
-    [SerializeField] public Color LightsColour;
-
-    [Range(0, 1)]
-    [SerializeField] public float LightsIntensity;
-
-    [SerializeField] public bool EmsToggle;
-
-    [Range(0, 1)]
-    [SerializeField] public float EmsIntensity;
-
-    [SerializeField] public bool AppleWatchToggle;
-
-    [Range(0, 1)]
-    [SerializeField] public float AppleWatchIntensity;
-
-    [SerializeField] public bool FanToggle;
-    
-    [Range(0, 1)]
-    [SerializeField] public float FanIntensity;
-  }
-
   // Presenter
   [RequireComponent(typeof(UIDocument))]
   public class LuciUI : MonoBehaviour
   {
     [SerializeField] Texture2D tex;
-    [SerializeField] LuciModel model;
+    [SerializeField] SettingsViewModel model;
     private UIDocument document; // View
     private VisualElement root;
 
@@ -73,7 +43,7 @@ namespace LuciReality.EMS
 
       var startButton = root.Q<Button>("StartButton");
       startButton.clicked += () => {
-        var fanIntensity = 1 + Mathf.RoundToInt(model.FanIntensity * 8);
+        var fanIntensity = 1 + Mathf.RoundToInt(model.Fan.Intensity * 8);
         Task.WaitAll(SetFanIntensity(fanIntensity));
       };
 
@@ -84,9 +54,9 @@ namespace LuciReality.EMS
     // private async void OnPromptClicked() => UpdateModel(await TextQuery.Query(model.Prompt));
     private async void OnPromptClicked()
     {
-      var modelResponse = await TextQuery.Query(model.Prompt);
+      var modelResponse = await TextQuery.Query(model.Prompt.Text);
       UpdateModel(modelResponse);
-      await ImageQuery.Query(model.Prompt, tex);
+      await ImageQuery.Query(model.Prompt.Text, tex);
       VisualElement image = root.Q("Image");
       image.style.backgroundImage = tex;
     }
@@ -101,7 +71,7 @@ namespace LuciReality.EMS
       isGenerating = true;
       try
       {
-        await ImageQuery.Query(model.Prompt, tex);
+        await ImageQuery.Query(model.Prompt.Text, tex);
         VisualElement image = root.Q("Image");
         image.style.backgroundImage = tex;
       }
@@ -117,16 +87,16 @@ namespace LuciReality.EMS
 
     private void UpdateModel(SystemParameters modelResponse)
     {
-      model.AudioToggle = modelResponse.Audio.Enabled;
-      model.AudioVolume = (float)modelResponse.Audio.Volume;
-      model.LightsToggle = modelResponse.Light.Enabled;
-      model.LightsIntensity = (float)modelResponse.Light.Intensity;
-      model.EmsToggle = modelResponse.EMS.Enabled;
-      model.EmsIntensity = (float)modelResponse.EMS.Intensity;
-      model.AppleWatchToggle = modelResponse.LRA.Enabled;
-      model.AppleWatchIntensity = (float)modelResponse.LRA.Intensity;
-      model.FanToggle = modelResponse.Light.Enabled;
-      model.FanIntensity = (float)modelResponse.Fan.Intensity;
+      model.Audio.Enabled = modelResponse.Audio.Enabled;
+      model.Audio.Volume = (float)modelResponse.Audio.Volume;
+      model.Lights.Enabled = modelResponse.Light.Enabled;
+      model.Lights.Intensity = (float)modelResponse.Light.Intensity;
+      model.Ems.Enabled = modelResponse.EMS.Enabled;
+      model.Ems.Intensity = (float)modelResponse.EMS.Intensity;
+      model.Lra.Enabled = modelResponse.LRA.Enabled;
+      model.Lra.Intensity = (float)modelResponse.LRA.Intensity;
+      model.Fan.Enabled = modelResponse.Light.Enabled;
+      model.Fan.Intensity = (float)modelResponse.Fan.Intensity;
     }
 
     async Task SetFanIntensity(int i)
@@ -150,17 +120,17 @@ namespace LuciReality.EMS
       root = document.rootVisualElement;
 
       // TODO: Create a reusable control for these.
-      Bind(root.Q<TextField>("PromptInput"), "value", nameof(LuciModel.Prompt));
-      Bind(root.Q<Toggle>("AudioToggle"), "value", nameof(LuciModel.AudioToggle));
-      Bind(root.Q<Slider>("AudioVolume"), "value", nameof(LuciModel.AudioVolume));
-      Bind(root.Q<Toggle>("LightToggle"), "value", nameof(LuciModel.LightsToggle));
-      Bind(root.Q<Slider>("LightIntensity"), "value", nameof(LuciModel.LightsIntensity));
-      Bind(root.Q<Toggle>("EmsToggle"), "value", nameof(LuciModel.EmsToggle));
-      Bind(root.Q<Slider>("EmsIntensity"), "value", nameof(LuciModel.EmsIntensity));
-      Bind(root.Q<Toggle>("AppleWatchToggle"), "value", nameof(LuciModel.AppleWatchToggle));
-      Bind(root.Q<Slider>("AppleWatchIntensity"), "value", nameof(LuciModel.AppleWatchIntensity));
-      Bind(root.Q<Toggle>("FanToggle"), "value", nameof(LuciModel.FanToggle));
-      Bind(root.Q<Slider>("FanIntensity"), "value", nameof(LuciModel.FanIntensity));
+      Bind(root.Q<TextField>("PromptInput"), "value", nameof(SettingsViewModel.Prompt.Text));
+      Bind(root.Q<Toggle>("AudioToggle"), "value", nameof(SettingsViewModel.Audio.Enabled));
+      Bind(root.Q<Slider>("AudioVolume"), "value", nameof(SettingsViewModel.Audio.Volume));
+      Bind(root.Q<Toggle>("LightToggle"), "value", nameof(SettingsViewModel.Lights.Enabled));
+      Bind(root.Q<Slider>("LightIntensity"), "value", nameof(SettingsViewModel.Lights.Intensity));
+      Bind(root.Q<Toggle>("EmsToggle"), "value", nameof(SettingsViewModel.Ems.Enabled));
+      Bind(root.Q<Slider>("EmsIntensity"), "value", nameof(SettingsViewModel.Ems.Intensity));
+      Bind(root.Q<Toggle>("AppleWatchToggle"), "value", nameof(SettingsViewModel.Lra.Enabled));
+      Bind(root.Q<Slider>("AppleWatchIntensity"), "value", nameof(SettingsViewModel.Lra.Intensity));
+      Bind(root.Q<Toggle>("FanToggle"), "value", nameof(SettingsViewModel.Fan.Enabled));
+      Bind(root.Q<Slider>("FanIntensity"), "value", nameof(SettingsViewModel.Fan.Intensity));
     }
 
     private void Bind<T>(T element, string binding, string name) where T : VisualElement
