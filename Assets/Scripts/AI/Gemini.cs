@@ -9,6 +9,7 @@ using UnityEngine.Networking;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Unity.Logging;
 
 namespace LuciReality.AI
 {
@@ -19,17 +20,20 @@ namespace LuciReality.AI
   {
     private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={ApiKeys.Gemini}";
     /// <summary>Queries the Gemini model with a user prompt.</summary>
-    /// <param name="promptText">The user prompt.</param>
+    /// <param name="prompt">The user prompt.</param>
     /// <returns>Gemini's response.</returns>
-    public static async Task<ModelResponse> Query(string promptText)
+    public static async Task<SystemParameters> Query(string prompt)
     {
-      Logger.Log(promptText);
-      string chat = await BuildQuery(promptText);
-      Logger.Log(chat);
+      Log.Info("Gemini {queryType} query started with: \'{prompt}\'", "text", prompt);
+      string chat = await BuildQuery(prompt);
+      Log.Debug("Gemini chat message created: \'{chat}\'", chat);
 
       var textResponse = await Gemini.QueryModel<GeminiMessage>(Endpoint(), chat);
+      Log.Debug("Gemini response received: \'{geminiResponse}\'", JsonConvert.SerializeObject(textResponse));
+      var sysParams = JsonConvert.DeserializeObject<SystemParameters>(textResponse.candidates[0].content.parts[0].text);
+      Log.Info("System parameters received from Gemini: \'{logParams}\'", JsonConvert.SerializeObject(sysParams));
 
-      return JsonConvert.DeserializeObject<ModelResponse>(textResponse.candidates[0].content.parts[0].text);
+      return sysParams;
     }
 
     /// <summary>Generates a json chat object containing a user defined prompt that can be sent to Gemini as a request.</summary>
@@ -64,11 +68,11 @@ namespace LuciReality.AI
   {
     private static string PromptTemplate(string prompt) => $"Generate a vibrant dream-like painting to help user dream about: \"{prompt}\"";
     private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:streamGenerateContent?key={ApiKeys.Gemini}";
-    public static async Task Query(string promptText, Texture2D img)
+    public static async Task Query(string prompt, Texture2D img)
     {
-      Logger.Log(promptText);
-      string chat = await BuildQuery(PromptTemplate(promptText));
-      Logger.Log(chat);
+      Log.Info("Gemini {queryType} query started with: \'{prompt}\'", "image", prompt);
+      string chat = await BuildQuery(PromptTemplate(prompt));
+      Log.Debug("Gemini chat message created: \'{chat}\'", chat);
 
       var messages = await Gemini.QueryModel<List<GeminiMessage>>(Endpoint(), chat);
 
@@ -77,7 +81,8 @@ namespace LuciReality.AI
         var inlineData = msg.candidates[0].content.parts[0].inlineData;
         if (inlineData != null)
         {
-          Debug.Log(inlineData.mimeType);
+          Log.Info("Image received from gemini {mimeType}", inlineData.mimeType);
+          // TODO: Save image to file with timestamp
           var dataBytes = DataToBytes(inlineData.data);
 
           switch (inlineData.mimeType)
@@ -152,7 +157,7 @@ namespace LuciReality.AI
     {
       string responseData = await MakeRequest(endpoint, chat);
 
-      Logger.Log(responseData);
+      // LuciLogs.Log(responseData);
       // var chatResponse = JsonConvert.DeserializeObject<List<GeminiMessage>>(responseData);
       // var chatResponse = JsonUtility.FromJson<GeminiResponse>(responseData);
       // var textResponse = chatResponse.candidates[0].content.parts[0].text;
@@ -220,19 +225,19 @@ namespace LuciReality.AI
       switch (request.result)
       {
         case UnityWebRequest.Result.ConnectionError:
-          Logger.LogError("Connection Error: " + request.error);
+          // LuciLogs.LogError("Connection Error: " + request.error);
           break;
         case UnityWebRequest.Result.DataProcessingError:
-          Logger.LogError("Data Processing Error: " + request.error);
+          // LuciLogs.LogError("Data Processing Error: " + request.error);
           break;
         case UnityWebRequest.Result.ProtocolError:
-          Logger.LogError("Protocol Error: " + request.error);
+          // LuciLogs.LogError("Protocol Error: " + request.error);
           break;
         case UnityWebRequest.Result.Success:
-          Logger.Log("Received: " + request.downloadHandler.text);
+          // LuciLogs.Log("Received: " + request.downloadHandler.text);
           break;
         default:
-          Logger.LogError($"Unhandled request result status: {request.result}");
+          // LuciLogs.LogError($"Unhandled request result status: {request.result}");
           break;
       }
     }

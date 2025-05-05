@@ -78,3 +78,6 @@ crashlytics-build.properties
 
 # Api Keys
 /[Aa]ssets/[Ss]cripts/ApiKeys.cs
+
+# Logs
+/[Aa]ssets/[Ll]ogs/*

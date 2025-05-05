@@ -115,7 +115,7 @@ namespace LuciReality.EMS
       }
     }
 
-    private void UpdateModel(ModelResponse modelResponse)
+    private void UpdateModel(SystemParameters modelResponse)
     {
       model.AudioToggle = modelResponse.Audio.Enabled;
       model.AudioVolume = (float)modelResponse.Audio.Volume;

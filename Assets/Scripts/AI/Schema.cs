@@ -103,7 +103,7 @@ namespace LuciReality.Prompt
   }
   
   [Serializable]
-  public class ModelResponse
+  public class SystemParameters
   {
     public Linear LRA;
     public Audio Audio;
