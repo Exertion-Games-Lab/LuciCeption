@@ -24,14 +24,14 @@ namespace LuciReality.AI
     /// <returns>Gemini's response.</returns>
     public static async Task<SystemParameters> Query(string prompt)
     {
-      Log.Info("Gemini {queryType} query started with: \'{prompt}\'", "text", prompt);
+      Log.Info("{logType}] {queryType} query started with: \'{prompt}\'", "GEMINI", "text", prompt);
       string chat = await BuildQuery(prompt);
-      Log.Debug("Gemini chat message created: \'{chat}\'", chat);
+      Log.Debug("{logType}] chat message created: \'{chat}\'", "GEMINI", chat);
 
       var textResponse = await Gemini.QueryModel<GeminiMessage>(Endpoint(), chat);
-      Log.Debug("Gemini response received: \'{geminiResponse}\'", JsonConvert.SerializeObject(textResponse));
+      Log.Debug("{logType}] response received: \'{geminiResponse}\'", "GEMINI", JsonConvert.SerializeObject(textResponse));
       var sysParams = JsonConvert.DeserializeObject<SystemParameters>(textResponse.candidates[0].content.parts[0].text);
-      Log.Info("System parameters received from Gemini: \'{logParams}\'", JsonConvert.SerializeObject(sysParams));
+      Log.Info("{logType}] system parameters received from Gemini: \'{logParams}\'", "GEMINI", JsonConvert.SerializeObject(sysParams));
 
       return sysParams;
     }
@@ -70,9 +70,9 @@ namespace LuciReality.AI
     private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:streamGenerateContent?key={ApiKeys.Gemini}";
     public static async Task Query(string prompt, Texture2D img)
     {
-      Log.Info("Gemini {queryType} query started with: \'{prompt}\'", "image", prompt);
+      Log.Info("[{logType}] {queryType} query started with: \'{prompt}\'", "GEMINI", "image", prompt);
       string chat = await BuildQuery(PromptTemplate(prompt));
-      Log.Debug("Gemini chat message created: \'{chat}\'", chat);
+      Log.Debug("[{logType}] chat message created: \'{chat}\'", "GEMINI", chat);
 
       var messages = await Gemini.QueryModel<List<GeminiMessage>>(Endpoint(), chat);
 
@@ -81,7 +81,7 @@ namespace LuciReality.AI
         var inlineData = msg.candidates[0].content.parts[0].inlineData;
         if (inlineData != null)
         {
-          Log.Info("Image received from gemini {mimeType}", inlineData.mimeType);
+          Log.Info("[{logType}] image received: {mimeType}", "GEMINI", inlineData.mimeType);
           // TODO: Save image to file with timestamp
           var dataBytes = DataToBytes(inlineData.data);
 

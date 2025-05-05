@@ -59,8 +59,8 @@ namespace LuciReality.UI
       {
         return;
       }
-      
-      Log.Info("[{logType}]: The clicked submit prompt", "USER_INTERFACE");
+
+      Log.Info("[{logType}]: The user clicked submit prompt", "USER_INTERFACE");
       var modelResponse = await TextQuery.Query(model.Prompt.Text);
       UpdateModel(modelResponse);
 
@@ -98,6 +98,7 @@ namespace LuciReality.UI
 
     private async void OnGenerateClicked()
     {
+      Log.Info("[{logType}]: The user clicked generate image", "USER_INTERFACE");
       if (isGenerating)
       {
         return;
@@ -106,9 +107,7 @@ namespace LuciReality.UI
       isGenerating = true;
       try
       {
-        await ImageQuery.Query(model.Prompt.Text, tex);
-        VisualElement image = root.Q("Image");
-        image.style.backgroundImage = tex;
+        await QueryImage();
       }
       catch (System.Exception e)
       {
