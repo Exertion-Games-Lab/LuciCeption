@@ -1,0 +1,92 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:appui="Unity.AppUI.UI" xsi="http://www.w3.org/2001/XMLSchema-instance" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <appui:Panel name="root-panel" >
+      <appui:Toolbar />
+      <appui:SplitView fixed-pane-index="0" fixed-pane-initial-dimension="400" orientation="Horizontal">
+        <ui:VisualElement class="section-prompts">
+          <appui:Heading text="Dream Prompt" />
+          <appui:TextArea name="prompt-text" placeholder="What would you like to dream about?" leading-icon-name="info"  />
+          <appui:ActionButton name="prompt-submit-button" label="Submit" />
+          <appui:Divider spacing="M" />
+          <appui:Heading text="Image Generation" />
+          <ui:VisualElement name="generated-image-box" style="height: 400px"/>
+          <appui:ActionButton name="image-generate-button" label="Generate" />
+        </ui:VisualElement>
+        <ui:VisualElement class="section-cues">
+          <appui:Heading text="Cue Modules" />
+          <ui:VisualElement style="flex-direction: row">
+            <appui:ExVisualElement class="appui-elevation-1" style="flex-grow: 1; flex-basis: 50%; margin-left: 8px; margin-right: 4px; padding: 2px;">
+              <appui:Heading text="Visual" size="S" />
+              <appui:InputLabel direction="Horizontal" label="Intensity">
+                <appui:SliderFloat size="S" filled="true" tick-count="10" />
+              </appui:InputLabel>
+              <appui:InputLabel direction="Horizontal" label="Colour">
+                <appui:ColorField show-alpha="false" size="s" />
+              </appui:InputLabel>
+              <appui:Toggle />
+            </appui:ExVisualElement>
+            <appui:ExVisualElement class="appui-elevation-1" style="flex-grow: 1; flex-basis: 50%; margin-left: 4px; margin-right: 8px; padding: 2px;">
+              <appui:Heading text="Auditory" size="s" />
+              <appui:ActionGroup>
+                <appui:ActionButton label="Ambient" />
+                <appui:ActionButton label="Generated Voice" />
+                <appui:ActionButton label="Clip" />
+              </appui:ActionGroup>
+              <appui:Dropdown size="M" />
+              <appui:InputLabel direction="Horizontal" label="Volume">
+                <appui:SliderFloat size="S" filled="true" tick-count="10" />
+              </appui:InputLabel>
+              <appui:Toggle />
+            </appui:ExVisualElement>
+          </ui:VisualElement>
+          <ui:VisualElement style="flex-direction: row">
+            <appui:ExVisualElement class="appui-elevation-1" style="flex-grow: 1; flex-basis: 50%; margin-left: 8px; margin-right: 4px; padding: 2px;">
+              <appui:Heading text="Haptic Vibrations" size="s" />
+              <appui:InputLabel direction="Horizontal" label="Intensity">
+                <appui:SliderFloat size="S" filled="true" tick-count="10" />
+              </appui:InputLabel>
+              <appui:Toggle />
+            </appui:ExVisualElement>
+            <appui:ExVisualElement class="appui-elevation-1" style="flex-grow: 1; flex-basis: 50%; margin-left: 4px; margin-right: 8px; padding: 2px;">
+              <appui:Heading text="Fan" size="s" />
+              <appui:InputLabel direction="Horizontal" label="Intensity">
+                <appui:SliderFloat size="S" filled="true" tick-count="10" />
+              </appui:InputLabel>
+              <appui:Toggle />
+            </appui:ExVisualElement>
+          </ui:VisualElement>
+          <ui:VisualElement style="flex-direction: row;">
+            <appui:ExVisualElement class="appui-elevation-1" style="flex-grow: 1; flex-basis: 50%; margin-left: 8px; margin-right: 4px; padding: 2px;">
+              <appui:Heading text="EMS" size="s" />
+              <appui:InputLabel direction="Horizontal" label="Intensity">
+                <appui:SliderFloat size="S" filled="true" tick-count="10" />
+              </appui:InputLabel>
+              <appui:Toggle />
+            </appui:ExVisualElement>
+            <appui:ExVisualElement class="appui-elevation-1" style="flex-grow: 1; flex-basis: 50%; margin-left: 4px; margin-right: 8px; padding: 2px;">
+              <appui:Heading text="Olfactory" size="s" />
+                <appui:ActionGroup>
+                  <appui:ActionButton label="Pleasant" />
+                  <appui:ActionButton label="Unpleasant" />
+                </appui:ActionGroup>
+              <appui:Toggle />
+            </appui:ExVisualElement>
+          </ui:VisualElement>
+          <appui:ExVisualElement class="appui-elevation-1" style="flex-grow: 1; margin-left: 8px; margin-right: 8px; margin-bottom: 8px; padding: 2px;">
+            <appui:Heading text="System"/>
+            <appui:ActionGroup>
+              <appui:Text text="Delay"/>
+              <appui:IntField size="S" unit="h"/>
+              <appui:Text text=":"/>
+              <appui:IntField size="S" unit="m"/>
+              <appui:Text text=":"/>  
+              <appui:IntField size="S" unit="s"/>
+            </appui:ActionGroup>
+            <appui:ActionGroup>
+              <appui:ActionButton label="Start System" />
+                <appui:ActionButton label="Test Cues" />
+            </appui:ActionGroup>
+          </appui:ExVisualElement>
+        </ui:VisualElement>
+      </appui:SplitView>
+    </appui:Panel>
+</ui:UXML>
