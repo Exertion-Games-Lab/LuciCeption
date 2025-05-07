@@ -22,7 +22,7 @@ namespace LuciReality.AI
     /// <summary>Queries the Gemini model with a user prompt.</summary>
     /// <param name="prompt">The user prompt.</param>
     /// <returns>Gemini's response.</returns>
-    public static async Task<SystemParameters> Query(string prompt)
+    public static async Task<CueParametersModel> Query(string prompt)
     {
       Log.Info("{logType}] {queryType} query started with: \'{prompt}\'", "GEMINI", "text", prompt);
       string chat = await BuildQuery(prompt);
@@ -30,7 +30,7 @@ namespace LuciReality.AI
 
       var textResponse = await Gemini.QueryModel<GeminiMessage>(Endpoint(), chat);
       Log.Debug("{logType}] response received: \'{geminiResponse}\'", "GEMINI", JsonConvert.SerializeObject(textResponse));
-      var sysParams = JsonConvert.DeserializeObject<SystemParameters>(textResponse.candidates[0].content.parts[0].text);
+      var sysParams = JsonConvert.DeserializeObject<CueParametersModel>(textResponse.candidates[0].content.parts[0].text);
       Log.Info("{logType}] system parameters received from Gemini: \'{logParams}\'", "GEMINI", JsonConvert.SerializeObject(sysParams));
 
       return sysParams;
