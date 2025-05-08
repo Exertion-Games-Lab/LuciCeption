@@ -9,16 +9,16 @@
                 <appui:ActionButton name="prompt-submit-button" label="Submit" />
                 <appui:Divider spacing="M" />
                 <appui:Heading text="Image Generation" />
-                <ui:VisualElement name="generated-image-box" style="height: 400px; background-color: #999999;" />
+                <ui:VisualElement name="generated-image-box" style="height: 400px; background-color: rgb(153, 153, 153);" />
                 <appui:ActionButton name="image-generate-button" label="Generate" />
             </appui:Pane>
-            <appui:Pane class="section-cues" stretch-factor="1" style="width: 70%;">
+            <appui:Pane stretch-factor="1" class="section-cues" style="width: 70%;">
                 <appui:Heading text="Cue Modules" />
                 <ui:VisualElement class="cue-module-row">
                     <appui:ExVisualElement class="appui-elevation-1 cue-settings-card cue-settings-card-left">
                         <appui:Heading text="Visual" size="S" />
                         <appui:InputLabel direction="Horizontal" label="Colour">
-                            <appui:ColorField name="visual-cue-colour" size="S" show-alpha="false" hdr="false"/>
+                            <appui:ColorPicker name="visual-cue-colour" size="S" show-alpha="false" hdr="false" value="#FF0000FF" show-hex="false" />
                         </appui:InputLabel>
                         <appui:InputLabel direction="Horizontal" label="Intensity">
                             <appui:SliderFloat name="visual-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0.5" />

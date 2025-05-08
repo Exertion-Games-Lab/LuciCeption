@@ -43,6 +43,14 @@ namespace LuciReality
   {
     public bool Enabled;
     [JsonIgnore] public Color Colour;
+
+    // Allow for deserialisation but not serialisation
+    [JsonProperty("Colour")]
+    private Color ColourSetter
+    {
+      set { Colour = value; }
+    }
+
     [Range(0, 1)] public float Intensity;
   }
 

@@ -97,7 +97,11 @@ namespace LuciReality.UI
       };
     }
 
-    private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(promptViewModel.Text);
+    private async Task QueryModel() {
+      cueParametersViewModel.Model = await TextQuery.Query(promptViewModel.Text);
+      var visualCueColor = root.Q<Unity.AppUI.UI.ColorPicker>("visual-cue-colour");
+      visualCueColor.value = cueParametersViewModel.Model.Lights.Colour;
+    }
 
     private async Task QueryImage()
     {
@@ -122,14 +126,11 @@ namespace LuciReality.UI
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.LightsIntensity))
       });
 
-      var visualCueColor = cuePane.Q<ColorField>("visual-cue-colour");
-      foreach (var binding in visualCueColor.GetBindingInfos())
+      var visualCueColor = cuePane.Q<Unity.AppUI.UI.ColorPicker>("visual-cue-colour");
+
+      visualCueColor.RegisterCallback<ChangeEvent<Color>>((evt) =>
       {
-        Debug.Log(binding);
-      }
-      
-      visualCueColor.SetBinding("value", new DataBinding {
-        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.LightsColour))
+          cueParametersViewModel.LightsColour = evt.newValue;
       });
 
       var visualCueEnabled = cuePane.Q<Unity.AppUI.UI.Toggle>("visual-cue-enabled");
