@@ -18,7 +18,7 @@ namespace LuciReality.UI
 
     public CueParametersModel model;
 
-    public Texture2D tex;
+    private Texture2D tex;
     public bool isGenerating = false;
 
     protected void Awake()
@@ -45,16 +45,13 @@ namespace LuciReality.UI
     private void SetupActions()
     {
       var promptPane = root.Query<Pane>().First();
-      var submitButton = promptPane.Q<ActionButton>("prompt-submit-button");
+      var submitButton = promptPane.Q<Unity.AppUI.UI.Button>("prompt-submit-button");
 
       submitButton.clicked += async () => {
-        if (isGenerating)
-        {
-          return;
-        }
+        if (cueParametersViewModel.IsGenerating) { return; }
 
         Log.Info("[{logType}]: The user clicked submit prompt", "USER_INTERFACE");
-        isGenerating = true;
+        cueParametersViewModel.IsGenerating = true;
         try
         {
           Task[] tasks = {
@@ -63,45 +60,30 @@ namespace LuciReality.UI
           };
           await Task.WhenAll(tasks);
         }
-        catch (System.Exception e)
-        {
-          throw e;
-        }
-        finally
-        {
-          isGenerating = false;
-        }
+        finally { cueParametersViewModel.IsGenerating = false; }
       };
 
-      var generateButton = promptPane.Q<ActionButton>("image-generate-button");
+      var generateButton = promptPane.Q<Unity.AppUI.UI.Button>("image-generate-button");
       generateButton.clicked += async () => {
-        if (isGenerating)
+        if (cueParametersViewModel.IsGenerating)
         {
           return;
         }
 
         Log.Info("[{logType}]: The user clicked generate image", "USER_INTERFACE");
-        isGenerating = true;
-        try
-        {
-          await QueryImage();
-        }
-        catch (System.Exception e)
-        {
-          throw e;
-        }
-        finally
-        {
-          isGenerating = false;
-        }
+
+        cueParametersViewModel.IsGenerating = true;
+        try { await QueryImage(); }
+        finally { cueParametersViewModel.IsGenerating = false; }
+      };
+
+      var startSystemButton = root.Q<ActionButton>("start-system-button");
+      startSystemButton.clicked += async () =>
+      {
       };
     }
 
-    private async Task QueryModel() {
-      cueParametersViewModel.Model = await TextQuery.Query(promptViewModel.Text);
-      var visualCueColor = root.Q<Unity.AppUI.UI.ColorPicker>("visual-cue-colour");
-      visualCueColor.value = cueParametersViewModel.Model.Lights.Colour;
-    }
+    private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(promptViewModel.Text);
 
     private async Task QueryImage()
     {
@@ -109,6 +91,8 @@ namespace LuciReality.UI
       VisualElement image = root.Q("generated-image-box");
       image.style.backgroundImage = tex;
     }
+
+    private CueParametersViewModel GetViewModel() => cueParametersViewModel;
 
     private void Bind()
     {
@@ -126,12 +110,20 @@ namespace LuciReality.UI
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.LightsIntensity))
       });
 
-      var visualCueColor = cuePane.Q<Unity.AppUI.UI.ColorPicker>("visual-cue-colour");
+      // There appears to be a bug with AppUI's ColorPicker.
+      // It succesfully invokes change events but fails to notify the runtime binding system when its value changes.
+      // Therefore, we replicate the binding behaviour with a work-around.
 
-      visualCueColor.RegisterCallback<ChangeEvent<Color>>((evt) =>
-      {
-          cueParametersViewModel.LightsColour = evt.newValue;
-      });
+      var visualCueColor = cuePane.Q<ColorPicker>("visual-cue-colour");
+
+      visualCueColor.RegisterCallback<ChangeEvent<Color>>((evt) => GetViewModel().SetLightsColourWithoutNotify(evt.newValue));
+      cueParametersViewModel.PropertyChanged += (v, evt) => {
+        if (evt.PropertyName != nameof(CueParametersViewModel.LightsColour)) { return; }
+        if (v is not CueParametersViewModel viewModel) { return; }
+        if (visualCueColor.value == viewModel.LightsColour) { return; }
+
+        visualCueColor.SetValueWithoutNotify(viewModel.LightsColour);
+      };
 
       var visualCueEnabled = cuePane.Q<Unity.AppUI.UI.Toggle>("visual-cue-enabled");
       visualCueEnabled.SetBinding("value", new DataBinding {

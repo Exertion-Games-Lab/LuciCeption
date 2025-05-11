@@ -9,17 +9,20 @@ namespace LuciReality.UI
   public partial class CueParametersViewModel
   {
     [ObservableProperty]
-    // [AlsoNotifyChangeFor(nameof(LightsEnabled))]
-    // [AlsoNotifyChangeFor(nameof(LightsIntensity))]
-    // [AlsoNotifyChangeFor(nameof(AudioEnabled))]
-    // [AlsoNotifyChangeFor(nameof(AudioVolume))]
-    // [AlsoNotifyChangeFor(nameof(LightsColour))]
-    // [AlsoNotifyChangeFor(nameof(LraEnabled))]
-    // [AlsoNotifyChangeFor(nameof(LraIntensity))]
-    // [AlsoNotifyChangeFor(nameof(EmsEnabled))]
-    // [AlsoNotifyChangeFor(nameof(EmsIntensity))]
-    // [AlsoNotifyChangeFor(nameof(FanEnabled))]
-    // [AlsoNotifyChangeFor(nameof(FanIntensity))]
+    private bool _isGenerating = false;
+
+    [ObservableProperty]
+    [AlsoNotifyChangeFor(nameof(LightsEnabled))]
+    [AlsoNotifyChangeFor(nameof(LightsColour))]
+    [AlsoNotifyChangeFor(nameof(LightsIntensity))]
+    [AlsoNotifyChangeFor(nameof(AudioEnabled))]
+    [AlsoNotifyChangeFor(nameof(AudioVolume))]
+    [AlsoNotifyChangeFor(nameof(LraEnabled))]
+    [AlsoNotifyChangeFor(nameof(LraIntensity))]
+    [AlsoNotifyChangeFor(nameof(EmsEnabled))]
+    [AlsoNotifyChangeFor(nameof(EmsIntensity))]
+    [AlsoNotifyChangeFor(nameof(FanEnabled))]
+    [AlsoNotifyChangeFor(nameof(FanIntensity))]
     private CueParametersModel _model = new();
 
     [CreateProperty]
@@ -29,19 +32,21 @@ namespace LuciReality.UI
       set => SetProperty(_model.Lights.Enabled, value, _model, (u, n) => u.Lights.Enabled = n);
     }
 
+    [CreateProperty]
     public Color LightsColour
     {
       get => _model.Lights.Colour;
-      set {
-        _model.Lights.Colour = value;
-      }
+      set => SetProperty(_model.Lights.Colour, value, _model, (u, n) => u.Lights.Colour = n);
     }
+    public void SetLightsColourWithoutNotify(Color colour) => _model.Lights.Colour = colour;
+
     [CreateProperty]
     public float LightsIntensity
     {
       get => _model.Lights.Intensity;
       set => SetProperty(_model.Lights.Intensity, value, _model, (u, n) => u.Lights.Intensity = n);
     }
+
 
     [CreateProperty]
     public bool AudioEnabled

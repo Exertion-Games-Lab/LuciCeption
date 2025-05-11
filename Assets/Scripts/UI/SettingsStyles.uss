@@ -1,8 +1,10 @@
 .cue-settings-card {
-    padding: 2px;
+    padding: 4px;
     flex-basis: 50%;
     flex-grow: 1;
     margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: #2B2B2B;
 }
 
 .cue-settings-card-left {
@@ -16,8 +18,8 @@
 .cue-module-row {
     flex-direction: row;
     margin-right: 0;
-    padding-right: 8px;
-    padding-left: 8px;
+    /* padding-right: 8px; */
+    /* padding-left: 8px; */
 }
 
 .cue-module-toggle {
