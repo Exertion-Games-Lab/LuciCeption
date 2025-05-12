@@ -46,29 +46,29 @@ namespace LuciReality.UI
     private void SetupActions()
     {
       var promptPane = root.Query<Pane>().First();
-      var submitButton = promptPane.Q<Unity.AppUI.UI.Button>("prompt-submit-button");
+      var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
 
-      submitButton.clicked += async () => {
-        if (cueParametersViewModel.IsGenerating) { return; }
+      imageFromPrompt.clicked += async () => {
+        if (cueParametersViewModel.GeneratingImage) { return; }
 
         Log.Info("[{logType}]: The user clicked generate image", "USER_INTERFACE");
-        cueParametersViewModel.IsGenerating = true;
+        cueParametersViewModel.GeneratingImage = true;
         try { await QueryImage(); }
-        finally { cueParametersViewModel.IsGenerating = false; }
+        finally { cueParametersViewModel.GeneratingImage = false; }
       };
 
-      var generateButton = promptPane.Q<Unity.AppUI.UI.Button>("image-generate-button");
-      generateButton.clicked += async () => {
-        if (cueParametersViewModel.IsGenerating)
+      var cuesFromPrompt = promptPane.Q<ActionButton>("cues-from-prompt-button");
+      cuesFromPrompt.clicked += async () => {
+        if (cueParametersViewModel.GeneratingCues)
         {
           return;
         }
 
         Log.Info("[{logType}]: The user clicked generate cues", "USER_INTERFACE");
 
-        cueParametersViewModel.IsGenerating = true;
+        cueParametersViewModel.GeneratingCues = true;
         try { await QueryModel(); }
-        finally { cueParametersViewModel.IsGenerating = false; }
+        finally { cueParametersViewModel.GeneratingCues = false; }
       };
 
       var dreamPromptInfo = root.Q<IconButton>("dream-prompt-info");
@@ -128,13 +128,29 @@ namespace LuciReality.UI
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.PromptText))
       });
 
-      var generationProgressIndicator = promptPane.Q("generation-progress-indicator");
-      var generationProgressIndicatorBinding = new DataBinding {
-        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.IsGenerating)),
+      var imageProgressIndicator = promptPane.Q("image-progress-indicator");
+      var imageProgressIndicatorBinding = new DataBinding {
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingImage)),
         bindingMode = BindingMode.ToTarget,
       };
-      generationProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ?  DisplayStyle.Flex : DisplayStyle.None));
-      generationProgressIndicator.SetBinding("style." + nameof(generationProgressIndicator.style.display), generationProgressIndicatorBinding);
+      imageProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ?  DisplayStyle.Flex : DisplayStyle.None));
+      imageProgressIndicator.SetBinding("style." + nameof(imageProgressIndicator.style.display), imageProgressIndicatorBinding);
+
+      var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
+      var imageFromPromptBinding = new DataBinding {
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingImage)),
+        bindingMode = BindingMode.ToTarget,
+      };
+      imageFromPromptBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => !isGenerating);
+      imageFromPrompt.SetBinding("enabledSelf", imageFromPromptBinding);
+
+      var cuesFromPrompt = promptPane.Q<ActionButton>("cues-from-prompt-button");
+      var cuesFromPromptBinding = new DataBinding {
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingCues)),
+        bindingMode = BindingMode.ToTarget,
+      };
+      cuesFromPromptBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => !isGenerating);
+      cuesFromPrompt.SetBinding("enabledSelf", cuesFromPromptBinding);
 
       var cuePane = root.Query<Pane>().AtIndex(1);
       cuePane.dataSource = cueParametersViewModel;
@@ -148,6 +164,14 @@ namespace LuciReality.UI
       // Therefore, we replicate the binding behaviour with a work-around.
 
       var visualCueColor = cuePane.Q<ColorPicker>("visual-cue-colour");
+
+      var cueProgressIndicator = cuePane.Q("cue-progress-indicator");
+      var cueProgressIndicatorBinding = new DataBinding {
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingCues)),
+        bindingMode = BindingMode.ToTarget,
+      };
+      cueProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ?  DisplayStyle.Flex : DisplayStyle.None));
+      cueProgressIndicator.SetBinding("style." + nameof(cueProgressIndicator.style.display), cueProgressIndicatorBinding);
 
       visualCueColor.RegisterCallback<ChangeEvent<Color>>((evt) => GetViewModel().SetLightsColourWithoutNotify(evt.newValue));
       cueParametersViewModel.PropertyChanged += (v, evt) => {

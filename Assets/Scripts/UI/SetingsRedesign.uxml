@@ -9,15 +9,15 @@
               </ui:VisualElement>
                 <appui:Divider />
                 <appui:TextArea name="prompt-text" placeholder="What would you like to dream about?" leading-icon-name="info" />
-                <appui:Button name="prompt-submit-button" title="Generate Image From Prompt" style="margin-top: 4px;" />
+                <appui:ActionButton name="image-from-prompt-button" label="Generate Image From Prompt" style="margin-top: 4px;" />
               <ui:VisualElement class="heading-row-container">
                 <appui:Heading text="Image" />
                 <appui:IconButton name="dream-image-info" icon="info" />
               </ui:VisualElement>
                 <appui:Divider />
                 <ui:VisualElement name="generated-image-box" style="height: 400px; background-color: rgb(153, 153, 153);" />
-                <appui:Button name="image-generate-button" title="Generate Cues From Prompt + Image" style="margin-top: 4px;" />
-                <ui:VisualElement name="generation-progress-indicator" style="display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.71); align-items: center; justify-content: center;">
+                <appui:ActionButton name="cues-from-prompt-button" label="Generate Cues From Prompt + Image" style="margin-top: 4px;" />
+                <ui:VisualElement name="image-progress-indicator" style="display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.71); align-items: center; justify-content: center;">
                   <appui:CircularProgress />
                 </ui:VisualElement>
             </appui:Pane>
@@ -111,6 +111,9 @@
                         <appui:Button title="Test Cues" />
                     </appui:ActionGroup>
                 </appui:ExVisualElement>
+                <ui:VisualElement name="cue-progress-indicator" style="display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.71); align-items: center; justify-content: center;">
+                  <appui:CircularProgress />
+                </ui:VisualElement>
             </appui:Pane>
         </appui:SplitView>
     </appui:Panel>

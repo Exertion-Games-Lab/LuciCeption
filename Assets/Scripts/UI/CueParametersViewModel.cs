@@ -9,7 +9,10 @@ namespace LuciReality.UI
   public partial class CueParametersViewModel
   {
     [ObservableProperty]
-    private bool _isGenerating = false;
+    private bool _generatingImage = false;
+
+    [ObservableProperty]
+    private bool _generatingCues = false;
 
     [ObservableProperty]
     private string _promptText;
