@@ -25,3 +25,8 @@
 .cue-module-toggle {
     flex-direction: row-reverse;
 }
+
+.heading-row-container {
+  flex-direction: row;
+  justify-content: space-between;
+}

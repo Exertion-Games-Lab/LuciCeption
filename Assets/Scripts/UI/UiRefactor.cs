@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.Logging;
 using System.Threading.Tasks;
+using UnityEditor;
 
 namespace LuciReality.UI
 {
@@ -50,16 +51,9 @@ namespace LuciReality.UI
       submitButton.clicked += async () => {
         if (cueParametersViewModel.IsGenerating) { return; }
 
-        Log.Info("[{logType}]: The user clicked submit prompt", "USER_INTERFACE");
+        Log.Info("[{logType}]: The user clicked generate image", "USER_INTERFACE");
         cueParametersViewModel.IsGenerating = true;
-        try
-        {
-          Task[] tasks = {
-            QueryModel(),
-            QueryImage()
-          };
-          await Task.WhenAll(tasks);
-        }
+        try { await QueryImage(); }
         finally { cueParametersViewModel.IsGenerating = false; }
       };
 
@@ -70,24 +64,55 @@ namespace LuciReality.UI
           return;
         }
 
-        Log.Info("[{logType}]: The user clicked generate image", "USER_INTERFACE");
+        Log.Info("[{logType}]: The user clicked generate cues", "USER_INTERFACE");
 
         cueParametersViewModel.IsGenerating = true;
-        try { await QueryImage(); }
+        try { await QueryModel(); }
         finally { cueParametersViewModel.IsGenerating = false; }
       };
 
-      var startSystemButton = root.Q<ActionButton>("start-system-button");
-      startSystemButton.clicked += async () =>
-      {
+      var dreamPromptInfo = root.Q<IconButton>("dream-prompt-info");
+      dreamPromptInfo.clicked += () => {
+        var popoverContent = new VisualElement();
+        var infoText = new Text
+        {
+          text = "This section generates an image using AI.\nDescribe what you would like to dream about in the text area, and clicking the button will prompt the AI to generate an image based on it."
+        };
+        popoverContent.Add(infoText);
+
+        Popover.Build(dreamPromptInfo, popoverContent)
+        .SetKeyboardDismiss(true)
+        .SetContainerPadding(4)
+        .SetOutsideClickDismiss(true)
+        .SetArrowVisible(true)
+        .SetOffset(2)
+        .Show();
+      };
+
+      var dreamImageInfo = root.Q<IconButton>("dream-image-info");
+      dreamImageInfo.clicked += () => {
+        var popoverContent = new VisualElement();
+        var infoText = new Text
+        {
+          text = "Once you are happy with the image that the AI generated, click the generate cues button.\nThis will configure the cues using your text prompt and selected image.\nAfter the cues have been generated, you are free to customise them as you wish."
+        };
+        popoverContent.Add(infoText);
+
+        Popover.Build(dreamImageInfo, popoverContent)
+        .SetKeyboardDismiss(true)
+        .SetContainerPadding(4)
+        .SetOutsideClickDismiss(true)
+        .SetArrowVisible(true)
+        .SetOffset(2)
+        .Show();
       };
     }
 
-    private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(promptViewModel.Text);
+    private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(cueParametersViewModel.PromptText);
 
     private async Task QueryImage()
     {
-      await ImageQuery.Query(promptViewModel.Text, tex);
+      await ImageQuery.Query(cueParametersViewModel.PromptText, tex);
       VisualElement image = root.Q("generated-image-box");
       image.style.backgroundImage = tex;
     }
@@ -97,11 +122,19 @@ namespace LuciReality.UI
     private void Bind()
     {
       var promptPane = root.Query<Pane>().First();
-      promptPane.dataSource = promptViewModel;
+      promptPane.dataSource = cueParametersViewModel;
       var promptTextArea = promptPane.Q<TextArea>("prompt-text");
       promptTextArea.SetBinding("value", new DataBinding {
-        dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.Text))
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.PromptText))
       });
+
+      var generationProgressIndicator = promptPane.Q("generation-progress-indicator");
+      var generationProgressIndicatorBinding = new DataBinding {
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.IsGenerating)),
+        bindingMode = BindingMode.ToTarget,
+      };
+      generationProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ?  DisplayStyle.Flex : DisplayStyle.None));
+      generationProgressIndicator.SetBinding("style." + nameof(generationProgressIndicator.style.display), generationProgressIndicatorBinding);
 
       var cuePane = root.Query<Pane>().AtIndex(1);
       cuePane.dataSource = cueParametersViewModel;

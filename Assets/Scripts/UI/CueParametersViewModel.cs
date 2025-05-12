@@ -12,6 +12,9 @@ namespace LuciReality.UI
     private bool _isGenerating = false;
 
     [ObservableProperty]
+    private string _promptText;
+
+    [ObservableProperty]
     [AlsoNotifyChangeFor(nameof(LightsEnabled))]
     [AlsoNotifyChangeFor(nameof(LightsColour))]
     [AlsoNotifyChangeFor(nameof(LightsIntensity))]

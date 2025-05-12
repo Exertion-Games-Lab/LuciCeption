@@ -2,18 +2,32 @@
     <Style src="project://database/Assets/Scripts/UI/SettingsStyles.uss?fileID=7433441132597879392&amp;guid=d34b29af7d3936943bf9138b587a2290&amp;type=3#SettingsStyles" />
     <appui:Panel name="root-panel">
         <appui:SplitView fixed-pane-index="0" fixed-pane-initial-dimension="400" orientation="Horizontal">
-            <appui:Pane class="section-prompts" style="width: 30%; padding: 4px">
+            <appui:Pane class="section-prompts" style="width: 30%; padding: 4px;">
+              <ui:VisualElement class="heading-row-container">
                 <appui:Heading text="Dream Prompt" />
+                <appui:IconButton name="dream-prompt-info" icon="info" />
+              </ui:VisualElement>
                 <appui:Divider />
                 <appui:TextArea name="prompt-text" placeholder="What would you like to dream about?" leading-icon-name="info" />
-                <appui:Button name="prompt-submit-button" title="Submit" style="margin-top: 4px" />
-                <appui:Heading text="Image Generation" />
+                <appui:Button name="prompt-submit-button" title="Generate Image From Prompt" style="margin-top: 4px;" />
+              <ui:VisualElement class="heading-row-container">
+                <appui:Heading text="Image" />
+                <appui:IconButton name="dream-image-info" icon="info" />
+              </ui:VisualElement>
                 <appui:Divider />
                 <ui:VisualElement name="generated-image-box" style="height: 400px; background-color: rgb(153, 153, 153);" />
-                <appui:Button name="image-generate-button" title="Generate" style="margin-top: 4px" />
+                <appui:Button name="image-generate-button" title="Generate Cues From Prompt + Image" style="margin-top: 4px;" />
+                <ui:VisualElement name="generation-progress-indicator" style="display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.71); align-items: center; justify-content: center;">
+                  <appui:CircularProgress />
+                </ui:VisualElement>
             </appui:Pane>
-            <appui:Pane stretch-factor="1" class="section-cues" style="width: 70%; padding: 4px">
-                <appui:Heading text="Cue Modules" />
+            <appui:Pane stretch-factor="1" class="section-cues" style="width: 70%; padding: 4px;">
+                <ui:VisualElement class="heading-row-container">
+                    <appui:Heading text="Cue Modules" />
+                    <ui:VisualElement style="flex-direction: row">
+                    <appui:Button title="View AI Reasoning" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
                 <appui:Divider />
                 <ui:VisualElement class="cue-module-row">
                     <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
