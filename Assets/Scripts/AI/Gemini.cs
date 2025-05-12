@@ -85,9 +85,13 @@ namespace LuciReality.AI
         var inlineData = msg.candidates[0].content.parts[0].inlineData;
         if (inlineData != null)
         {
-          Log.Info("[{logType}] image received: {mimeType}", "GEMINI", inlineData.mimeType);
-          // TODO: Save image to file with timestamp
           var dataBytes = DataToBytes(inlineData.data);
+
+          var filename = string.Format("{0:yyyy-MM-dd-HH-mm-ss-fff}.png", DateTime.Now);
+          using var writer = File.Create(Path.Join(Application.dataPath, "Logs", filename));
+          writer.Write(dataBytes);
+          writer.Close();
+          Log.Info("[{logType}] image received: {mimeType}, written to file: {filename}", "GEMINI", inlineData.mimeType, filename);
 
           switch (inlineData.mimeType)
           {
