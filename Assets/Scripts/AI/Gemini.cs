@@ -78,6 +78,10 @@ namespace LuciReality.AI
 
       foreach (var msg in messages)
       {
+        if (msg.candidates == null || msg.candidates.Count == 0) { continue; }
+        if (msg.candidates[0].content == null || msg.candidates[0].content.parts == null) { continue; }
+        if (msg.candidates[0].content.parts.Count == 0) { continue; }
+
         var inlineData = msg.candidates[0].content.parts[0].inlineData;
         if (inlineData != null)
         {
