@@ -30,3 +30,33 @@
   flex-direction: row;
   justify-content: space-between;
 }
+
+.lucireality--file-browser {
+  background-color: var(--appui-primary-200);
+}
+
+FileBrowser .unity-multi-column-view__header-container
+{
+  border-width: 0;
+}
+
+FileBrowser .unity-multi-column-header__column
+{
+  background-color: var(--appui-primary-300);
+}
+
+#audio-clip-selector {
+  cursor: var(--appui-alias-control-cursor-pointer);
+}
+
+#audio-clip-selector #appui-textfield__input {
+  cursor: var(--appui-alias-control-cursor-pointer);
+}
+
+#audio-clip-selector #unity-text-input {
+  cursor: var(--appui-alias-control-cursor-pointer);
+}
+
+#audio-clip-selector TextElement {
+  cursor: var(--appui-alias-control-cursor-pointer);
+}

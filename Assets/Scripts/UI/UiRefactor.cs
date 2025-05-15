@@ -106,6 +106,15 @@ namespace LuciReality.UI
         .SetOffset(2)
         .Show();
       };
+
+      var audioClipSelector = root.Q<Unity.AppUI.UI.Button>("audio-clip-selector");
+      audioClipSelector.AddManipulator(new Unity.AppUI.UI.Clickable(evt => {
+        var fileBrowser = new FileBrowser();
+        Modal.Build(audioClipSelector, fileBrowser)
+        .SetKeyboardDismiss(false)
+        .SetOutsideClickDismiss(true)
+        .Show();
+      }));
     }
 
     private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(cueParametersViewModel.PromptText);
@@ -143,7 +152,6 @@ namespace LuciReality.UI
       };
       imageFromPromptBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => !isGenerating);
       imageFromPrompt.SetBinding("enabledSelf", imageFromPromptBinding);
-
       var cuesFromPrompt = promptPane.Q<ActionButton>("cues-from-prompt-button");
       var cuesFromPromptBinding = new DataBinding {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingCues)),
