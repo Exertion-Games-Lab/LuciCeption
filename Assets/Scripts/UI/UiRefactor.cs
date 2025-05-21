@@ -113,6 +113,11 @@ namespace LuciReality.UI
       viewReasoningButton.clicked += () =>
       {
         var reasoningWindow = new ReasoningWindow();
+        reasoningWindow.dataSource = cueParametersViewModel;
+        reasoningWindow.SetBinding("text", new DataBinding
+        {
+          dataSourcePath = PropertyPath.FromName(nameof(CueParametersViewModel.ReasoningText))
+        });
         var modal = Modal.Build(viewReasoningButton, reasoningWindow)
         .SetKeyboardDismiss(false)
         .SetOutsideClickDismiss(true);

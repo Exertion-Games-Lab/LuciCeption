@@ -14,10 +14,13 @@ namespace LuciReality.UI
     [ObservableProperty]
     private bool _generatingCues = false;
 
+    
+
     [ObservableProperty]
     private string _promptText;
 
     [ObservableProperty]
+    [AlsoNotifyChangeFor(nameof(ReasoningText))]
     [AlsoNotifyChangeFor(nameof(LightsEnabled))]
     [AlsoNotifyChangeFor(nameof(LightsColour))]
     [AlsoNotifyChangeFor(nameof(LightsIntensity))]
@@ -30,6 +33,12 @@ namespace LuciReality.UI
     [AlsoNotifyChangeFor(nameof(FanEnabled))]
     [AlsoNotifyChangeFor(nameof(FanIntensity))]
     private CueParametersModel _model = new();
+
+    [CreateProperty]
+    public string ReasoningText
+    {
+      get => _model.ReasoningText;
+    }
 
     [CreateProperty]
     public bool LightsEnabled

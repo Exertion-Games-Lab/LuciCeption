@@ -18,7 +18,7 @@ namespace LuciReality.AI
   /// </summary>
   public static class TextQuery
   {
-    private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={ApiKeys.Gemini}";
+    private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key={ApiKeys.Gemini}";
     /// <summary>Queries the Gemini model with a user prompt.</summary>
     /// <param name="prompt">The user prompt.</param>
     /// <returns>Gemini's response.</returns>
@@ -29,9 +29,13 @@ namespace LuciReality.AI
       Log.Debug("{logType}] chat message created: \'{chat}\'", "GEMINI", chat);
 
       var textResponse = await Gemini.QueryModel<GeminiMessage>(Endpoint(), chat);
+      Debug.Log(textResponse);
       Log.Debug("{logType}] response received: \'{geminiResponse}\'", "GEMINI", JsonConvert.SerializeObject(textResponse));
-      var sysParams = JsonConvert.DeserializeObject<CueParametersModel>(textResponse.candidates[0].content.parts[0].text);
+      var sysParams = JsonConvert.DeserializeObject<CueParametersModel>(textResponse.candidates[0].content.parts[1].text);
       Log.Info("{logType}] system parameters received from Gemini: \'{logParams}\'", "GEMINI", JsonConvert.SerializeObject(sysParams));
+      Log.Info("[{logType}] reasoning was: [{reasoning}]", "GEMINI", textResponse.candidates[0].content.parts[0].text);
+
+      sysParams.ReasoningText = textResponse.candidates[0].content.parts[0].text;
 
       return sysParams;
     }
@@ -49,10 +53,15 @@ namespace LuciReality.AI
             parts = new List<Part>() { Part.FromText(prompt) }
           }
         },
-        generationConfig = new GenerateContentConfig {
+        generationConfig = new GenerateContentConfig
+        {
           responseModalities = new List<string>() { "text" },
           responseMimeType = "application/json",
-          responseSchema = JObject.Parse(await TextQuerySchema.ResponseSchema())
+          responseSchema = JObject.Parse(await TextQuerySchema.ResponseSchema()),
+          thinkingConfig = new ThinkingConfig
+          {
+            includeThoughts = true,
+          },
         }
       };
 
@@ -111,17 +120,21 @@ namespace LuciReality.AI
 
     private static async Task<string> BuildQuery(string prompt)
     {
-      var query = new GeminiQuery {
-        contents = new List<Content>() {
-          new Content() {
+      var query = new GeminiQuery
+      {
+        contents = new List<Content>()
+        {
+          new Content()
+          {
             role = "user",
             parts = new List<Part>() { Part.FromText(prompt) }
           }
         },
-        generationConfig = new GenerateContentConfig {
+        generationConfig = new GenerateContentConfig
+        {
           responseModalities = new List<string>() { "text", "image" },
           responseMimeType = "text/plain",
-        }
+        },
       };
 
       var jsonQuery = JsonConvert.SerializeObject(query, Formatting.Indented, new JsonSerializerSettings
@@ -164,7 +177,7 @@ namespace LuciReality.AI
     public static async Task<T> QueryModel<T>(string endpoint, string chat) where T : class
     {
       string responseData = await MakeRequest(endpoint, chat);
-
+      Debug.Log(responseData);
       // LuciLogs.Log(responseData);
       // var chatResponse = JsonConvert.DeserializeObject<List<GeminiMessage>>(responseData);
       // var chatResponse = JsonUtility.FromJson<GeminiResponse>(responseData);

@@ -18,6 +18,7 @@ namespace LuciReality
       Fan = new();
     }
 
+    public string ReasoningText;
     [JsonProperty("Audio")] public AudioParameters Audio;
     [JsonProperty("Light")] public LightParameters Lights;
     [JsonProperty("LRA")] public LraParameters Lra;

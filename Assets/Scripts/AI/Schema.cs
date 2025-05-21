@@ -42,6 +42,7 @@ namespace LuciReality.Prompt
     public List<string> responseModalities;
     public string responseMimeType;
     public JObject responseSchema;
+    public ThinkingConfig thinkingConfig;
   }
 
   [Serializable]
@@ -65,6 +66,13 @@ namespace LuciReality.Prompt
     public JObject systemInstruction;
     [SerializeField] public GenerateContentConfig generationConfig;
     [SerializeField] public List<Content> contents;
+  }
+
+  [Serializable]
+  public class ThinkingConfig
+  {
+    public bool includeThoughts;
+    public int thinkingBudget = 8192;
   }
 
   [Serializable]
