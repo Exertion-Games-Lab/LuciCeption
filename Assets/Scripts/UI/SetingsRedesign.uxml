@@ -25,7 +25,7 @@
                 <ui:VisualElement class="heading-row-container">
                     <appui:Heading text="Cue Modules" />
                     <ui:VisualElement style="flex-direction: row;">
-                        <appui:Button title="View AI Reasoning" />
+                        <appui:Button name="view-reasoning-button" title="View AI Reasoning" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <appui:Divider />

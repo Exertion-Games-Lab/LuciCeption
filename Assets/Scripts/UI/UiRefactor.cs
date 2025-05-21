@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using Unity.Logging;
 using System.Threading.Tasks;
 using UnityEditor;
+using Unity.AppUI.Core;
 
 namespace LuciReality.UI
 {
@@ -90,7 +91,8 @@ namespace LuciReality.UI
       };
 
       var dreamImageInfo = root.Q<IconButton>("dream-image-info");
-      dreamImageInfo.clicked += () => {
+      dreamImageInfo.clicked += () =>
+      {
         var popoverContent = new VisualElement();
         var infoText = new Text
         {
@@ -107,13 +109,30 @@ namespace LuciReality.UI
         .Show();
       };
 
-      var audioClipSelector = root.Q<Unity.AppUI.UI.Button>("audio-clip-selector");
-      audioClipSelector.AddManipulator(new Unity.AppUI.UI.Clickable(evt => {
-        var fileBrowser = new FileBrowser();
-        Modal.Build(audioClipSelector, fileBrowser)
+      var viewReasoningButton = root.Q<Unity.AppUI.UI.Button>();
+      viewReasoningButton.clicked += () =>
+      {
+        var reasoningWindow = new ReasoningWindow();
+        var modal = Modal.Build(viewReasoningButton, reasoningWindow)
         .SetKeyboardDismiss(false)
-        .SetOutsideClickDismiss(true)
-        .Show();
+        .SetOutsideClickDismiss(true);
+
+        reasoningWindow.OnCloseClicked += () => modal.Dismiss();
+
+        modal.Show();
+      };
+
+      var audioClipSelector = root.Q<Unity.AppUI.UI.Button>("audio-clip-selector");
+      audioClipSelector.AddManipulator(new Unity.AppUI.UI.Clickable(evt =>
+      {
+        var fileBrowser = new FileBrowser();
+        var modal = Modal.Build(audioClipSelector, fileBrowser)
+        .SetKeyboardDismiss(false)
+        .SetOutsideClickDismiss(true);
+
+        fileBrowser.OnCloseClicked += () => modal.Dismiss();
+
+        modal.Show();
       }));
     }
 
