@@ -6,6 +6,9 @@ using UnityEngine.UIElements;
 
 namespace LuciReality.UI
 {
+  /// <summary>
+  /// This class is a <see href="https://learn.microsoft.com/en-us/dotnet/architecture/maui/mvvm">view-model</see> for the settings interface.
+  /// </summary>
   [System.Serializable]
   [ObservableObject]
   public partial class CueParametersViewModel
@@ -17,8 +20,6 @@ namespace LuciReality.UI
 
     [ObservableProperty]
     private bool _generatingCues = false;
-
-
 
     [ObservableProperty]
     private string _promptText;
@@ -122,14 +123,27 @@ namespace LuciReality.UI
 
     // Commands
 
+    /// <summary>Opens a tooltip in the "image" section of the interface explaining how it works</summary>
+    /// <param name="dreamImageInfo">The element that the tooltip should be attached to</param>
     [ICommand]
     public void OpenImageHelp(VisualElement dreamImageInfo)
       => MakeTooltipPopover(dreamImageInfo, PROMPT_TOOLTIP_TEXT);
 
+    /// <summary>Opens a tooltip in the "prompt" section of the interface explaining how it works</summary>
+    /// <param name="dreamPromptInfo">The element that the tooltip should be attached to</param>
     [ICommand]
     public void OpenPromptHelp(VisualElement dreamPromptInfo) =>
       MakeTooltipPopover(dreamPromptInfo, PROMPT_TOOLTIP_TEXT);
 
+    private void MakeReasoningWindow()
+    {
+        
+    }
+
+
+    /// <summary>Builds a popover tooltip attached to an element, using the specified text</summary>
+    /// <param name="target">The element the tooltip is attached to</param>
+    /// <param name="tooltipText">The message the tooltip displays</param>
     private void MakeTooltipPopover(VisualElement target, string tooltipText)
     {
       var popoverContent = new VisualElement();
