@@ -107,38 +107,31 @@ namespace LuciReality.UI
         return valid;
       };
 
+      // TODO: Confirmation dialog on load + delete.
+      // TODO: Confirmation dialog on overwrite.
+      // TODO: Notification with undo button.
+
       var loadButton = root.Q<Unity.AppUI.UI.Button>("load-parameters-button");
       var deleteButton = root.Q<Unity.AppUI.UI.Button>("delete-parameters-button");
       var loadDropdown = root.Q<Dropdown>("load-parameters-dropdown");
 
       deleteButton.clicked += () =>
       {
-        var selectedList = loadDropdown.value.ToList();
-        if (selectedList.Count != 1)
-        {
-          return;
-        }
-        var name = savedFiles[selectedList[0]];
+        var path = GetSelectedSavePath(loadDropdown);
+        if (path is null) { return; }
 
-        var path = Path.Combine(Application.persistentDataPath, "saved-cues", name + ".txt");
         File.Delete(path);
-        Debug.Log("Deleted " + path);
 
         savedFiles = GetSavedFiles();
         loadDropdown.sourceItems = savedFiles;
+        loadDropdown.Refresh();
       };
 
       loadButton.clicked += async () =>
       {
-        var selectedList = loadDropdown.value.ToList();
-        if (selectedList.Count != 1)
-        {
-          return;
-        }
+        string path = GetSelectedSavePath(loadDropdown);
+        if (path is null) { return; }
 
-        var name = savedFiles[selectedList[0]];
-
-        var path = Path.Combine(Application.persistentDataPath, "saved-cues", name + ".txt");
         cueParametersViewModel.Model = JsonConvert.DeserializeObject<CueParametersModel>(await File.ReadAllTextAsync(path));
       };
 
@@ -151,6 +144,7 @@ namespace LuciReality.UI
       {
 
         var name = saveFilename.value;
+        if (name == null) { return; }
         var path = Path.Combine(Application.persistentDataPath, "saved-cues", name + ".txt");
 
         File.Delete(path);
@@ -169,10 +163,32 @@ namespace LuciReality.UI
 
         savedFiles = GetSavedFiles();
         loadDropdown.sourceItems = savedFiles;
+        loadDropdown.Refresh();
       };
 
 
       AddSliderInteractions();
+    }
+
+    private string GetSelectedSavePath(Dropdown loadDropdown)
+    {
+      var name = GetSelectedSave(loadDropdown);
+      if (name is null) { return null; }
+      var path = Path.Combine(Application.persistentDataPath, "saved-cues", name + ".txt");
+      return path;
+    }
+
+    private string GetSelectedSave(Dropdown dropdown)
+    {
+      var selectedList = dropdown.value.ToList();
+
+      if (selectedList.Count != 1)
+      {
+        return null;
+      }
+
+      var name = savedFiles[selectedList[0]];
+      return name;
     }
 
     private List<string> GetSavedFiles()

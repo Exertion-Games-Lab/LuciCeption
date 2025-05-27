@@ -7,5 +7,8 @@ namespace LuciReality.UI
   {
     [ObservableProperty]
     private string _text;
+
+    [ObservableProperty]
+    private string _imagePath;
   }
 }
