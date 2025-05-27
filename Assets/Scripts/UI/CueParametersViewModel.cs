@@ -1,6 +1,8 @@
 using Unity.AppUI.MVVM;
+using Unity.AppUI.UI;
 using Unity.Properties;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace LuciReality.UI
 {
@@ -8,13 +10,15 @@ namespace LuciReality.UI
   [ObservableObject]
   public partial class CueParametersViewModel
   {
+    public const string PROMPT_TOOLTIP_TEXT = "This section generates an image using AI.\nDescribe what you would like to dream about in the text area, and clicking the button will prompt the AI to generate an image based on it.";
+    public const string IMAGE_TOOLTIP_TEXT = "Once you are happy with the image that the AI generated, click the generate cues button.\nThis will configure the cues using your text prompt and selected image.\nAfter the cues have been generated, you are free to customise them as you wish.";
     [ObservableProperty]
     private bool _generatingImage = false;
 
     [ObservableProperty]
     private bool _generatingCues = false;
 
-    
+
 
     [ObservableProperty]
     private string _promptText;
@@ -113,6 +117,35 @@ namespace LuciReality.UI
     {
       get => _model.Fan.Intensity;
       set => SetProperty(_model.Fan.Intensity, value, _model, (u, n) => u.Fan.Intensity = n);
+    }
+
+
+    // Commands
+
+    [ICommand]
+    public void OpenImageHelp(VisualElement dreamImageInfo)
+      => MakeTooltipPopover(dreamImageInfo, PROMPT_TOOLTIP_TEXT);
+
+    [ICommand]
+    public void OpenPromptHelp(VisualElement dreamPromptInfo) =>
+      MakeTooltipPopover(dreamPromptInfo, PROMPT_TOOLTIP_TEXT);
+
+    private void MakeTooltipPopover(VisualElement target, string tooltipText)
+    {
+      var popoverContent = new VisualElement();
+      var infoText = new Text
+      {
+        text = tooltipText
+      };
+      popoverContent.Add(infoText);
+
+      Popover.Build(target, popoverContent)
+      .SetKeyboardDismiss(true)
+      .SetContainerPadding(4)
+      .SetOutsideClickDismiss(true)
+      .SetArrowVisible(true)
+      .SetOffset(2)
+      .Show();
     }
   }
 }

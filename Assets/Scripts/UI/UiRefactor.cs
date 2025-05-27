@@ -73,41 +73,12 @@ namespace LuciReality.UI
       };
 
       var dreamPromptInfo = root.Q<IconButton>("dream-prompt-info");
-      dreamPromptInfo.clicked += () => {
-        var popoverContent = new VisualElement();
-        var infoText = new Text
-        {
-          text = "This section generates an image using AI.\nDescribe what you would like to dream about in the text area, and clicking the button will prompt the AI to generate an image based on it."
-        };
-        popoverContent.Add(infoText);
-
-        Popover.Build(dreamPromptInfo, popoverContent)
-        .SetKeyboardDismiss(true)
-        .SetContainerPadding(4)
-        .SetOutsideClickDismiss(true)
-        .SetArrowVisible(true)
-        .SetOffset(2)
-        .Show();
-      };
+      dreamPromptInfo.clicked += () =>
+        cueParametersViewModel.OpenPromptHelpCommand.Execute(dreamPromptInfo);
 
       var dreamImageInfo = root.Q<IconButton>("dream-image-info");
       dreamImageInfo.clicked += () =>
-      {
-        var popoverContent = new VisualElement();
-        var infoText = new Text
-        {
-          text = "Once you are happy with the image that the AI generated, click the generate cues button.\nThis will configure the cues using your text prompt and selected image.\nAfter the cues have been generated, you are free to customise them as you wish."
-        };
-        popoverContent.Add(infoText);
-
-        Popover.Build(dreamImageInfo, popoverContent)
-        .SetKeyboardDismiss(true)
-        .SetContainerPadding(4)
-        .SetOutsideClickDismiss(true)
-        .SetArrowVisible(true)
-        .SetOffset(2)
-        .Show();
-      };
+        cueParametersViewModel.OpenImageHelpCommand.Execute(dreamImageInfo);
 
       var viewReasoningButton = root.Q<Unity.AppUI.UI.Button>();
       viewReasoningButton.clicked += () =>
