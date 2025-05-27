@@ -72,44 +72,26 @@ namespace LuciReality.UI
         finally { cueParametersViewModel.GeneratingCues = false; }
       };
 
+      // Show prompt section help tooltip
       var dreamPromptInfo = root.Q<IconButton>("dream-prompt-info");
       dreamPromptInfo.clicked += () =>
         cueParametersViewModel.OpenPromptHelpCommand.Execute(dreamPromptInfo);
 
+      // Show image section help tooltip
       var dreamImageInfo = root.Q<IconButton>("dream-image-info");
       dreamImageInfo.clicked += () =>
         cueParametersViewModel.OpenImageHelpCommand.Execute(dreamImageInfo);
 
+      // Open reasoning window
       var viewReasoningButton = root.Q<Unity.AppUI.UI.Button>();
       viewReasoningButton.clicked += () =>
-      {
-        var reasoningWindow = new ReasoningWindow();
-        reasoningWindow.dataSource = cueParametersViewModel;
-        reasoningWindow.SetBinding("text", new DataBinding
-        {
-          dataSourcePath = PropertyPath.FromName(nameof(CueParametersViewModel.ReasoningText))
-        });
-        var modal = Modal.Build(viewReasoningButton, reasoningWindow)
-        .SetKeyboardDismiss(false)
-        .SetOutsideClickDismiss(true);
+        cueParametersViewModel.OpenReasoningCommand.Execute(viewReasoningButton);
 
-        reasoningWindow.OnCloseClicked += () => modal.Dismiss();
-
-        modal.Show();
-      };
-
+      // Open audio clip selector
       var audioClipSelector = root.Q<Unity.AppUI.UI.Button>("audio-clip-selector");
       audioClipSelector.AddManipulator(new Unity.AppUI.UI.Clickable(evt =>
-      {
-        var fileBrowser = new FileBrowser();
-        var modal = Modal.Build(audioClipSelector, fileBrowser)
-        .SetKeyboardDismiss(false)
-        .SetOutsideClickDismiss(true);
-
-        fileBrowser.OnCloseClicked += () => modal.Dismiss();
-
-        modal.Show();
-      }));
+        cueParametersViewModel.OpenAudioClipBrowserCommand.Execute(audioClipSelector)
+      ));
     }
 
     private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(cueParametersViewModel.PromptText);

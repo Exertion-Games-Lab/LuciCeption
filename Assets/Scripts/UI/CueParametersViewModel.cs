@@ -135,9 +135,39 @@ namespace LuciReality.UI
     public void OpenPromptHelp(VisualElement dreamPromptInfo) =>
       MakeTooltipPopover(dreamPromptInfo, PROMPT_TOOLTIP_TEXT);
 
-    private void MakeReasoningWindow()
+    [ICommand]
+    public void OpenReasoning(VisualElement target) => MakeReasoningWindow(target);
+
+    [ICommand]
+    public void OpenAudioClipBrowser(VisualElement target) => MakeFileBrowser(target);
+
+    private void MakeReasoningWindow(VisualElement target)
     {
-        
+      var reasoningWindow = new ReasoningWindow();
+      reasoningWindow.dataSource = this;
+      reasoningWindow.SetBinding("text", new DataBinding
+      {
+        dataSourcePath = PropertyPath.FromName(nameof(CueParametersViewModel.ReasoningText))
+      });
+      var modal = Modal.Build(target, reasoningWindow)
+      .SetKeyboardDismiss(false)
+      .SetOutsideClickDismiss(true);
+
+      reasoningWindow.OnCloseClicked += () => modal.Dismiss();
+
+      modal.Show();
+    }
+
+    private void MakeFileBrowser(VisualElement target)
+    {
+      var fileBrowser = new FileBrowser();
+      var modal = Modal.Build(target, fileBrowser)
+      .SetKeyboardDismiss(false)
+      .SetOutsideClickDismiss(true);
+
+      fileBrowser.OnCloseClicked += () => modal.Dismiss();
+
+      modal.Show();
     }
 
 
