@@ -39,7 +39,7 @@
                             </appui:Dialog>
                         </appui:DialogTrigger>
                         <appui:InputLabel direction="Horizontal" label="Intensity">
-                            <appui:SliderFloat name="visual-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0.5" track="On" />
+                            <appui:SliderFloat name="visual-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
                         </appui:InputLabel>
                         <ui:VisualElement style="flex-grow: 1;" />
                         <appui:InputLabel label="Enabled" direction="Horizontal" input-alignment="FlexEnd">
@@ -55,7 +55,7 @@
                         <appui:Dropdown size="M" style="display: none"/>
                         <appui:Button name="audio-clip-selector" title="Select Audio" subtitle="No Clip Selected" trailing-icon="caret-right"/>
                         <appui:InputLabel direction="Horizontal" label="Volume">
-                            <appui:SliderFloat name="audio-cue-volume" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0.5" track="On" />
+                            <appui:SliderFloat name="audio-cue-volume" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
                         </appui:InputLabel>
                         <ui:VisualElement style="flex-grow: 1;" />
                         <appui:InputLabel label="Enabled">
@@ -67,7 +67,7 @@
                     <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
                         <appui:Heading text="Haptic Vibrations" size="s" />
                         <appui:InputLabel direction="Horizontal" label="Intensity">
-                            <appui:SliderFloat name="lra-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0.5" track="On" />
+                            <appui:SliderFloat name="lra-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
                         </appui:InputLabel>
                         <ui:VisualElement style="flex-grow: 1;" />
                         <appui:InputLabel label="Enabled">
@@ -77,7 +77,7 @@
                     <appui:ExVisualElement class="cue-settings-card cue-settings-card-right">
                         <appui:Heading text="Fan" size="s" />
                         <appui:InputLabel direction="Horizontal" label="Intensity">
-                            <appui:SliderFloat name="fan-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0.5" track="On" />
+                            <appui:SliderFloat name="fan-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
                         </appui:InputLabel>
                         <ui:VisualElement style="flex-grow: 1;" />
                         <appui:InputLabel label="Enabled">
@@ -89,7 +89,7 @@
                     <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
                         <appui:Heading text="EMS" size="s" />
                         <appui:InputLabel direction="Horizontal" label="Intensity">
-                            <appui:SliderFloat name="ems-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0.5" track="On" />
+                            <appui:SliderFloat name="ems-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
                         </appui:InputLabel>
                         <ui:VisualElement style="flex-grow: 1;" />
                         <appui:InputLabel label="Enabled">
@@ -108,21 +108,35 @@
                         </appui:InputLabel>
                     </appui:ExVisualElement>
                 </ui:VisualElement>
-                <appui:ExVisualElement class="cue-settings-card" style="flex-grow: 1;">
-                    <appui:Heading text="System" />
-                    <appui:ActionGroup>
-                        <appui:Text text="Delay" />
-                        <appui:IntField size="S" unit="h" />
-                        <appui:Text text=":" />
-                        <appui:IntField size="S" unit="m" />
-                        <appui:Text text=":" />
-                        <appui:IntField size="S" unit="s" />
+                <ui:VisualElement class="cue-module-row">
+                  <appui:ExVisualElement class="cue-settings-card cue-settings-card-left" style="flex-grow: 1;">
+                      <appui:Heading text="System" />
+                      <appui:ActionGroup>
+                          <appui:Text text="Delay" />
+                          <appui:IntField size="S" unit="h" />
+                          <appui:Text text=":" />
+                          <appui:IntField size="S" unit="m" />
+                          <appui:Text text=":" />
+                          <appui:IntField size="S" unit="s" />
+                      </appui:ActionGroup>
+                      <appui:ActionGroup>
+                          <appui:Button name="start-system-button" title="Start System" variant="Accent" />
+                          <appui:Button title="Test Cues" />
+                      </appui:ActionGroup>
+                  </appui:ExVisualElement>
+                  <appui:ExVisualElement class="cue-settings-card cue-settings-card-right" style="flex-grow: 1;">
+                    <appui:Heading text="Save / Load" />
+                    <appui:ActionGroup style="flex-grow: 1">
+                      <appui:Button name="save-parameters-button" title="Save" style="width: 80px;" />
+                      <appui:TextField name="save-parameters-filename" placeholder="Name" style="flex-grow: 1" />
                     </appui:ActionGroup>
-                    <appui:ActionGroup>
-                        <appui:Button name="start-system-button" title="Start System" variant="Accent" />
-                        <appui:Button title="Test Cues" />
+                    <appui:ActionGroup style="margin-top: 8px;">
+                      <appui:Button name="load-parameters-button" title="Load" style="width: 80px;" />
+                      <appui:Button name="delete-parameters-button" title="Delete" variant="Destructive" style="width: 80px;" />
+                      <appui:Dropdown name="load-parameters-dropdown" style="flex-grow: 1" />
                     </appui:ActionGroup>
-                </appui:ExVisualElement>
+                  </appui:ExVisualElement>
+                </ui:VisualElement>
                 <ui:VisualElement name="cue-progress-indicator" style="display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.71); align-items: center; justify-content: center;">
                     <appui:CircularProgress />
                 </ui:VisualElement>

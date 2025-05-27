@@ -67,7 +67,6 @@ namespace LuciReality.UI
       set => SetProperty(_model.Lights.Intensity, value, _model, (u, n) => u.Lights.Intensity = n);
     }
 
-
     [CreateProperty]
     public bool AudioEnabled
     {
@@ -147,7 +146,7 @@ namespace LuciReality.UI
       reasoningWindow.dataSource = this;
       reasoningWindow.SetBinding("text", new DataBinding
       {
-        dataSourcePath = PropertyPath.FromName(nameof(CueParametersViewModel.ReasoningText))
+        dataSourcePath = PropertyPath.FromName(nameof(ReasoningText))
       });
       var modal = Modal.Build(target, reasoningWindow)
       .SetKeyboardDismiss(false)
