@@ -19,7 +19,7 @@ namespace LuciReality.UI
     private UIDocument document;
     private VisualElement root;
     public CueParametersViewModel cueParametersViewModel;
-    public CueParametersModel model;
+    public PromptViewModel promptViewModel;
     private Texture2D tex;
     public bool isGenerating = false;
 
@@ -32,8 +32,15 @@ namespace LuciReality.UI
         hideFlags = HideFlags.DontSave
       };
 
-      cueParametersViewModel = new();
-      model = cueParametersViewModel.Model = new CueParametersModel();
+      cueParametersViewModel = new()
+      {
+        Model = new CueParametersModel()
+      };
+
+      promptViewModel = new()
+      {
+        Model = new PromptModel()
+      };
 
       document = GetComponent<UIDocument>();
     }
@@ -51,12 +58,12 @@ namespace LuciReality.UI
       var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
       imageFromPrompt.clicked += async () =>
       {
-        if (cueParametersViewModel.GeneratingImage) { return; }
+        if (promptViewModel.GeneratingImage) { return; }
 
         Log.Info("[{logType}]: The user clicked generate image", "USER_INTERFACE");
-        cueParametersViewModel.GeneratingImage = true;
+        promptViewModel.GeneratingImage = true;
         try { await QueryImage(); }
-        finally { cueParametersViewModel.GeneratingImage = false; }
+        finally { promptViewModel.GeneratingImage = false; }
       };
 
       var cuesFromPrompt = promptPane.Q<ActionButton>("cues-from-prompt-button");
@@ -117,22 +124,25 @@ namespace LuciReality.UI
 
       deleteButton.clicked += () =>
       {
-        var path = GetSelectedSavePath(loadDropdown);
-        if (path is null) { return; }
-
-        File.Delete(path);
+        var name = GetSelectedSave(loadDropdown);
+        if (name is null) { return; }
+        Log.Info("[{logType}]: The user deleted save {saveName}", "USER_INTERFACE", name);
+        SaveSettings.Delete(name);
 
         savedFiles = GetSavedFiles();
         loadDropdown.sourceItems = savedFiles;
         loadDropdown.Refresh();
+
       };
 
       loadButton.clicked += async () =>
       {
-        string path = GetSelectedSavePath(loadDropdown);
-        if (path is null) { return; }
-
-        cueParametersViewModel.Model = JsonConvert.DeserializeObject<CueParametersModel>(await File.ReadAllTextAsync(path));
+        string name = GetSelectedSave(loadDropdown);
+        if (name is null) { return; }
+        Log.Info("[{logType}]: The user loaded {saveName}", "USER_INTERFACE", name);
+        var (cues, prompts) = await SaveSettings.Load(name);
+        cueParametersViewModel.Model = cues;
+        promptViewModel.Model = prompts;
       };
 
       savedFiles = GetSavedFiles();
@@ -142,40 +152,22 @@ namespace LuciReality.UI
 
       saveButton.clicked += async () =>
       {
-
         var name = saveFilename.value;
         if (name == null) { return; }
-        var path = Path.Combine(Application.persistentDataPath, "saved-cues", name + ".txt");
+        Log.Info("[{logType}]: The user saved to {saveName}", "USER_INTERFACE", name);
+        await SaveSettings.Save(name, cueParametersViewModel.Model, promptViewModel.Model);
 
-        File.Delete(path);
-        using var file = File.Open(path, FileMode.Create);
-
-        var toWrite = JsonConvert.SerializeObject(cueParametersViewModel.Model);
-
-        var data = System.Text.Encoding.ASCII.GetBytes(toWrite);
-        await file.WriteAsync(data, 0, data.Length);
-
-        var files = GetSavedFiles();
-        foreach (var fileName in files)
+        savedFiles = GetSavedFiles();
+        foreach (var fileName in savedFiles)
         {
           Debug.Log(fileName);
         }
-
-        savedFiles = GetSavedFiles();
         loadDropdown.sourceItems = savedFiles;
         loadDropdown.Refresh();
       };
 
 
       AddSliderInteractions();
-    }
-
-    private string GetSelectedSavePath(Dropdown loadDropdown)
-    {
-      var name = GetSelectedSave(loadDropdown);
-      if (name is null) { return null; }
-      var path = Path.Combine(Application.persistentDataPath, "saved-cues", name + ".txt");
-      return path;
     }
 
     private string GetSelectedSave(Dropdown dropdown)
@@ -289,13 +281,12 @@ namespace LuciReality.UI
       }
     }
 
-    private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(cueParametersViewModel.PromptText);
+    private async Task QueryModel() => cueParametersViewModel.Model = await TextQuery.Query(promptViewModel.Text);
 
     private async Task QueryImage()
     {
-      await ImageQuery.Query(cueParametersViewModel.PromptText, tex);
-      VisualElement image = root.Q("generated-image-box");
-      image.style.backgroundImage = tex;
+      await ImageQuery.Query(promptViewModel.Text, tex);
+      promptViewModel.Image = tex;
     }
 
     private CueParametersViewModel GetViewModel() => cueParametersViewModel;
@@ -303,15 +294,23 @@ namespace LuciReality.UI
     private void Bind()
     {
       var promptPane = root.Query<Pane>().First();
-      promptPane.dataSource = cueParametersViewModel;
+      promptPane.dataSource = promptViewModel;
+
       var promptTextArea = promptPane.Q<TextArea>("prompt-text");
       promptTextArea.SetBinding("value", new DataBinding {
-        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.PromptText))
+        dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.Text))
+      });
+
+      var promptImage = promptPane.Q<VisualElement>("generated-image-box");
+      promptImage.SetBinding($"{nameof(promptImage.style)}.{nameof(promptImage.style.backgroundImage)}", new DataBinding
+      {
+        dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.Image)),
+        bindingMode = BindingMode.ToTarget,
       });
 
       var imageProgressIndicator = promptPane.Q("image-progress-indicator");
       var imageProgressIndicatorBinding = new DataBinding {
-        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingImage)),
+        dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.GeneratingImage)),
         bindingMode = BindingMode.ToTarget,
       };
       imageProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ?  DisplayStyle.Flex : DisplayStyle.None));
@@ -319,12 +318,13 @@ namespace LuciReality.UI
 
       var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
       var imageFromPromptBinding = new DataBinding {
-        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingImage)),
+        dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.GeneratingImage)),
         bindingMode = BindingMode.ToTarget,
       };
       imageFromPromptBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => !isGenerating);
       imageFromPrompt.SetBinding("enabledSelf", imageFromPromptBinding);
       var cuesFromPrompt = promptPane.Q<ActionButton>("cues-from-prompt-button");
+      cuesFromPrompt.dataSource = cueParametersViewModel;
       var cuesFromPromptBinding = new DataBinding {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingCues)),
         bindingMode = BindingMode.ToTarget,

@@ -10,7 +10,7 @@
                 <appui:Divider />
                 <appui:TextArea name="prompt-text" placeholder="What would you like to dream about?" leading-icon-name="info" />
                 <appui:ActionButton name="image-from-prompt-button" label="Generate Image From Prompt" style="margin-top: 4px;" />
-                <ui:VisualElement class="heading-row-container">
+                <ui:VisualElement class="heading-row-container" style="margin-top: 4px">
                     <appui:Heading text="Image" />
                     <appui:IconButton name="dream-image-info" icon="info" />
                 </ui:VisualElement>
@@ -110,7 +110,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="cue-module-row">
                   <appui:ExVisualElement class="cue-settings-card cue-settings-card-left" style="flex-grow: 1;">
-                      <appui:Heading text="System" />
+                      <appui:Heading text="System" size="s" />
                       <appui:ActionGroup>
                           <appui:Text text="Delay" />
                           <appui:IntField size="S" unit="h" />
@@ -125,7 +125,7 @@
                       </appui:ActionGroup>
                   </appui:ExVisualElement>
                   <appui:ExVisualElement class="cue-settings-card cue-settings-card-right" style="flex-grow: 1;">
-                    <appui:Heading text="Save / Load" />
+                    <appui:Heading text="Save / Load" size="s" />
                     <appui:ActionGroup style="flex-grow: 1">
                       <appui:Button name="save-parameters-button" title="Save" style="width: 80px;" />
                       <appui:TextField name="save-parameters-filename" placeholder="Name" style="flex-grow: 1" />

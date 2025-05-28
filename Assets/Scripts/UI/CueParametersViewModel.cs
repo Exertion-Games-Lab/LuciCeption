@@ -15,8 +15,6 @@ namespace LuciReality.UI
   {
     public const string PROMPT_TOOLTIP_TEXT = "This section generates an image using AI.\nDescribe what you would like to dream about in the text area, and clicking the button will prompt the AI to generate an image based on it.";
     public const string IMAGE_TOOLTIP_TEXT = "Once you are happy with the image that the AI generated, click the generate cues button.\nThis will configure the cues using your text prompt and selected image.\nAfter the cues have been generated, you are free to customise them as you wish.";
-    [ObservableProperty]
-    private bool _generatingImage = false;
 
     [ObservableProperty]
     private bool _generatingCues = false;

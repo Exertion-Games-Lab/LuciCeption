@@ -17,7 +17,7 @@ namespace LuciReality
       .MinimumLevel.Debug()
       .SyncMode.FatalIsSync()
       .CaptureStacktrace(false)
-      .WriteTo.JsonFile($"{Application.dataPath}/Logs/log.json", minLevel: LogLevel.Debug)
+      .WriteTo.JsonFile($"{Application.dataPath}/Logs/{string.Format("{0:yyyy-MM-dd-HH-mm-ss-fff}.png", DateTime.Now)}.json", minLevel: LogLevel.Debug)
       .WriteTo.UnityEditorConsole(minLevel: LogLevel.Debug));
     }
     
