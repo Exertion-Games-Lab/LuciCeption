@@ -15,6 +15,12 @@ namespace LuciReality.OpenBCI
     DISCONNECTED
   }
 
+  /// <summary>
+  /// This class represents an IPC connection to the Python EOG Detection server that will be running along side Unity.<br/>
+  /// It can be extended to support additional message types by modifying <c>ObciMessages</c> and adding parsing logic for the specific message to <c>ParseMessageAt</c>.
+  /// Internally, this class manages a TCP Socket, which it uses to connect to the EOG Detection server.
+  /// It will automatically re-connect when disconnected and can prompt the server to begin certain tasks like calibration.
+  /// </summary>
   public class OpenBCIClient : MonoBehaviour
   {
     public const int MessageTypeLength = 1;
@@ -31,7 +37,7 @@ namespace LuciReality.OpenBCI
       public const int EXIT = 3;
       public const int CALIBRATION_RESULT = 4;
     }
-    
+
     // Connection Parameters
     [Range(0, 65535), SerializeField]
     private ushort port = 7777;
@@ -51,7 +57,7 @@ namespace LuciReality.OpenBCI
 
       Task.Run(Connect);
     }
-    
+
     /// <summary>Attempts to connect to the Python instance running the EOG Detector Server.<br/>
     /// Will attempt to re-connect if it disconnects.</summary>
     private async Task Connect()
@@ -123,6 +129,8 @@ namespace LuciReality.OpenBCI
       return (true, buffer); // Did not disconnect
     }
 
+    // Below are specific messages that can be sent to the EOG Detection server.
+
     public async Task StartCalibration() => await SendMessage(ObciMessages.START_CALIBRATION);
     public async Task EndCalibration() => await SendMessage(ObciMessages.GO_IDLE);
     public async Task StartSystem() => await SendMessage(ObciMessages.GO_ACTIVE);
@@ -165,7 +173,7 @@ namespace LuciReality.OpenBCI
       {
         case ObciMessages.CALIBRATION_RESULT:
           ReadCalibrationResult(buffer, index + 1);
-          messageLength = 1 + CalibrationResult.GetSize();
+          messageLength = 1 + CalibrationResult.GetSize(); // Should return where the next message begins
           break;
         default:
           messageLength = 0;
@@ -175,6 +183,9 @@ namespace LuciReality.OpenBCI
       return messageLength;
     }
     #endregion
+    /// <summary>Converts a message containing a calibration result into a CalibrationResult object.</summary>
+    /// <param name="buffer">The buffer containing the message data</param>
+    /// <param name="start">Offset to start parsing from</param>
     public void ReadCalibrationResult(byte[] buffer, int start)
     {
       var res = CalibrationResult.ParseResult(buffer, start);
@@ -185,10 +196,13 @@ namespace LuciReality.OpenBCI
       Calibrated?.Invoke(res);
     }
     #region NetworkEvents
+    /// <summary>Called when a message is received from the EOG Detection server</summary>
     void OnMessageReceived()
     {
 
     }
+
+    /// <summary>Called when a disconnection is detected</summary>
     void OnDisconnected()
     {
       currentState = OpenBciClientState.DISCONNECTED;
@@ -197,12 +211,14 @@ namespace LuciReality.OpenBCI
       Task.Run(Connect);
     }
 
+    /// <summary>Closes the client and cleans up allocated memory</summary>
     void KillClient()
     {
       client.Close();
       client.Dispose();
     }
 
+    /// <summary>Called when a connection with the EOG detection server has been established</summary>
     void OnConnected()
     {
       Task.Run(StartCalibration);
