@@ -41,12 +41,9 @@ namespace LuciReality.OpenBCI
 
     // Socket Client
     private Socket client;
+    private NetworkStream networkStream;
     private OpenBciClientState currentState = OpenBciClientState.DISCONNECTED;
 
-    // Messages
-    readonly byte[] messages = new byte[128];
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected void Start()
     {
       Disconnected += OnDisconnected;
@@ -54,34 +51,25 @@ namespace LuciReality.OpenBCI
 
       Task.Run(Connect);
     }
+    
+    /// <summary>Attempts to connect to the Python instance running the EOG Detector Server.<br/>
+    /// Will attempt to re-connect if it disconnects.</summary>
     private async Task Connect()
     {
-      if (client is not null)
-      {
-        client.Close();
-        client.Dispose();
-      }
-
       // Loop until we successfully (re-)connect to the server.
       while (currentState != OpenBciClientState.CONNECTED)
       {
+        // (Re-)create the client so we can connect to the server.
+        if (client is not null) { KillClient(); }
         client = new Socket(SocketType.Stream, ProtocolType.Tcp);
+
         Log.Debug("[OpenBCI] Connecting...");
 
-        Task timeout = Task.Run(async () =>
-        {
-          await Task.Delay(2000);
-          if (client.Connected) { return; }
-          client.Close();
-          client.Dispose();
-        });
-
+        Task<bool> timeout = ConnectionTimeout();
         try { client.Connect(IPAddress.Loopback, port); }
         catch { }
 
-        await timeout; // Ensure we wait for the timeout before attempting another connection.
-
-        if (client.Connected)
+        if (await timeout) // Ensure we wait for the timeout before attempting another connection.
         {
           Log.Info("[OpenBCI] Connected to OpenBCI server.");
           currentState = OpenBciClientState.CONNECTED;
@@ -89,17 +77,25 @@ namespace LuciReality.OpenBCI
         }
       }
 
-      await ProcessMessageQueue();
+      await ProcessMessages();
     }
+
+    /// <summary>Waits some time between connections/re-connections.</summary>
+    private async Task<bool> ConnectionTimeout()
+    {
+      await Task.Delay(2000);
+      return client.Connected;
+    }
+
     #region Messaging
-    private async Task ProcessMessageQueue()
+    /// <summary>Reads messages from the Socket and dispatches them appropriately</summary>
+    private async Task ProcessMessages()
     {
       while (true)
       {
-        ClearMessages();
-        bool disconnected = await ReceiveMessage();
+        (bool success, byte[] buffer) = await TryReceiveMessage();
 
-        if (disconnected)
+        if (!success)
         {
           if (!Application.exitCancellationToken.IsCancellationRequested)
           {
@@ -108,30 +104,23 @@ namespace LuciReality.OpenBCI
           break;
         }
 
-        for (int i = 0; i < messages.Length; i++)
+        for (int i = 0; i < buffer.Length; i++)
         {
-          int step = ParseMessageAt(i);
+          int step = ParseMessageAt(buffer, i);
           if (step == 0) { break; }
           else { i += step; }
         }
       }
     }
-    private async Task<bool> ReceiveMessage()
+
+    /// <summary>Attempts to receive a message. If this fails (e.g., due to a disconnection) it will return false. Otherwise it will return true</summary>
+    /// <returns>A tuple consisting of a bool and a byte array. A true value for the bool indicates success.</returns>
+    private async Task<(bool, byte[])> TryReceiveMessage()
     {
-      bool disconnected = false;
-
-      try { await client.ReceiveAsync(messages, SocketFlags.None); }
-      catch { disconnected = true; }
-
-      return disconnected;
-    }
-
-    private void ClearMessages()
-    {
-      for (int i = 0; i < messages.Length; i++)
-      {
-        messages[i] = 0;
-      }
+      byte[] buffer = new byte[1024];
+      try { await client.ReceiveAsync(buffer, SocketFlags.None); }
+      catch { return (false, buffer); } // Disconnected
+      return (true, buffer); // Did not disconnect
     }
 
     public async Task StartCalibration() => await SendMessage(ObciMessages.START_CALIBRATION);
@@ -140,6 +129,8 @@ namespace LuciReality.OpenBCI
     public async Task StopSystem() => await SendMessage(ObciMessages.GO_IDLE);
     public async Task Exit() => await SendMessage(ObciMessages.EXIT);
 
+    /// <summary>Sends a single byte message to the EOG Detector server.</summary>
+    /// <param name="task">The message to be sent</param>
     public async Task SendMessage(byte task)
     {
       Log.Debug("[OpenBCI] Sending message to OpenBCI server: {0}", task);
@@ -151,7 +142,7 @@ namespace LuciReality.OpenBCI
           Application.exitCancellationToken
         );
       }
-      catch
+      catch // We were unable to send, therefore we must have disconnected.
       {
         if (!Application.exitCancellationToken.IsCancellationRequested)
         {
@@ -160,17 +151,21 @@ namespace LuciReality.OpenBCI
       }
       Log.Debug("[OpenBCI] Successfully sent message to OpenBCI server: {0}", task);
     }
-    public int ParseMessageAt(int index)
+    /// <summary>Attempts to parse a message from the messages buffer.</summary>
+    /// <param name="buffer">The buffer containing message data</param>
+    /// <param name="index">Offset to start parsing from</param>
+    /// <returns>The size of the message</returns>
+    public int ParseMessageAt(byte[] buffer, int index)
     {
-      byte messageType = messages[index];
+      byte messageType = buffer[index];
 
       int messageLength;
 
       switch (messageType)
       {
         case ObciMessages.CALIBRATION_RESULT:
-          ReadCalibrationResult(index + 1);
-          messageLength = 1 + sizeof(int) * 3;
+          ReadCalibrationResult(buffer, index + 1);
+          messageLength = 1 + CalibrationResult.GetSize();
           break;
         default:
           messageLength = 0;
@@ -180,18 +175,14 @@ namespace LuciReality.OpenBCI
       return messageLength;
     }
     #endregion
-    public void ReadCalibrationResult(int start)
+    public void ReadCalibrationResult(byte[] buffer, int start)
     {
-      CalibrationResult res = new()
-      {
-        nSignals = BitConverter.ToInt32(messages, start + sizeof(int) * 0),
-        maxAmplitude = BitConverter.ToInt32(messages, start + sizeof(int) * 1),
-        minAmplitude = BitConverter.ToInt32(messages, start + sizeof(int) * 2),
-      };
-
+      var res = CalibrationResult.ParseResult(buffer, start);
+      Log.Info(
+        "[OpenBCI] Calibration finished with result: leftSignals = {0}, rightSignals = {1}, maxAmplitude = {2}, minAmplitude = {3}",
+        res.leftSignals, res.rightSignals, res.maxAmplitude, res.minAmplitude
+      );
       Calibrated?.Invoke(res);
-
-      Log.Info("[OpenBCI] Calibration finished with result: nSignals = {0}, maxAmplitude = {1}, minAmplitude = {2}", res.nSignals, res.maxAmplitude, res.minAmplitude);
     }
     #region NetworkEvents
     void OnMessageReceived()
@@ -201,11 +192,17 @@ namespace LuciReality.OpenBCI
     void OnDisconnected()
     {
       currentState = OpenBciClientState.DISCONNECTED;
-      client.Close();
-      client.Dispose();
+      KillClient();
       Log.Info("[OpenBCI] Disconnected from OpenBCI server.");
       Task.Run(Connect);
     }
+
+    void KillClient()
+    {
+      client.Close();
+      client.Dispose();
+    }
+
     void OnConnected()
     {
       Task.Run(StartCalibration);
@@ -213,8 +210,7 @@ namespace LuciReality.OpenBCI
     #endregion
     void OnDestroy()
     {
-      client.Close();
-      client.Dispose();
+      KillClient();
     }
   }
 }

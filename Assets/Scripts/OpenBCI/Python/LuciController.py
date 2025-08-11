@@ -81,17 +81,21 @@ class UnityCommunication:
   async def receive_start_calibration(self):
     if self.is_active or self.is_calibrating: return
     self.is_calibrating = True
-    self.detector.perform_calibration()
+    self.detector.perform_calibration(self.calibration_callback)
     self.is_calibrating = False
+
+  def calibration_callback(self, left_signals: int, right_signals: int, minAmplitude: int, maxAmplitude: int):
+    self.send_calibration_results(left_signals, right_signals, minAmplitude, maxAmplitude)
 
   def receive_exit(self):
     self.exit = True
 
   # Message Send Handlers
-  def send_calibration_results(self, signals: int, minAmplitude: int, maxAmplitude: int):
+  def send_calibration_results(self, left_signals: int, right_signals: int, minAmplitude: int, maxAmplitude: int):
     msg = bytearray()
     msg.extend(int(UnityClientMessagesTypes.CALIBRATION_RESULT).to_bytes(length=1, signed=True, byteorder='little'))
-    msg.extend(signals.to_bytes(length=4, signed=True, byteorder='little'))
+    msg.extend(left_signals.to_bytes(length=4, signed=True, byteorder='little'))
+    msg.extend(right_signals.to_bytes(length=4, signed=True, byteorder='little'))
     msg.extend(minAmplitude.to_bytes(length=4, signed=True, byteorder='little'))
     msg.extend(maxAmplitude.to_bytes(length=4, signed=True, byteorder='little'))
     self.conn.send(msg)

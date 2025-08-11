@@ -1,0 +1,33 @@
+[2025-08-11 15:26:44] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:44] Right Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:44] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:45] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:45] Right Detected sequence: LRLRLRLR
+[2025-08-11 15:26:45] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:46] Left Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:46] Right Detected sequence: LRLRLRLR
+[2025-08-11 15:26:46] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:47] Left Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:47] Right Detected sequence: LRLRLRLR
+[2025-08-11 15:26:47] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:48] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:48] Right Detected sequence: LRLRLRLR
+[2025-08-11 15:26:48] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:49] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:49] Right Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:49] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:50] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:50] Right Detected sequence: LRLRLRLR
+[2025-08-11 15:26:50] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:51] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:51] Right Detected sequence: LRLRLRLR
+[2025-08-11 15:26:51] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:52] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:52] Right Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:52] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:53] Left Detected sequence: LRLRLRLR
+[2025-08-11 15:26:53] Right Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:53] ✅ Both eyes detected LRLRLRLR pattern!
+[2025-08-11 15:26:54] Left Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:54] Right Detected sequence: RLRLRLRLR
+[2025-08-11 15:26:54] ✅ Both eyes detected LRLRLRLR pattern!

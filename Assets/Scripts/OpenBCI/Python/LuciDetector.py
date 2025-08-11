@@ -15,9 +15,10 @@ from brainflow.data_filter import (
 )
 from mne import create_info
 from scipy.signal import find_peaks, find_peaks_cwt
+import math
 
 # our own graph drawer
-from LiveEOGPlotter import LiveEOGPlotter
+from LiveEOGPlotter import EogPlotter, PlotterProcess
 
 # import OpenBCIStyleLogger
 # from OpenBCIStyleLogger import OpenBCIStyleLogger
@@ -40,7 +41,7 @@ class Detector:
     self.setup_timeout_counter()
     self.setup_logger()
 
-    self.plotter = LiveEOGPlotter(ylim=(-20, 20))
+    self.plotter = EogPlotter()
 
   def setup_logger(self):
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -83,13 +84,6 @@ class Detector:
     self.timeoutCnt = 0
     self.TIMEOUT_THRESHOLD = 600
 
-  def convert_to_microvolt(self, raw_data):
-    Vref = 4.5  # Volts
-    gain = 24  # Default Cyton gain
-    factor = (Vref / (gain * (2**23))) * 1e6  # convert to μV
-    return raw_data * factor
-
-  
   def filter_eog_data(self, eog_data, removed_window: int = 1000):
     """
     Apply bandpass and detrend processing to the left and right channels of the eog_data
@@ -103,7 +97,7 @@ class Detector:
 
     return eog_data
   
-  def perform_calibration(self):
+  def perform_calibration(self, callback):
     """
     sampling_rate=1000,
     min_peak_distance_ms=200,
@@ -111,53 +105,56 @@ class Detector:
     peak_threshold=0.3,
     """
     
+    self.retry_connection()
     calibration_interval: int = 10
-    start_time = datetime.now()
 
     self.eog_buffer_left: List[float] = []
     self.eog_buffer_right: List[float] = []
 
-    while datetime.now() <= start_time + timedelta(seconds=calibration_interval):
-      self.retry_connection()
-      time.sleep(1)
+    total_left: int = 0
+    total_right: int = 0
+    max_amplitude = -math.inf
+    min_amplitude = math.inf
 
-      print("a")
+    calibration_iterations = 0
+
+    while calibration_iterations <= calibration_interval:
       if not self.hasNewData():
         continue
     
-      print("b")
       self.update_data(self.get_buffer_size())
 
-      print("c")
       if (not self.should_try_detect()):
         continue
       
-      print("d")
       found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect()
 
-      print("e")
+      max_amplitude = max(
+        max_amplitude,
+        np.max(left_eog),
+        np.max(right_eog),
+      )
+
+      min_amplitude = min(
+        min_amplitude,
+        np.min(left_eog),
+        np.min(right_eog),
+      )
+
       if (found_left and found_right):
         self.print_logger.print("✅ Both eyes detected LRLRLRLR pattern!")
         self.write_info(left_eog, detected_left, right_eog, detected_right)
+        total_left += len(detected_left)
+        total_right += len(detected_right)
       else:
         self.print_logger.print("❌ Not both eyes detected LRLRLRLR pattern.")
 
+      calibration_iterations = calibration_iterations + 1
       print("Calibrating")
-    
-    print("Calibration Finished")
+      time.sleep(1)
 
-  def plot_data(self,
-                left_eog,
-                detected_indices_left,
-                right_eog,
-                detected_indices_right
-    ):
-    self.plot_sequences(
-      left_eog,
-      detected_indices_left,
-      right_eog,
-      detected_indices_right
-    )
+    callback(total_left, total_right, int(max_amplitude), int(min_amplitude))
+    print("Calibration Finished")
 
   def retry_connection(self):
     """
@@ -211,7 +208,7 @@ class Detector:
   def detect_lr_pattern(
     self,
     eog_signal,
-    detecting_pattern="LRLRLRLR",
+    detecting_pattern="LRLRLRLRLR",
     min_peak_distance_ms=200,
     max_interval_ms=3000,
     peak_threshold=5,
@@ -255,9 +252,11 @@ class Detector:
     detecting_pattern = "LRLRLRLR"
 
     left_eog: np.ndarray = np.array(self.eog_buffer_left, dtype=np.float64)
+    # left_eog = self.convert_to_microvolt(left_eog)
     left_eog = self.filter_eog_data(left_eog, removed_window=1000)
 
     right_eog: np.ndarray = np.array(self.eog_buffer_right, dtype=np.float64)
+    # right_eog = self.convert_to_microvolt(right_eog)
     right_eog = self.filter_eog_data(right_eog, removed_window=1000)
 
     found_left, sequence_left, detected_left = (
@@ -281,11 +280,11 @@ class Detector:
     return (found_left, found_right, left_eog, right_eog, detected_left, detected_right)
 
   def write_info(self, left_eog, detected_left, right_eog, detected_right):
-    self.plot_sequences(
+    self.plotter.plot(
       left_eog,
       detected_left,
       right_eog,
-      detected_right
+      detected_right,
     )
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -299,19 +298,12 @@ class Detector:
       self.eog_buffer_right,
       delimiter=",",
     )
-
-  def plot_sequences(self,
-    left_eog: np.ndarray,
-    detected_left: list[float],
-    right_eog: np.ndarray,
-    detected_right: list[float]
-  ):
-    self.plotter.update(
-      left_eog,
-      detected_left,
-      right_eog,
-      detected_right,
-    )
+  
+  def convert_to_microvolt(self, raw_data):
+    Vref = 4.5      # Volts
+    gain = 24       # Default Cyton gain
+    factor = (Vref / (gain * (2**23))) * 1e6  # convert to μV
+    return raw_data * factor
 
 class SyntheticDetector(Detector):
   """
