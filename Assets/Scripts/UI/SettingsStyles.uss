@@ -1,3 +1,26 @@
+.luci-reality--nav-menu {
+  height: 100%;
+  width: 100%
+}
+
+.nav-menu-container {
+  flex-basis: 50%;
+  flex-grow: 1;
+  justify-content: center;
+  align-self: center;
+}
+
+.nav-menu-link-container {
+  background-color: #2B2B2B;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  flex-shrink: 1;
+}
+
+.nav-menu-button {
+  margin: 4px;
+}
+
 .cue-settings-card {
     padding: 4px;
     flex-basis: 50%;

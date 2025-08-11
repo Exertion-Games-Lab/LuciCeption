@@ -1,0 +1,11 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:lr="LuciReality.UI" xmlns:appui="Unity.AppUI.UI" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UI/SettingsStyles.uss?fileID=7433441132597879392&amp;guid=d34b29af7d3936943bf9138b587a2290&amp;type=3#SettingsStyles" />
+    <ui:VisualElement name="nav-container" class="nav-menu-container">
+        <appui:Text text="LuciReality" style="-unity-text-align: middle-center; font-size: 36px; margin-bottom: 8px;" />
+        <appui:ExVisualElement class="nav-menu-link-container">
+            <appui:Button name="settings-window-link" title="Set-Up System" class="nav-menu-button" />
+            <appui:Button name="calibration-window-link" title="Calibrate System" class="nav-menu-button" />
+            <appui:Button name="modules-window-link" title="View Connected Modules" class="nav-menu-button" />
+        </appui:ExVisualElement>
+    </ui:VisualElement>
+</ui:UXML>

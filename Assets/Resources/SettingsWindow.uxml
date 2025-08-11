@@ -1,0 +1,144 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:appui="Unity.AppUI.UI" xsi="http://www.w3.org/2001/XMLSchema-instance" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+  <Style src="project://database/Assets/Scripts/UI/SettingsStyles.uss?fileID=7433441132597879392&amp;guid=d34b29af7d3936943bf9138b587a2290&amp;type=3#SettingsStyles" />
+  <appui:SplitView fixed-pane-index="0" fixed-pane-initial-dimension="400" orientation="Horizontal">
+      <appui:Pane class="section-prompts" style="width: 30%; padding: 4px;">
+          <ui:VisualElement class="heading-row-container">
+              <appui:Heading text="Dream Prompt" />
+              <appui:IconButton name="dream-prompt-info" icon="info" />
+          </ui:VisualElement>
+          <appui:Divider />
+          <appui:TextArea name="prompt-text" placeholder="What would you like to dream about?" leading-icon-name="info" />
+          <appui:ActionButton name="image-from-prompt-button" label="Generate Image From Prompt" style="margin-top: 4px;" />
+          <ui:VisualElement class="heading-row-container" style="margin-top: 4px">
+              <appui:Heading text="Image" />
+              <appui:IconButton name="dream-image-info" icon="info" />
+          </ui:VisualElement>
+          <appui:Divider />
+          <ui:VisualElement name="generated-image-box" style="height: 400px; background-color: rgb(153, 153, 153);" />
+          <appui:ActionButton name="cues-from-prompt-button" label="Generate Cues From Prompt + Image" style="margin-top: 4px;" />
+          <ui:VisualElement name="image-progress-indicator" style="display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.71); align-items: center; justify-content: center;">
+              <appui:CircularProgress />
+          </ui:VisualElement>
+      </appui:Pane>
+      <appui:Pane stretch-factor="1" class="section-cues" style="width: 70%; padding: 4px;">
+          <ui:VisualElement class="heading-row-container">
+              <appui:Heading text="Cue Modules" />
+              <ui:VisualElement style="flex-direction: row;">
+                  <appui:Button name="view-reasoning-button" title="View AI Reasoning" />
+              </ui:VisualElement>
+          </ui:VisualElement>
+          <appui:Divider />
+          <ui:VisualElement class="cue-module-row">
+              <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
+                  <appui:Heading text="Visual" size="S" />
+                  <appui:DialogTrigger type="Tray" tray-position="Left">
+                      <appui:ActionButton label="Edit Colour" />
+                      <appui:Dialog title="Light Colour">
+                          <appui:ColorPicker name="visual-cue-colour" size="M" show-alpha="false" hdr="false" value="#FF0000FF" show-hex="true" show-toolbar="false" />
+                      </appui:Dialog>
+                  </appui:DialogTrigger>
+                  <appui:InputLabel direction="Horizontal" label="Intensity">
+                      <appui:SliderFloat name="visual-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
+                  </appui:InputLabel>
+                  <ui:VisualElement style="flex-grow: 1;" />
+                  <appui:InputLabel label="Enabled" direction="Horizontal" input-alignment="FlexEnd">
+                      <appui:Toggle name="visual-cue-enabled" class="cue-module-toggle" />
+                  </appui:InputLabel>
+              </appui:ExVisualElement>
+              <appui:ExVisualElement class="cue-settings-card cue-settings-card-right">
+                  <appui:Heading text="Auditory" size="s" />
+                  <appui:ActionGroup selection-type="Single" justified="true" compact="true">
+                      <appui:ActionButton label="Generated Voice" />
+                      <appui:ActionButton label="Clip" />
+                  </appui:ActionGroup>
+                  <appui:Dropdown size="M" style="display: none"/>
+                  <appui:Button name="audio-clip-selector" title="Select Audio" subtitle="No Clip Selected" trailing-icon="caret-right"/>
+                  <appui:InputLabel direction="Horizontal" label="Volume">
+                      <appui:SliderFloat name="audio-cue-volume" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
+                  </appui:InputLabel>
+                  <ui:VisualElement style="flex-grow: 1;" />
+                  <appui:InputLabel label="Enabled">
+                      <appui:Toggle name="audio-cue-enabled" class="cue-module-toggle" />
+                  </appui:InputLabel>
+              </appui:ExVisualElement>
+          </ui:VisualElement>
+          <ui:VisualElement class="cue-module-row">
+              <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
+                  <appui:Heading text="Haptic Vibrations" size="s" />
+                  <appui:InputLabel direction="Horizontal" label="Intensity">
+                      <appui:SliderFloat name="lra-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
+                  </appui:InputLabel>
+                  <ui:VisualElement style="flex-grow: 1;" />
+                  <appui:InputLabel label="Enabled">
+                      <appui:Toggle name="lra-cue-enabled" class="cue-module-toggle" />
+                  </appui:InputLabel>
+              </appui:ExVisualElement>
+              <appui:ExVisualElement class="cue-settings-card cue-settings-card-right">
+                  <appui:Heading text="Fan" size="s" />
+                  <appui:InputLabel direction="Horizontal" label="Intensity">
+                      <appui:SliderFloat name="fan-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
+                  </appui:InputLabel>
+                  <ui:VisualElement style="flex-grow: 1;" />
+                  <appui:InputLabel label="Enabled">
+                      <appui:Toggle name="fan-cue-enabled" class="cue-module-toggle" />
+                  </appui:InputLabel>
+              </appui:ExVisualElement>
+          </ui:VisualElement>
+          <ui:VisualElement class="cue-module-row">
+              <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
+                  <appui:Heading text="EMS" size="s" />
+                  <appui:InputLabel direction="Horizontal" label="Intensity">
+                      <appui:SliderFloat name="ems-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
+                  </appui:InputLabel>
+                  <ui:VisualElement style="flex-grow: 1;" />
+                  <appui:InputLabel label="Enabled">
+                      <appui:Toggle name="ems-cue-enabled" class="cue-module-toggle" />
+                  </appui:InputLabel>
+              </appui:ExVisualElement>
+              <appui:ExVisualElement class="cue-settings-card cue-settings-card-right">
+                  <appui:Heading text="Olfactory" size="s" />
+                  <appui:ActionGroup selection-type="Single" justified="true" compact="true">
+                      <appui:ActionButton label="Pleasant" />
+                      <appui:ActionButton label="Unpleasant" />
+                  </appui:ActionGroup>
+                  <ui:VisualElement style="flex-grow: 1;" />
+                  <appui:InputLabel label="Enabled">
+                      <appui:Toggle name="olfactory-cue-enabled" class="cue-module-toggle" />
+                  </appui:InputLabel>
+              </appui:ExVisualElement>
+          </ui:VisualElement>
+          <ui:VisualElement class="cue-module-row">
+            <appui:ExVisualElement class="cue-settings-card cue-settings-card-left" style="flex-grow: 1;">
+                <appui:Heading text="System" size="s" />
+                <appui:ActionGroup>
+                    <appui:Text text="Delay" />
+                    <appui:IntField size="S" unit="h" />
+                    <appui:Text text=":" />
+                    <appui:IntField size="S" unit="m" />
+                    <appui:Text text=":" />
+                    <appui:IntField size="S" unit="s" />
+                </appui:ActionGroup>
+                <appui:ActionGroup>
+                    <appui:Button name="start-system-button" title="Start System" variant="Accent" />
+                    <appui:Button title="Test Cues" />
+                </appui:ActionGroup>
+            </appui:ExVisualElement>
+            <appui:ExVisualElement class="cue-settings-card cue-settings-card-right" style="flex-grow: 1;">
+              <appui:Heading text="Save / Load" size="s" />
+              <appui:ActionGroup style="flex-grow: 1">
+                <appui:Button name="save-parameters-button" title="Save" style="width: 80px;" />
+                <appui:TextField name="save-parameters-filename" placeholder="Name" style="flex-grow: 1" />
+              </appui:ActionGroup>
+              <appui:ActionGroup style="margin-top: 8px;">
+                <appui:Button name="load-parameters-button" title="Load" style="width: 80px;" />
+                <appui:Button name="delete-parameters-button" title="Delete" variant="Destructive" style="width: 80px;" />
+                <appui:Dropdown name="load-parameters-dropdown" style="flex-grow: 1" />
+              </appui:ActionGroup>
+            </appui:ExVisualElement>
+          </ui:VisualElement>
+          <ui:VisualElement name="cue-progress-indicator" style="display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.71); align-items: center; justify-content: center;">
+              <appui:CircularProgress />
+          </ui:VisualElement>
+      </appui:Pane>
+  </appui:SplitView>
+</ui:UXML>

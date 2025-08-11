@@ -11,21 +11,20 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.AppUI.Navigation;
 
 namespace LuciReality.UI
 {
-  public class SettingsWindow : MonoBehaviour
+  [UxmlElement]
+  public partial class SettingsWindow : VisualElement, INavigationScreen
   {
-    private UIDocument document;
-    private VisualElement root;
     public CueParametersViewModel cueParametersViewModel;
     public PromptViewModel promptViewModel;
     private Texture2D tex;
-    public bool isGenerating = false;
 
     private List<string> savedFiles;
 
-    protected void Awake()
+    public SettingsWindow()
     {
       tex = new Texture2D(2, 2)
       {
@@ -42,19 +41,16 @@ namespace LuciReality.UI
         Model = new PromptModel()
       };
 
-      document = GetComponent<UIDocument>();
-    }
+      var asset = Resources.Load<VisualTreeAsset>("SettingsWindow");
+      asset.CloneTree(this);
 
-    protected void Start()
-    {
-      root = document.rootVisualElement;
       SetupActions();
       Bind();
     }
 
     private void SetupActions()
     {
-      var promptPane = root.Query<Pane>().First();
+      var promptPane = this.Query<Pane>().First();
       var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
       imageFromPrompt.clicked += async () =>
       {
@@ -82,33 +78,33 @@ namespace LuciReality.UI
       };
 
       // Show prompt section help tooltip
-      var dreamPromptInfo = root.Q<IconButton>("dream-prompt-info");
+      var dreamPromptInfo = this.Q<IconButton>("dream-prompt-info");
       dreamPromptInfo.clicked += () =>
         cueParametersViewModel.OpenPromptHelpCommand.Execute(dreamPromptInfo);
 
       // Show image section help tooltip
-      var dreamImageInfo = root.Q<IconButton>("dream-image-info");
+      var dreamImageInfo = this.Q<IconButton>("dream-image-info");
       dreamImageInfo.clicked += () =>
         cueParametersViewModel.OpenImageHelpCommand.Execute(dreamImageInfo);
 
       // Open reasoning window
-      var viewReasoningButton = root.Q<Unity.AppUI.UI.Button>();
+      var viewReasoningButton = this.Q<Unity.AppUI.UI.Button>();
       viewReasoningButton.clicked += () =>
         cueParametersViewModel.OpenReasoningCommand.Execute(viewReasoningButton);
 
       // Open audio clip selector
-      var audioClipSelector = root.Q<Unity.AppUI.UI.Button>("audio-clip-selector");
+      var audioClipSelector = this.Q<Unity.AppUI.UI.Button>("audio-clip-selector");
       audioClipSelector.AddManipulator(new Unity.AppUI.UI.Clickable(evt =>
         cueParametersViewModel.OpenAudioClipBrowserCommand.Execute(audioClipSelector)
       ));
 
-      var saveButton = root.Q<Unity.AppUI.UI.Button>("save-parameters-button");
-      var saveFilename = root.Q<Unity.AppUI.UI.TextField>("save-parameters-filename");
+      var saveButton = this.Q<Unity.AppUI.UI.Button>("save-parameters-button");
+      var saveFilename = this.Q<Unity.AppUI.UI.TextField>("save-parameters-filename");
 
       saveFilename.validateValue += (value) =>
       {
         if (value is null) { return true; }
-        
+
         var valid = value.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
         saveButton.enabledSelf = valid;
         return valid;
@@ -118,9 +114,9 @@ namespace LuciReality.UI
       // TODO: Confirmation dialog on overwrite.
       // TODO: Notification with undo button.
 
-      var loadButton = root.Q<Unity.AppUI.UI.Button>("load-parameters-button");
-      var deleteButton = root.Q<Unity.AppUI.UI.Button>("delete-parameters-button");
-      var loadDropdown = root.Q<Dropdown>("load-parameters-dropdown");
+      var loadButton = this.Q<Unity.AppUI.UI.Button>("load-parameters-button");
+      var deleteButton = this.Q<Unity.AppUI.UI.Button>("delete-parameters-button");
+      var loadDropdown = this.Q<Dropdown>("load-parameters-dropdown");
 
       deleteButton.clicked += () =>
       {
@@ -208,8 +204,8 @@ namespace LuciReality.UI
       // TODO: These log messages will also appear when Gemini changes the interface, however we can identify this through the timestamps.
       // Ideally this would be fixed though.
 
-      var visualCueIntensity = root.Q<SliderFloat>("visual-cue-intensity");
-      var visualCueEnabled = root.Q<Unity.AppUI.UI.Toggle>("visual-cue-enabled");
+      var visualCueIntensity = this.Q<SliderFloat>("visual-cue-intensity");
+      var visualCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("visual-cue-enabled");
       visualCueIntensity.RegisterValueChangedCallback((evt) =>
       {
         UpdateToggleForSlider(evt, visualCueEnabled);
@@ -220,8 +216,8 @@ namespace LuciReality.UI
         Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", visualCueEnabled.name, evt.previousValue, evt.newValue);
       });
 
-      var audioCueVolume = root.Q<SliderFloat>("audio-cue-volume");
-      var audioCueEnabled = root.Q<Unity.AppUI.UI.Toggle>("audio-cue-enabled");
+      var audioCueVolume = this.Q<SliderFloat>("audio-cue-volume");
+      var audioCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("audio-cue-enabled");
       audioCueVolume.RegisterValueChangedCallback((evt) =>
       {
         UpdateToggleForSlider(evt, audioCueEnabled);
@@ -232,8 +228,8 @@ namespace LuciReality.UI
         Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", audioCueEnabled.name, evt.previousValue, evt.newValue);
       });
 
-      var lraCueIntensity = root.Q<SliderFloat>("lra-cue-intensity");
-      var lraCueEnabled = root.Q<Unity.AppUI.UI.Toggle>("lra-cue-enabled");
+      var lraCueIntensity = this.Q<SliderFloat>("lra-cue-intensity");
+      var lraCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("lra-cue-enabled");
       lraCueIntensity.RegisterValueChangedCallback((evt) =>
       {
         UpdateToggleForSlider(evt, lraCueEnabled);
@@ -244,8 +240,8 @@ namespace LuciReality.UI
         Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", lraCueEnabled.name, evt.previousValue, evt.newValue);
       });
 
-      var emsCueIntensity = root.Q<SliderFloat>("ems-cue-intensity");
-      var emsCueEnabled = root.Q<Unity.AppUI.UI.Toggle>("ems-cue-enabled");
+      var emsCueIntensity = this.Q<SliderFloat>("ems-cue-intensity");
+      var emsCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("ems-cue-enabled");
       emsCueIntensity.RegisterValueChangedCallback((evt) =>
       {
         UpdateToggleForSlider(evt, emsCueEnabled);
@@ -256,8 +252,8 @@ namespace LuciReality.UI
         Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", emsCueEnabled.name, evt.previousValue, evt.newValue);
       });
 
-      var fanCueIntensity = root.Q<SliderFloat>("fan-cue-intensity");
-      var fanCueEnabled = root.Q<Unity.AppUI.UI.Toggle>("fan-cue-enabled");
+      var fanCueIntensity = this.Q<SliderFloat>("fan-cue-intensity");
+      var fanCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("fan-cue-enabled");
       fanCueIntensity.RegisterValueChangedCallback((evt) =>
       {
         UpdateToggleForSlider(evt, fanCueEnabled);
@@ -293,11 +289,12 @@ namespace LuciReality.UI
 
     private void Bind()
     {
-      var promptPane = root.Query<Pane>().First();
+      var promptPane = this.Query<Pane>().First();
       promptPane.dataSource = promptViewModel;
 
       var promptTextArea = promptPane.Q<TextArea>("prompt-text");
-      promptTextArea.SetBinding("value", new DataBinding {
+      promptTextArea.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.Text))
       });
 
@@ -309,15 +306,17 @@ namespace LuciReality.UI
       });
 
       var imageProgressIndicator = promptPane.Q("image-progress-indicator");
-      var imageProgressIndicatorBinding = new DataBinding {
+      var imageProgressIndicatorBinding = new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.GeneratingImage)),
         bindingMode = BindingMode.ToTarget,
       };
-      imageProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ?  DisplayStyle.Flex : DisplayStyle.None));
+      imageProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ? DisplayStyle.Flex : DisplayStyle.None));
       imageProgressIndicator.SetBinding("style." + nameof(imageProgressIndicator.style.display), imageProgressIndicatorBinding);
 
       var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
-      var imageFromPromptBinding = new DataBinding {
+      var imageFromPromptBinding = new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(promptViewModel.GeneratingImage)),
         bindingMode = BindingMode.ToTarget,
       };
@@ -325,17 +324,19 @@ namespace LuciReality.UI
       imageFromPrompt.SetBinding("enabledSelf", imageFromPromptBinding);
       var cuesFromPrompt = promptPane.Q<ActionButton>("cues-from-prompt-button");
       cuesFromPrompt.dataSource = cueParametersViewModel;
-      var cuesFromPromptBinding = new DataBinding {
+      var cuesFromPromptBinding = new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingCues)),
         bindingMode = BindingMode.ToTarget,
       };
       cuesFromPromptBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => !isGenerating);
       cuesFromPrompt.SetBinding("enabledSelf", cuesFromPromptBinding);
 
-      var cuePane = root.Query<Pane>().AtIndex(1);
+      var cuePane = this.Query<Pane>().AtIndex(1);
       cuePane.dataSource = cueParametersViewModel;
       var visualCueIntensity = cuePane.Q<SliderFloat>("visual-cue-intensity");
-      visualCueIntensity.SetBinding("value", new DataBinding {
+      visualCueIntensity.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.LightsIntensity))
       });
 
@@ -346,15 +347,17 @@ namespace LuciReality.UI
       var visualCueColor = cuePane.Q<ColorPicker>("visual-cue-colour");
 
       var cueProgressIndicator = cuePane.Q("cue-progress-indicator");
-      var cueProgressIndicatorBinding = new DataBinding {
+      var cueProgressIndicatorBinding = new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.GeneratingCues)),
         bindingMode = BindingMode.ToTarget,
       };
-      cueProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ?  DisplayStyle.Flex : DisplayStyle.None));
+      cueProgressIndicatorBinding.sourceToUiConverters.AddConverter((ref bool isGenerating) => (StyleEnum<DisplayStyle>)(isGenerating ? DisplayStyle.Flex : DisplayStyle.None));
       cueProgressIndicator.SetBinding("style." + nameof(cueProgressIndicator.style.display), cueProgressIndicatorBinding);
 
       visualCueColor.RegisterCallback<ChangeEvent<Color>>((evt) => GetViewModel().SetLightsColourWithoutNotify(evt.newValue));
-      cueParametersViewModel.PropertyChanged += (v, evt) => {
+      cueParametersViewModel.PropertyChanged += (v, evt) =>
+      {
         if (evt.PropertyName != nameof(CueParametersViewModel.LightsColour)) { return; }
         if (v is not CueParametersViewModel viewModel) { return; }
         if (visualCueColor.value == viewModel.LightsColour) { return; }
@@ -363,49 +366,68 @@ namespace LuciReality.UI
       };
 
       var visualCueEnabled = cuePane.Q<Unity.AppUI.UI.Toggle>("visual-cue-enabled");
-      visualCueEnabled.SetBinding("value", new DataBinding {
+      visualCueEnabled.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.LightsEnabled))
       });
 
       var audioCueVolume = cuePane.Q<SliderFloat>("audio-cue-volume");
-      audioCueVolume.SetBinding("value", new DataBinding {
+      audioCueVolume.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.AudioVolume))
       });
 
       var audioCueEnabled = cuePane.Q<Unity.AppUI.UI.Toggle>("audio-cue-enabled");
-      audioCueEnabled.SetBinding("value", new DataBinding {
+      audioCueEnabled.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.AudioEnabled))
       });
 
       var lraCueIntensity = cuePane.Q<SliderFloat>("lra-cue-intensity");
-      lraCueIntensity.SetBinding("value", new DataBinding {
+      lraCueIntensity.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.LraIntensity))
       });
 
       var lraCueEnabled = cuePane.Q<Unity.AppUI.UI.Toggle>("lra-cue-enabled");
-      lraCueEnabled.SetBinding("value", new DataBinding {
+      lraCueEnabled.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.LraEnabled))
       });
 
       var emsCueIntensity = cuePane.Q<SliderFloat>("ems-cue-intensity");
-      emsCueIntensity.SetBinding("value", new DataBinding {
+      emsCueIntensity.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.EmsIntensity))
       });
 
       var emsCueEnabled = cuePane.Q<Unity.AppUI.UI.Toggle>("ems-cue-enabled");
-      emsCueEnabled.SetBinding("value", new DataBinding {
+      emsCueEnabled.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.EmsEnabled))
       });
 
       var fanCueIntensity = cuePane.Q<SliderFloat>("fan-cue-intensity");
-      fanCueIntensity.SetBinding("value", new DataBinding {
+      fanCueIntensity.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.FanIntensity))
       });
 
       var fanCueEnabled = cuePane.Q<Unity.AppUI.UI.Toggle>("fan-cue-enabled");
-      fanCueEnabled.SetBinding("value", new DataBinding {
+      fanCueEnabled.SetBinding("value", new DataBinding
+      {
         dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.FanEnabled))
       });
+    }
+
+    public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
+    {
+      // throw new System.NotImplementedException();
+    }
+
+    public void OnExit(NavController controller, NavDestination destination, Argument[] args)
+    {
+      // throw new System.NotImplementedException();
     }
   }
 }

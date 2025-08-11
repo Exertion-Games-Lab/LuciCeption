@@ -4,11 +4,12 @@
     xmlns:ui="UnityEngine.UIElements"
     xmlns:lr="LuciReality.UI"
     xmlns:appui="Unity.AppUI.UI"
+    xmlns:nav="Unity.AppUI.Navigation"
     xmlns:uie="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
   <Style src="project://database/Assets/Scripts/UI/SettingsStyles.uss?fileID=7433441132597879392&amp;guid=d34b29af7d3936943bf9138b587a2290&amp;type=3#SettingsStyles" />
   <appui:Panel name="root-panel">
-    
+    <nav:NavHost />
   </appui:Panel>
 </ui:UXML>
