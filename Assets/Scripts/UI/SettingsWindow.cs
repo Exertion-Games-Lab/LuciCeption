@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AppUI.Navigation;
+using System;
+using Unity.AppUI.Navigation.Generated;
 
 namespace LuciReality.UI
 {
@@ -420,14 +422,18 @@ namespace LuciReality.UI
       });
     }
 
+    Action backToNav;
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
     {
-      // throw new System.NotImplementedException();
+      var back = this.Q<Unity.AppUI.UI.Button>("back-to-nav-menu");
+      backToNav = () => controller.Navigate(Actions.back_to_menu);
+      back.clicked += backToNav;
     }
 
     public void OnExit(NavController controller, NavDestination destination, Argument[] args)
     {
-      // throw new System.NotImplementedException();
+      var back = this.Q<Unity.AppUI.UI.Button>("back-to-nav-menu");
+      back.clicked -= backToNav;
     }
   }
 }

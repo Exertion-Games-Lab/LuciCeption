@@ -25,6 +25,7 @@
               <appui:Heading text="Cue Modules" />
               <ui:VisualElement style="flex-direction: row;">
                   <appui:Button name="view-reasoning-button" title="View AI Reasoning" />
+                  <appui:Button name="back-to-nav-menu" title="Back" />
               </ui:VisualElement>
           </ui:VisualElement>
           <appui:Divider />
