@@ -1,0 +1,139 @@
+{"Timestamp":"2025/07/31 07:03:02.044","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:04.071","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:06.074","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:08.076","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:10.078","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:12.080","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:14.081","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:16.082","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:18.083","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:20.084","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:22.085","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:24.088","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:26.088","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:28.090","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:30.091","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:32.104","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:34.105","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:36.106","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:38.108","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:40.109","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:42.110","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:44.113","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:46.123","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/31 07:03:46.138","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/31 07:03:46.156","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/31 07:03:50.826","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: nSignals = {0}, maxAmplitude = {1}, minAmplitude = {2}","Properties":{"arg0":4, "arg1":-1, "arg2":1}}
+{"Timestamp":"2025/07/31 07:07:33.673","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/31 07:07:33.673","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:07:35.675","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:07:37.675","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:07:39.706","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:07:41.706","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/31 07:07:41.706","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/31 07:07:41.707","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/31 07:07:45.779","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: nSignals = {0}, maxAmplitude = {1}, minAmplitude = {2}","Properties":{"arg0":4, "arg1":-1, "arg2":1}}
+{"Timestamp":"2025/07/31 07:27:39.991","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:39.991","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:41.992","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:43.994","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:45.994","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:47.997","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:50.002","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:52.003","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:54.004","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:56.007","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:27:58.008","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:00.023","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:02.024","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:04.033","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:06.035","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:08.036","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:10.038","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:12.039","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:14.040","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:16.041","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:18.043","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:20.046","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:22.073","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:24.074","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:26.076","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:28.077","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:30.078","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:32.080","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:34.099","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:36.100","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:38.101","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:40.101","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:42.104","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:44.105","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:46.107","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:48.108","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:50.110","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:52.110","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:54.112","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:56.113","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:28:58.115","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:00.115","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:02.117","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:04.118","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:06.119","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:08.121","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:10.122","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:12.123","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:14.124","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:16.125","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:18.127","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:20.128","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:22.129","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:24.130","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:26.131","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:28.132","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:30.133","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:32.141","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:34.142","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:36.143","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:38.144","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:40.145","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:42.147","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:44.150","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:46.153","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:48.155","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:50.173","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:52.174","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:54.175","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:56.177","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:29:58.178","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:00.179","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:02.180","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:04.182","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:06.183","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:08.184","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:10.185","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:12.187","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:14.187","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:16.189","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:18.190","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:20.191","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:22.193","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:24.231","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:26.231","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:28.232","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:30.233","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:32.235","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:34.236","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:36.237","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:38.240","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:40.241","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:42.242","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/31 07:30:42.242","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/31 07:30:42.243","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/31 07:30:47.250","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: nSignals = {0}, maxAmplitude = {1}, minAmplitude = {2}","Properties":{"arg0":4, "arg1":-1, "arg2":1}}
+{"Timestamp":"2025/07/31 07:31:05.263","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/31 07:31:05.263","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:31:07.263","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:31:09.266","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:31:11.266","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/31 07:31:13.267","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/31 07:31:13.267","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/31 07:31:13.268","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}

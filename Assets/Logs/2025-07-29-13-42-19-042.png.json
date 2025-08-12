@@ -1,0 +1,26 @@
+{"Timestamp":"2025/07/29 03:42:19.666","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:21.675","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:21.684","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/29 03:42:21.694","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/29 03:42:26.303","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: nSignals = {0}, maxAmplitude = {1}, minAmplitude = {2}","Properties":{"arg0":67108864, "arg1":-16777216, "arg2":33554431}}
+{"Timestamp":"2025/07/29 03:42:44.235","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:44.236","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:46.237","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:48.237","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:50.238","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:52.239","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:54.240","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/29 03:42:54.240","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/29 03:42:54.241","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/29 03:42:59.276","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: nSignals = {0}, maxAmplitude = {1}, minAmplitude = {2}","Properties":{"arg0":67108864, "arg1":-16777216, "arg2":33554431}}
+{"Timestamp":"2025/07/29 03:45:41.499","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:41.499","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:43.508","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:45.508","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:47.509","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:49.510","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:51.514","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:53.528","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/29 03:45:53.528","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/29 03:45:53.529","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/07/29 03:45:58.571","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: nSignals = {0}, maxAmplitude = {1}, minAmplitude = {2}","Properties":{"arg0":4, "arg1":-1, "arg2":1}}

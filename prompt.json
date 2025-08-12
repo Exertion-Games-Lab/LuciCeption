@@ -1,0 +1,98 @@
+  "systemInstruction": {
+    "parts": [
+      {
+          "text": "Intensity and volume are numbers between 0 and 1.\nHaptic cues are being tested so ensure that they are active."
+      },
+    ]
+  },
+  "generationConfig": {
+    "responseMimeType": "application/json",
+    "responseSchema": {
+        "type": "object",
+        "properties": {
+          "Audio": {
+            "type": "object",
+            "properties": {
+              "Enabled": {
+                "type": "boolean"
+              },
+              "Volume": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "Enabled",
+              "Volume"
+            ]
+          },
+          "Light": {
+            "type": "object",
+            "properties": {
+              "Enabled": {
+                "type": "boolean"
+              },
+              "Intensity": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "Enabled",
+              "Intensity"
+            ]
+          },
+          "EMS": {
+            "type": "object",
+            "properties": {
+              "Enabled": {
+                "type": "boolean"
+              },
+              "Intensity": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "Enabled",
+              "Intensity"
+            ]
+          },
+          "AppleWatch": {
+            "type": "object",
+            "properties": {
+              "Enabled": {
+                "type": "boolean"
+              },
+              "Intensity": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "Enabled",
+              "Intensity"
+            ]
+          },
+          "Fan": {
+            "type": "object",
+            "properties": {
+              "Enabled": {
+                "type": "boolean"
+              },
+              "Intensity": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "Enabled",
+              "Intensity"
+            ]
+          }
+        },
+        "required": [
+          "Audio",
+          "Light",
+          "EMS",
+          "AppleWatch",
+          "Fan"
+        ]
+      },
+  },
+}

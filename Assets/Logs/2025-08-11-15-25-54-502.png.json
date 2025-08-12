@@ -1,0 +1,33 @@
+{"Timestamp":"2025/08/11 05:25:55.085","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:25:57.094","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/08/11 05:25:57.103","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/08/11 05:25:57.112","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/08/11 05:26:09.154","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: leftSignals = {0}, rightSignals = {1}, maxAmplitude = {2}, minAmplitude = {3}","Properties":{"arg0":88, "arg1":88, "arg2":32, "arg3":-32}}
+{"Timestamp":"2025/08/11 05:26:23.118","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:23.119","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:25.136","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:27.161","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:29.200","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:31.240","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:33.276","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:35.276","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/08/11 05:26:35.276","Level":"DEBUG","Message":"[OpenBCI] Sending message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/08/11 05:26:35.277","Level":"DEBUG","Message":"[OpenBCI] Successfully sent message to OpenBCI server: {0}","Properties":{"arg0":1}}
+{"Timestamp":"2025/08/11 05:26:55.889","Level":"INFO","Message":"[OpenBCI] Calibration finished with result: leftSignals = {0}, rightSignals = {1}, maxAmplitude = {2}, minAmplitude = {3}","Properties":{"arg0":88, "arg1":88, "arg2":32, "arg3":-32}}
+{"Timestamp":"2025/08/11 05:27:01.540","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:01.540","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:03.586","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:05.616","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:07.663","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:09.706","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:11.764","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:13.790","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:15.833","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:17.870","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:19.904","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:21.924","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:23.946","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:25.967","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:28.014","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:30.030","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}
+{"Timestamp":"2025/08/11 05:27:32.075","Level":"DEBUG","Message":"[OpenBCI] Connecting...","Properties":{}}

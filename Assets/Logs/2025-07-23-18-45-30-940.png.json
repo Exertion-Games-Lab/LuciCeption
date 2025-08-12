@@ -1,0 +1,4 @@
+{"Timestamp":"2025/07/23 08:45:31.369","Level":"DEBUG","Message":"[OpenBCI] Initiating connection...","Properties":{}}
+{"Timestamp":"2025/07/23 08:45:33.379","Level":"INFO","Message":"[OpenBCI] Connected to OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/23 08:45:44.828","Level":"INFO","Message":"[OpenBCI] Disconnected from OpenBCI server.","Properties":{}}
+{"Timestamp":"2025/07/23 08:45:44.830","Level":"DEBUG","Message":"[OpenBCI] Initiating connection...","Properties":{}}

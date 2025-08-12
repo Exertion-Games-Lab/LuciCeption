@@ -1,0 +1,37 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement style="flex-grow: 1; flex-direction: row;">
+        <engine:VisualElement style="flex-grow: 1; background-color: rgb(161, 161, 161); border-right-width: 1px; border-left-color: rgb(94, 94, 94); border-right-color: rgb(94, 94, 94); border-top-color: rgb(94, 94, 94); border-bottom-color: rgb(94, 94, 94);">
+            <engine:TextField placeholder-text="Enter what you&apos;d like to dream about." vertical-scroller-visibility="AlwaysVisible" multiline="true" data-source="project://database/Assets/Scripts/UI/LuciConfig.asset?fileID=11400000&amp;guid=8e7f05185d882594b8054c3d0ffc6193&amp;type=2#LuciConfig" data-source-path="Prompt" name="PromptInput" style="height: 256px; flex-grow: 0;" />
+            <engine:Button text="Submit" name="SubmitPrompt" />
+            <engine:VisualElement style="flex-grow: 1;">
+                <engine:VisualElement name="Image" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Scripts/UI/DiverReef_Shutterstock.jpg?fileID=2800000&amp;guid=750ff6c96a34079409216ca1def84e3b&amp;type=3#DiverReef_Shutterstock&quot;); margin-left: 4px; margin-right: 4px; margin-top: 2px; margin-bottom: 2px; border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px;" />
+                <engine:Button text="Generate Image (Placeholder)" name="GenerateImage" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement style="flex-grow: 1; background-color: rgb(161, 161, 161);">
+            <engine:VisualElement style="flex-grow: 1;">
+                <engine:Toggle label="Audio" name="AudioToggle" />
+                <engine:DropdownField label="Clip (Placeholder)" name="AudioClip" />
+                <engine:Slider label="Volume" high-value="1" fill="true" name="AudioVolume" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 1;">
+                <engine:Toggle label="Lights" name="LightToggle" />
+                <engine:Slider label="Intensity" high-value="1" fill="true" name="LightIntensity" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 1;">
+                <engine:Toggle label="EMS Electrodes" name="EmsToggle" />
+                <engine:Slider label="Intensity" high-value="1" fill="true" name="EmsIntensity" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 1;">
+                <engine:Toggle label="Apple Watch" name="AppleWatchToggle" />
+                <engine:Slider label="Intensity" high-value="1" fill="true" name="AppleWatchIntensity" />
+            </engine:VisualElement>
+            <engine:VisualElement style="flex-grow: 1;">
+                <engine:Toggle label="Fan" name="FanToggle" />
+                <engine:Slider label="Intensity" high-value="1" fill="true" name="FanIntensity" />
+            </engine:VisualElement>
+            <engine:FloatField label="Delay (Placeholder)" value="0" />
+            <engine:Button text="Start" name="StartButton" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
