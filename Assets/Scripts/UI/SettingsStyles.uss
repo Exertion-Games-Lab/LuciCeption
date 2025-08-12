@@ -21,6 +21,10 @@
   margin: 4px;
 }
 
+.appui-navhost .appui-stackview {
+  height: 100%;
+}
+
 .cue-settings-card {
     padding: 4px;
     flex-basis: 50%;

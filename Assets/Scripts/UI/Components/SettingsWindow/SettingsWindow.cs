@@ -271,11 +271,11 @@ namespace LuciReality.UI
     {
       if (evt.newValue == 0f && evt.previousValue != 0f && toggle.value)
       {
-        toggle.SetValueWithoutNotify(false);
+        toggle.value = false;
       }
       if (evt.newValue != 0f && evt.previousValue == 0f && !toggle.value)
       {
-        toggle.SetValueWithoutNotify(true);
+        toggle.value = true;
       }
     }
 
