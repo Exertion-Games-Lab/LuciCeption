@@ -37,6 +37,7 @@ namespace LuciReality.UI
 
       Unity.AppUI.UI.Button startCalibration = new Unity.AppUI.UI.Button();
       startCalibration.title = "Start Calibration Attempt";
+      startCalibration.clicked += StartCalibrationAction;
 
       Add(pageHeading);
       Add(explanationHeading);
@@ -52,5 +53,7 @@ namespace LuciReality.UI
       Add(calibrationInfoSignalLength);
       Add(startCalibration);
     }
+
+    public async void StartCalibrationAction() => await OpenBCIClient.Instance.StartCalibration();
   }
 }

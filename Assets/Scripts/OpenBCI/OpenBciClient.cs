@@ -23,6 +23,18 @@ namespace LuciReality.OpenBCI
   /// </summary>
   public class OpenBCIClient : MonoBehaviour
   {
+    private static OpenBCIClient _instance;
+    public static OpenBCIClient Instance
+    {
+      get => _instance;
+      set
+      {
+        if (_instance == null)
+        {
+          _instance = value;
+        }
+      }
+    }
     public const int MessageTypeLength = 1;
     public event Action Disconnected;
     public event Action Connected;
