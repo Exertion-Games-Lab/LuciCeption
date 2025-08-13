@@ -38,6 +38,8 @@ namespace LuciReality.OpenBCI
       public const int CALIBRATION_RESULT = 4;
     }
 
+    
+
     // Connection Parameters
     [Range(0, 65535), SerializeField]
     private ushort port = 8080;
@@ -47,7 +49,7 @@ namespace LuciReality.OpenBCI
 
     // Socket Client
     private Socket client;
-    private OpenBciClientState currentState = OpenBciClientState.DISCONNECTED;
+    public OpenBciClientState CurrentState { get; private set; } = OpenBciClientState.DISCONNECTED;
 
     public OpenBCIClient()
     {
@@ -61,7 +63,7 @@ namespace LuciReality.OpenBCI
     private async Task Connect()
     {
       // Loop until we successfully (re-)connect to the server.
-      while (currentState != OpenBciClientState.CONNECTED)
+      while (CurrentState != OpenBciClientState.CONNECTED)
       {
         // (Re-)create the client so we can connect to the server.
         if (client is not null) { KillClient(); }
@@ -76,7 +78,7 @@ namespace LuciReality.OpenBCI
         if (await timeout) // Ensure we wait for the timeout before attempting another connection.
         {
           Log.Info("[OpenBCI] Connected to OpenBCI server.");
-          currentState = OpenBciClientState.CONNECTED;
+          CurrentState = OpenBciClientState.CONNECTED;
           Connected?.Invoke();
         }
       }
@@ -211,7 +213,7 @@ namespace LuciReality.OpenBCI
     /// <summary>Called when a disconnection is detected</summary>
     void OnDisconnected()
     {
-      currentState = OpenBciClientState.DISCONNECTED;
+      CurrentState = OpenBciClientState.DISCONNECTED;
       KillClient();
       Log.Info("[OpenBCI] Disconnected from OpenBCI server.");
       Task.Run(Connect);

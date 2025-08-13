@@ -5,6 +5,7 @@ using Unity.AppUI.MVVM;
 using Unity.AppUI.Navigation;
 using Unity.AppUI.UI;
 using Unity.Logging;
+using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,12 +23,14 @@ namespace LuciReality.UI
     private Text RightCountText => this.Q<Text>("result-right-count");
     private Text MinAmplitudeText => this.Q<Text>("result-min-amplitude");
     private Text MaxAmplitudeText => this.Q<Text>("result-max-amplitude");
-    private OpenBCIClient openBCIClient;
+    private readonly OpenBCIClient openBCIClient;
+    private readonly CalibrationViewModel viewModel;
 
-    public SystemCalibration(OpenBCIClient openBCIClient)
+    public SystemCalibration(CalibrationViewModel viewModel, OpenBCIClient openBCIClient)
     {
+      this.viewModel = viewModel;
       this.openBCIClient = openBCIClient;
-      
+
       AddToClassList(className);
 
       var asset = Resources.Load<VisualTreeAsset>("SystemCalibration");
@@ -40,6 +43,38 @@ namespace LuciReality.UI
       openBCIClient.Calibrated += OnCalibrated;
       openBCIClient.Disconnected += OnDisconnected;
       openBCIClient.Connected += OnConnected;
+
+      dataSource = viewModel;
+      LeftLrsText.SetBinding(nameof(Text.text), new DataBinding
+      {
+        bindingMode = BindingMode.ToTarget,
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.LeftLRMessage))
+      });
+      LeftCountText.SetBinding(nameof(Text.text), new DataBinding
+      {
+        bindingMode = BindingMode.ToTarget,
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.LeftCountMessage))
+      });
+      RightLrsText.SetBinding(nameof(Text.text), new DataBinding
+      {
+        bindingMode = BindingMode.ToTarget,
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.RightLRMessage))
+      });
+      RightCountText.SetBinding(nameof(Text.text), new DataBinding
+      {
+        bindingMode = BindingMode.ToTarget,
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.RightCountMessage))
+      });
+      MinAmplitudeText.SetBinding(nameof(Text.text), new DataBinding
+      {
+        bindingMode = BindingMode.ToTarget,
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.MinAmplitudeMessage))
+      });
+      MaxAmplitudeText.SetBinding(nameof(Text.text), new DataBinding
+      {
+        bindingMode = BindingMode.ToTarget,
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.MaxAmplitudeMessage))
+      });
     }
 
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
@@ -54,17 +89,14 @@ namespace LuciReality.UI
 
     public async void StartCalibration() => await openBCIClient.StartCalibration();
 
-    public async void OnCalibrated(CalibrationResult result)
+    public void OnCalibrated(CalibrationResult result)
     {
-      await UniTask.SwitchToMainThread(); // Have to be on the main thread to modify the UI like this.
-
+      // await UniTask.SwitchToMainThread(); // Have to be on the main thread to modify the UI like this.
       Log.Debug(result);
-      LeftLrsText.text = $"Left LRs: {result.leftSignals}";
-      LeftCountText.text = $"Left Count: {result.leftSignals}";
-      RightLrsText.text = $"Right LRs: {result.rightSignals}";
-      RightCountText.text = $"Right Count: {result.rightSignals}";
-      MinAmplitudeText.text = $"Min Amplitude: {result.minAmplitude}";
-      MaxAmplitudeText.text = $"Max Amplitude: {result.maxAmplitude}";
+      viewModel.LeftSignalCount = result.leftSignals;
+      viewModel.RightSignalCount = result.rightSignals;
+      viewModel.MinAmplitude = result.minAmplitude;
+      viewModel.MaxAmplitude = result.maxAmplitude;
     }
 
     public void OnDisconnected()
