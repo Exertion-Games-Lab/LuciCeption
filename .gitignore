@@ -81,3 +81,4 @@ crashlytics-build.properties
 
 # Logs
 /[Aa]ssets/[Ll]ogs/*
+/[Aa]ssets/[Oo]pen[Bb][Cc][Ii]/[Pp]ython/[Rr]esults/*

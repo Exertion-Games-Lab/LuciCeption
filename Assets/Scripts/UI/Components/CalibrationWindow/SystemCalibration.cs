@@ -23,27 +23,25 @@ namespace LuciReality.UI
     private Text RightCountText => this.Q<Text>("result-right-count");
     private Text MinAmplitudeText => this.Q<Text>("result-min-amplitude");
     private Text MaxAmplitudeText => this.Q<Text>("result-max-amplitude");
-    private readonly OpenBCIClient openBCIClient;
     private readonly CalibrationViewModel viewModel;
 
-    public SystemCalibration(CalibrationViewModel viewModel, OpenBCIClient openBCIClient)
+    public SystemCalibration(CalibrationViewModel viewModel)
     {
       this.viewModel = viewModel;
-      this.openBCIClient = openBCIClient;
 
       AddToClassList(className);
 
       var asset = Resources.Load<VisualTreeAsset>("SystemCalibration");
       asset.CloneTree(this);
 
-      openBCIClient = LuciRealityApp.current.services.GetRequiredService<OpenBCIClient>();
+      CalibrateSystemButton.clicked +=
+        async () => await viewModel.StartCalibrationAsyncCommand.ExecuteAsync(Application.exitCancellationToken);
 
-      CalibrateSystemButton.clicked += StartCalibration;
+      Bind();
+    }
 
-      openBCIClient.Calibrated += OnCalibrated;
-      openBCIClient.Disconnected += OnDisconnected;
-      openBCIClient.Connected += OnConnected;
-
+    private void Bind()
+    {
       dataSource = viewModel;
       LeftLrsText.SetBinding(nameof(Text.text), new DataBinding
       {
@@ -86,28 +84,5 @@ namespace LuciReality.UI
     {
       // throw new System.NotImplementedException();
     }
-
-    public async void StartCalibration() => await openBCIClient.StartCalibration();
-
-    public void OnCalibrated(CalibrationResult result)
-    {
-      // await UniTask.SwitchToMainThread(); // Have to be on the main thread to modify the UI like this.
-      Log.Debug(result);
-      viewModel.LeftSignalCount = result.leftSignals;
-      viewModel.RightSignalCount = result.rightSignals;
-      viewModel.MinAmplitude = result.minAmplitude;
-      viewModel.MaxAmplitude = result.maxAmplitude;
-    }
-
-    public void OnDisconnected()
-    {
-
-    }
-
-    public void OnConnected()
-    {
-
-    }
-
   }
 }

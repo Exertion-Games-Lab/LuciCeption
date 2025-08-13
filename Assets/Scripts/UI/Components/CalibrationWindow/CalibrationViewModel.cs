@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using LuciReality.OpenBCI;
 using Unity.AppUI.MVVM;
 using Unity.Properties;
@@ -9,11 +11,15 @@ namespace LuciReality.UI
   [ObservableObject]
   public partial class CalibrationViewModel
   {
-    public CalibrationViewModel(IServiceProvider services)
+    private OpenBCIClient openBCIClient;
+    public CalibrationViewModel(OpenBCIClient openBCIClient)
     {
-      var openBci = services.GetRequiredService<OpenBCIClient>();
+      this.openBCIClient = openBCIClient;
+      openBCIClient.Connected += OnConnectedCommand.Execute;
+      openBCIClient.Disconnected += OnDisconnectedCommand.Execute;
+      openBCIClient.Calibrated += OnCalibratedCommand.Execute;
 
-      _isConnected = openBci.CurrentState == OpenBciClientState.CONNECTED;
+      _isConnected = openBCIClient.CurrentState == OpenBciClientState.CONNECTED;
     }
 
     [ObservableProperty] private bool _isCalibrating;
@@ -48,5 +54,32 @@ namespace LuciReality.UI
 
     [CreateProperty(ReadOnly = true)]
     public string MaxAmplitudeMessage => $"Max Amplitude: {MaxAmplitude}";
+
+    [ICommand]
+    void OnConnected()
+    {
+      IsConnected = true;
+    }
+
+    [ICommand]
+    void OnDisconnected()
+    {
+      IsConnected = false;
+    }
+
+    [ICommand]
+    void OnCalibrated(CalibrationResult result)
+    {
+      LeftSignalCount = result.leftSignals;
+      RightSignalCount = result.rightSignals;
+      MinAmplitude = result.minAmplitude;
+      MaxAmplitude = result.maxAmplitude;
+    }
+
+    [ICommand]
+    public async Task StartCalibrationAsync(CancellationToken token)
+    {
+      await openBCIClient.StartCalibration();
+    }
   }
 }
