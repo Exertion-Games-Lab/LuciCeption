@@ -14,14 +14,19 @@ using System.Linq;
 using Unity.AppUI.Navigation;
 using System;
 using Unity.AppUI.Navigation.Generated;
+using Unity.AppUI.MVVM;
 
 namespace LuciReality.UI
 {
   [UxmlElement]
   public partial class SettingsWindow : VisualElement, INavigationScreen
   {
-    public CueParametersViewModel cueParametersViewModel;
-    public PromptViewModel promptViewModel;
+    [Service]
+    public CueParametersViewModel cueParametersViewModel { get; set; }
+
+    [Service]
+    public PromptViewModel promptViewModel { get; set; }
+    
     private Texture2D tex;
 
     private List<string> savedFiles;
@@ -426,7 +431,7 @@ namespace LuciReality.UI
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
     {
       var back = this.Q<Unity.AppUI.UI.Button>("back-to-nav-menu");
-      backToNav = () => controller.Navigate(Actions.back_to_menu);
+      backToNav = () => controller.Navigate(Actions.settings_to_menu);
       back.clicked += backToNav;
     }
 

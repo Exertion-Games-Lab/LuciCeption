@@ -64,6 +64,8 @@ namespace LuciReality.OpenBCI
 
     protected void Start()
     {
+      Instance = this;
+
       Disconnected += OnDisconnected;
       Connected += OnConnected;
 
@@ -205,7 +207,15 @@ namespace LuciReality.OpenBCI
         "[OpenBCI] Calibration finished with result: leftSignals = {0}, rightSignals = {1}, maxAmplitude = {2}, minAmplitude = {3}",
         res.leftSignals, res.rightSignals, res.maxAmplitude, res.minAmplitude
       );
-      Calibrated?.Invoke(res);
+
+      try
+      {
+        Calibrated?.Invoke(res);
+      }
+      catch (Exception e)
+      {
+        Debug.LogError(e);
+      }
     }
     #region NetworkEvents
     /// <summary>Called when a message is received from the EOG Detection server</summary>
@@ -233,7 +243,7 @@ namespace LuciReality.OpenBCI
     /// <summary>Called when a connection with the EOG detection server has been established</summary>
     void OnConnected()
     {
-      Task.Run(StartCalibration);
+      // Task.Run(StartCalibration);
     }
     #endregion
     void OnDestroy()

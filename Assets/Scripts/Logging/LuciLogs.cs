@@ -16,8 +16,8 @@ namespace LuciReality
       Unity.Logging.Log.Logger = new Unity.Logging.Logger(new LoggerConfig()
       .MinimumLevel.Debug()
       .SyncMode.FatalIsSync()
-      .CaptureStacktrace(false)
-      .WriteTo.JsonFile($"{Application.dataPath}/Logs/{string.Format("{0:yyyy-MM-dd-HH-mm-ss-fff}.png", DateTime.Now)}.json", minLevel: LogLevel.Debug)
+      .CaptureStacktrace()
+      .WriteTo.JsonFile($"{Application.dataPath}/Logs/{string.Format("{0:yyyy-MM-dd-HH-mm-ss-fff}", DateTime.Now)}.json", minLevel: LogLevel.Debug)
       .WriteTo.UnityEditorConsole(minLevel: LogLevel.Debug));
     }
     

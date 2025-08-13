@@ -34,7 +34,7 @@ namespace LuciReality.UI
     {
       
       SettingsWindowLinkOnClick = () => controller.Navigate(Actions.settings_link); // This is the navigation destination
-      CalibrationWindowLinkOnClick = () => controller.Navigate("CalibrationWindow");
+      CalibrationWindowLinkOnClick = () => controller.Navigate(Actions.calibration_link);
       ModulesWindowLinkOnClick = () => controller.Navigate("ModulesWindow");
 
       SettingsWindowLink.clicked += SettingsWindowLinkOnClick; // Now we have created a closure to hold `controller` we assign this as a callback.

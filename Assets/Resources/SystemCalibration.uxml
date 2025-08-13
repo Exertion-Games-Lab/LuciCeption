@@ -1,0 +1,23 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:lr="LuciReality.UI" xmlns:appui="Unity.AppUI.UI" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UI/SettingsStyles.uss?fileID=7433441132597879392&amp;guid=d34b29af7d3936943bf9138b587a2290&amp;type=3#SettingsStyles" />
+    <ui:VisualElement>
+      <appui:Heading name= "calibration-heading" text="System Calibration Instructions" />
+      <appui:Text text="1. Ensure that the EOG Movement Detector python script is running" />
+      <appui:Text text="2. Click the calibrate button and perform 10 Left-Right eye movements"/>
+      <appui:Text text="3. Verify that the number of detected movements is correct." />
+      <appui:Text text="3.1 Too many detections indicates that the threshold needs to be increased." />
+      <appui:Text text="3.2 Tow few indicates that it needs to be reduced." />
+      <appui:Divider />
+      <appui:ExVisualElement>
+        <appui:Heading name="calibration-results-heading" text="Calibration Results" />
+        <appui:Text name="result-left-detected" text="Left LRs: " />
+        <appui:Text name="result-right-detected" text="Right LRs: " />
+        <appui:Text name="result-left-count" text="Left LR Count: " />
+        <appui:Text name="result-right-count" text="Right LR Count: " />
+
+        <appui:Text name="result-min-amplitude" text="Min Amplitude: " />
+        <appui:Text name="result-max-amplitude" text="Max Amplitude: " />
+      </appui:ExVisualElement>
+      <appui:Button title="Calibrate" name="calibrate-system-button"/>
+    </ui:VisualElement>
+</ui:UXML>
