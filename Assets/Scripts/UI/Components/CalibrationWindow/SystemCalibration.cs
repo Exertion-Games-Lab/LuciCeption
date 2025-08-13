@@ -23,6 +23,10 @@ namespace LuciReality.UI
     private Text RightCountText => this.Q<Text>("result-right-count");
     private Text MinAmplitudeText => this.Q<Text>("result-min-amplitude");
     private Text MaxAmplitudeText => this.Q<Text>("result-max-amplitude");
+    private InputLabel ThresholdLabel => this.Q<InputLabel>("threshold-label");
+    private Stepper ThresholdStepper => this.Q<Stepper>("threshold-stepper");
+    private VisualElement CalibrationProgress => this.Q<VisualElement>("calibration-progress");
+    private VisualElement ConnectionProgress => this.Q<VisualElement>("connection-progress");
     private readonly CalibrationViewModel viewModel;
 
     public SystemCalibration(CalibrationViewModel viewModel)
@@ -42,6 +46,19 @@ namespace LuciReality.UI
 
     private void Bind()
     {
+      ThresholdStepper.RegisterValueChangedCallback((e) =>
+      {
+        if (e.newValue == e.previousValue) { return; }
+        if (e.newValue == 1)
+        {
+          viewModel.IncrementThresholdAsyncCommand.ExecuteAsync(Application.exitCancellationToken);
+        }
+        if (e.newValue == -1)
+        {
+          viewModel.IncrementThresholdAsyncCommand.Execute(Application.exitCancellationToken);
+        }
+      });
+
       dataSource = viewModel;
       LeftLrsText.SetBinding(nameof(Text.text), new DataBinding
       {
@@ -73,6 +90,29 @@ namespace LuciReality.UI
         bindingMode = BindingMode.ToTarget,
         dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.MaxAmplitudeMessage))
       });
+      ThresholdLabel.SetBinding(nameof(InputLabel.label), new DataBinding
+      {
+        bindingMode = BindingMode.ToTarget,
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.ThresholdMessage))
+      });
+      var calibrationProgressBinding = new DataBinding
+      {
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.IsCalibrating)),
+        bindingMode = BindingMode.ToTarget,
+      };
+      calibrationProgressBinding.sourceToUiConverters.AddConverter(
+        (ref bool isCalibrating) => (StyleEnum<DisplayStyle>)(isCalibrating ? DisplayStyle.Flex : DisplayStyle.None)
+      );
+      CalibrationProgress.SetBinding($"{nameof(CalibrationProgress.style)}.{nameof(CalibrationProgress.style.display)}", calibrationProgressBinding);
+      var connectionProgressBinding = new DataBinding
+      {
+        dataSourcePath = PropertyPath.FromName(nameof(CalibrationViewModel.IsConnected)),
+        bindingMode = BindingMode.ToTarget,
+      };
+      connectionProgressBinding.sourceToUiConverters.AddConverter(
+        (ref bool isCalibrating) => (StyleEnum<DisplayStyle>)(!isCalibrating ? DisplayStyle.Flex : DisplayStyle.None)
+      );
+      ConnectionProgress.SetBinding($"{nameof(ConnectionProgress.style)}.{nameof(ConnectionProgress.style.display)}", connectionProgressBinding);
     }
 
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)

@@ -70,6 +70,7 @@ class Detector:
   def setup_vars(self):
     self.eeg_data = np.ndarray(0)
     self.eog_class = "neutral"
+    self.threshold = 5
 
     # LR signal counters
     self.eog_data_left = np.ndarray(0)
@@ -263,14 +264,14 @@ class Detector:
       self.detect_lr_pattern(
         left_eog,
         detecting_pattern,
-        peak_threshold=5,
+        peak_threshold=self.threshold,
       )
     )
     found_right, sequence_right, detected_right = (
       self.detect_lr_pattern(
         right_eog,
         detecting_pattern,
-        peak_threshold=5,
+        peak_threshold=self.threshold,
       )
     )
 
@@ -304,6 +305,10 @@ class Detector:
     gain = 24       # Default Cyton gain
     factor = (Vref / (gain * (2**23))) * 1e6  # convert to μV
     return raw_data * factor
+  
+  def set_threshold(self, threshold):
+    self.threshold = threshold
+    print("Set threshold to: " + str(threshold))
 
 class SyntheticDetector(Detector):
   """

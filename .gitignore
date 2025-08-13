@@ -80,5 +80,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]cripts/ApiKeys.cs
 
 # Logs
-/[Aa]ssets/[Ll]ogs/*
-/[Aa]ssets/[Oo]pen[Bb][Cc][Ii]/[Pp]ython/[Rr]esults/*
+[Aa]ssets/[Ll]ogs/*
+[Aa]ssets/[Ss]cripts/OpenBCI/Python/results/*

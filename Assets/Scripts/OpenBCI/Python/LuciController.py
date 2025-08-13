@@ -20,6 +20,7 @@ class UnityClientMessagesTypes(IntEnum):
   GO_ACTIVE = 2
   EXIT = 3
   CALIBRATION_RESULT = 4
+  SET_THRESHOLD = 5
 
 class UnityCommunication:
   """
@@ -58,15 +59,16 @@ class UnityCommunication:
       if not data:
         print("Disconnected")
         break
-      self.process_message(data)
+      self.process_message(conn, data)
 
     conn.close()
 
-  def process_message(self, message: UnityClientMessagesTypes):
+  def process_message(self, conn: socket.socket, message: UnityClientMessagesTypes):
     if message == UnityClientMessagesTypes.GO_ACTIVE: asyncio.run(self.receive_go_active())
     elif message == UnityClientMessagesTypes.GO_IDLE: self.receive_go_idle()
     elif message == UnityClientMessagesTypes.START_CALIBRATION: asyncio.run(self.receive_start_calibration())
     elif message == UnityClientMessagesTypes.EXIT: self.receive_exit()
+    elif message == UnityClientMessagesTypes.SET_THRESHOLD: self.detector.set_threshold(int.from_bytes(conn.recv(4), signed=True, byteorder='little'))
     print("Received Message: ", message)
 
   # Message Receive Handlers

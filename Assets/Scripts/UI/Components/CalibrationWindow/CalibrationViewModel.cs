@@ -22,6 +22,9 @@ namespace LuciReality.UI
       _isConnected = openBCIClient.CurrentState == OpenBciClientState.CONNECTED;
     }
 
+    [AlsoNotifyChangeFor(nameof(ThresholdMessage))]
+    [ObservableProperty] private int _threshold = 5;
+
     [ObservableProperty] private bool _isCalibrating;
     [ObservableProperty] private bool _isConnected;
 
@@ -55,6 +58,9 @@ namespace LuciReality.UI
     [CreateProperty(ReadOnly = true)]
     public string MaxAmplitudeMessage => $"Max Amplitude: {MaxAmplitude}";
 
+    [CreateProperty(ReadOnly = true)]
+    public string ThresholdMessage => $"Threshold: {Threshold}";
+
     [ICommand]
     void OnConnected()
     {
@@ -65,11 +71,13 @@ namespace LuciReality.UI
     void OnDisconnected()
     {
       IsConnected = false;
+      IsCalibrating = false;
     }
 
     [ICommand]
     void OnCalibrated(CalibrationResult result)
     {
+      IsCalibrating = false;
       LeftSignalCount = result.leftSignals;
       RightSignalCount = result.rightSignals;
       MinAmplitude = result.minAmplitude;
@@ -77,9 +85,25 @@ namespace LuciReality.UI
     }
 
     [ICommand]
-    public async Task StartCalibrationAsync(CancellationToken token)
+    async Task StartCalibrationAsync(CancellationToken token)
     {
+      IsCalibrating = true;
       await openBCIClient.StartCalibration();
+    }
+
+    [ICommand]
+    async Task IncrementThresholdAsync(CancellationToken token)
+    {
+      Threshold++;
+      await openBCIClient.SetThreshold(Threshold, token);
+    }
+
+    [ICommand]
+    async Task DecrementThresholdAsync(CancellationToken token)
+    {
+      if (Threshold == 0) { return; }
+      Threshold--;
+      await openBCIClient.SetThreshold(Threshold, token);
     }
   }
 }

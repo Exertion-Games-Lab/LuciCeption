@@ -5,6 +5,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Unity.Logging;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 
 
 namespace LuciReality.OpenBCI
@@ -36,6 +38,7 @@ namespace LuciReality.OpenBCI
       public const int GO_ACTIVE = 2;
       public const int EXIT = 3;
       public const int CALIBRATION_RESULT = 4;
+      public const int SET_THRESHOLD = 5;
     }
 
     
@@ -158,6 +161,31 @@ namespace LuciReality.OpenBCI
         }
       }
       Log.Debug("[OpenBCI] Successfully sent message to OpenBCI server: {0}", task);
+    }
+    public async Task SetThreshold(int threshold, CancellationToken cancellationToken)
+    {
+      List<byte> bytes = new()
+      {
+        ObciMessages.SET_THRESHOLD
+      };
+      bytes.AddRange(BitConverter.GetBytes(threshold));
+
+      // TODO: Catch cancelled separately
+      try
+      {
+        await client.SendAsync(
+          bytes.ToArray(),
+          SocketFlags.None,
+          cancellationToken
+        );
+      }
+      catch // We were unable to send, therefore we must have disconnected.
+      {
+        if (!Application.exitCancellationToken.IsCancellationRequested)
+        {
+          Disconnected?.Invoke();
+        }
+      }
     }
     /// <summary>Attempts to parse a message from the messages buffer.</summary>
     /// <param name="buffer">The buffer containing message data</param>
