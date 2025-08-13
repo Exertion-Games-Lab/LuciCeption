@@ -18,35 +18,25 @@ using Unity.AppUI.MVVM;
 
 namespace LuciReality.UI
 {
-  [UxmlElement]
   public partial class SettingsWindow : VisualElement, INavigationScreen
   {
-    [Service]
     public CueParametersViewModel cueParametersViewModel { get; set; }
 
-    [Service]
     public PromptViewModel promptViewModel { get; set; }
     
     private Texture2D tex;
 
     private List<string> savedFiles;
 
-    public SettingsWindow()
+    public SettingsWindow(CueParametersViewModel cueParametersViewModel, PromptViewModel promptViewModel)
     {
       tex = new Texture2D(2, 2)
       {
         hideFlags = HideFlags.DontSave
       };
 
-      cueParametersViewModel = new()
-      {
-        Model = new CueParametersModel()
-      };
-
-      promptViewModel = new()
-      {
-        Model = new PromptModel()
-      };
+      this.cueParametersViewModel = cueParametersViewModel;
+      this.promptViewModel = promptViewModel;
 
       var asset = Resources.Load<VisualTreeAsset>("SettingsWindow");
       asset.CloneTree(this);

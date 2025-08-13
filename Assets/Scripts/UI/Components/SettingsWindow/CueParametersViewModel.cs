@@ -94,8 +94,8 @@ namespace LuciReality.UI
     [CreateProperty]
     public bool EmsEnabled
     {
-      get => _model.Lights.Enabled;
-      set => SetProperty(_model.Lights.Enabled, value, _model, (u, n) => u.Lights.Enabled = n);
+      get => _model.Ems.Enabled;
+      set => SetProperty(_model.Ems.Enabled, value, _model, (u, n) => u.Ems.Enabled = n);
     }
     [CreateProperty]
     public float EmsIntensity

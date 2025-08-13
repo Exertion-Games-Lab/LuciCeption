@@ -11,7 +11,7 @@ namespace LuciReality.UI
   [UxmlElement]
   public partial class NavMenu : VisualElement, INavigationScreen
   {
-    public const string className = "luci-reality--nav-menu";
+    public const string className = "luci-reality--fullscreen";
     public Panel RootPanel;
     public VisualElement NavContainer;
     public Unity.AppUI.UI.Button SettingsWindowLink => this.Q<Unity.AppUI.UI.Button>("settings-window-link");

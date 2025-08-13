@@ -21,20 +21,8 @@ namespace LuciReality.OpenBCI
   /// Internally, this class manages a TCP Socket, which it uses to connect to the EOG Detection server.
   /// It will automatically re-connect when disconnected and can prompt the server to begin certain tasks like calibration.
   /// </summary>
-  public class OpenBCIClient : MonoBehaviour
+  public class OpenBCIClient
   {
-    private static OpenBCIClient _instance;
-    public static OpenBCIClient Instance
-    {
-      get => _instance;
-      set
-      {
-        if (_instance == null)
-        {
-          _instance = value;
-        }
-      }
-    }
     public const int MessageTypeLength = 1;
     public event Action Disconnected;
     public event Action Connected;
@@ -52,23 +40,19 @@ namespace LuciReality.OpenBCI
 
     // Connection Parameters
     [Range(0, 65535), SerializeField]
-    private ushort port = 7777;
+    private ushort port = 8080;
 
     [SerializeField]
     private bool loopback = true;
 
     // Socket Client
     private Socket client;
-    private NetworkStream networkStream;
     private OpenBciClientState currentState = OpenBciClientState.DISCONNECTED;
 
-    protected void Start()
+    public OpenBCIClient()
     {
-      Instance = this;
-
       Disconnected += OnDisconnected;
       Connected += OnConnected;
-
       Task.Run(Connect);
     }
 
@@ -246,7 +230,7 @@ namespace LuciReality.OpenBCI
       // Task.Run(StartCalibration);
     }
     #endregion
-    void OnDestroy()
+    ~OpenBCIClient()
     {
       KillClient();
     }

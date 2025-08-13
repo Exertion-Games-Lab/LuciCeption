@@ -18,7 +18,7 @@ namespace LuciReality.AI
   /// </summary>
   public static class TextQuery
   {
-    private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key={ApiKeys.Gemini}";
+    private static string Endpoint() => $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={ApiKeys.Gemini}";
     /// <summary>Queries the Gemini model with a user prompt.</summary>
     /// <param name="prompt">The user prompt.</param>
     /// <returns>Gemini's response.</returns>
