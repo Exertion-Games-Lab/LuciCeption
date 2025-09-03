@@ -32,7 +32,7 @@ namespace LuciReality.UI
 
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
     {
-      
+      Focus();
       SettingsWindowLinkOnClick = () => controller.Navigate(Actions.settings_link); // This is the navigation destination
       CalibrationWindowLinkOnClick = () => controller.Navigate(Actions.calibration_link);
       ModulesWindowLinkOnClick = () => controller.Navigate("ModulesWindow");
