@@ -6,6 +6,7 @@ using Unity.AppUI.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.AppUI.UI;
+using Unity.Logging;
 
 namespace LuciReality.UI
 {
@@ -25,7 +26,6 @@ namespace LuciReality.UI
     }
   }
 
-  [UxmlElement]
   public partial class FileBrowser : VisualElement
   {
     public event Action OnCloseClicked;
@@ -40,15 +40,12 @@ namespace LuciReality.UI
     public List<string> Extensions;
     private List<FileDescriptor> files;
     private MultiColumnListView listView;
+    private CueParametersViewModel viewModel;
 
-    public FileBrowser()
+    public FileBrowser(CueParametersViewModel viewModel)
     {
-      RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-      RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
-    }
+      this.viewModel = viewModel;
 
-    public void OnAttachToPanel(AttachToPanelEvent e)
-    {
       AddToClassList("lucireality--file-browser");
       Extensions = new List<string> {
         "wav",
@@ -64,19 +61,15 @@ namespace LuciReality.UI
       headingContainer.style.flexDirection = FlexDirection.Row;
       headingContainer.style.justifyContent = Justify.SpaceBetween;
       headingContainer.Add(new Heading("Audio Files"));
-      var closeButton = new IconButton();
-      closeButton.icon = "x";
+
+      var closeButton = new IconButton
+      {
+        icon = "x"
+      };
       closeButton.clicked += () => OnCloseClicked?.Invoke();
       headingContainer.Add(closeButton);
       Add(headingContainer);
       Add(new Divider());
-
-      // listView.makeHeader = () => {
-      //   var element = new VisualElement();
-      //   element.Add(new Heading("Audio Files"));
-      //   element.Add(new Divider());
-      //   return element;
-      // };
 
       var fileNameColumn = new Column
       {
@@ -123,6 +116,15 @@ namespace LuciReality.UI
       };
       selectButton.style.width = new StyleLength(100);
 
+      selectButton.clicked += () =>
+      {
+        if (listView.selectedIndex == -1) { return; }
+        
+        var clip = ((FileDescriptor)listView.selectedItem).Path;
+        viewModel.SelectedAudioFile = clip;
+        Log.Info("[{logType}]: Selected audio clip {audioClip}", "USER_INTERFACE", clip);
+      };
+
       var openClipsFolder = new ActionButton
       {
         label = "Open Clips Folder"
@@ -133,45 +135,24 @@ namespace LuciReality.UI
       footerGroup.Add(openClipsFolder);
 
       Add(footerGroup);
+
+      RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
+      RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
+    }
+
+    public void OnAttachToPanel(AttachToPanelEvent e)
+    {
+      Log.Info("[{logType}]: File browser opened", "USER_INTERFACE");
     }
 
     public void OnDetachFromPanel(DetachFromPanelEvent e)
     {
-      Clear();
-    }
-
-    private VisualElement MakeItem()
-    {
-      var item = new VisualElement();
-
-      item.style.flexDirection = FlexDirection.Row;
-
-      item.Add(new Text());
-      var divider = new Divider
+      foreach (Action d in OnCloseClicked.GetInvocationList().Cast<Action>())
       {
-        direction = Direction.Vertical
-      };
-      item.Add(divider);
-      item.Add(new Text());
+        OnCloseClicked -= d;
+      }
 
-      return item;
-    }
-
-    private void BindItem(VisualElement item, int index)
-    {
-      var data = files[index];
-
-      var textElements = item.Query<Text>();
-
-      textElements.AtIndex(0).text = data.Name;
-      textElements.AtIndex(1).text = data.Extension;
-
-
-    }
-
-    private void UnbindItem(VisualElement item, int index)
-    {
-
+      Log.Info("[{logType}]: File browser closed", "USER_INTERFACE");
     }
 
     private void PopulateFileList()

@@ -1,3 +1,4 @@
+using LuciReality.Events;
 using LuciReality.OpenBCI;
 using Unity.AppUI.MVVM;
 using Unity.AppUI.Navigation;
@@ -35,15 +36,20 @@ namespace LuciReality.UI
       // Add services here
       builder.services.AddSingleton<NavigationStoreService>();
       builder.services.AddSingleton<OpenBCIClient>();
+      builder.services.AddSingleton<EventBus>();
 
       // Add ViewModels and Views as services
       builder.services.AddSingleton<CueParametersViewModel>();
       builder.services.AddSingleton<PromptViewModel>();
       builder.services.AddSingleton<CalibrationViewModel>();
+      builder.services.AddSingleton<CuesActiveViewModel>();
 
       builder.services.AddSingleton<MainPage>();
       builder.services.AddSingleton<SettingsWindow>();
       builder.services.AddSingleton<SystemCalibration>();
+      builder.services.AddSingleton<CuesActive>();
+
+      builder.services.AddSingleton<FileBrowser>();
     }
 
     protected override void OnAppShuttingDown(LuciRealityApp app)

@@ -28,7 +28,7 @@ namespace LuciReality.OpenBCI
     public const int MessageTypeLength = 1;
     public event Action Disconnected;
     public event Action Connected;
-    public event Action MessageReceived;
+    public event Action LrSignalDetected;
     public event Action<CalibrationResult> Calibrated;
 
     public static class ObciMessages
@@ -39,6 +39,7 @@ namespace LuciReality.OpenBCI
       public const int EXIT = 3;
       public const int CALIBRATION_RESULT = 4;
       public const int SET_THRESHOLD = 5;
+      public const int LR_SIGNAL_DETECTED = 6;
     }
 
     
@@ -202,6 +203,10 @@ namespace LuciReality.OpenBCI
         case ObciMessages.CALIBRATION_RESULT:
           ReadCalibrationResult(buffer, index + 1);
           messageLength = 1 + CalibrationResult.GetSize(); // Should return where the next message begins
+          break;
+        case ObciMessages.LR_SIGNAL_DETECTED:
+          LrSignalDetected?.Invoke();
+          messageLength = 1;
           break;
         default:
           messageLength = 0;

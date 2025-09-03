@@ -1,9 +1,6 @@
 using System;
 using Unity.AppUI.MVVM;
 using Unity.AppUI.Navigation;
-using UnityEngine;
-using UnityEngine.UIElements;
-
 namespace LuciReality.UI
 {
   [Serializable]

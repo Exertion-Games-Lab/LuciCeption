@@ -117,6 +117,7 @@ namespace LuciReality.UI
 
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
     {
+      Focus();
       // throw new System.NotImplementedException();
     }
 

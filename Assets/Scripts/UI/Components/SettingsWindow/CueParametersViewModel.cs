@@ -117,6 +117,8 @@ namespace LuciReality.UI
       set => SetProperty(_model.Fan.Intensity, value, _model, (u, n) => u.Fan.Intensity = n);
     }
 
+    [ObservableProperty]
+    private string _selectedAudioFile;
 
     // Commands
 
@@ -157,7 +159,8 @@ namespace LuciReality.UI
 
     private void MakeFileBrowser(VisualElement target)
     {
-      var fileBrowser = new FileBrowser();
+      var fileBrowser = LuciRealityApp.current.services.GetService<FileBrowser>();
+
       var modal = Modal.Build(target, fileBrowser)
       .SetKeyboardDismiss(false)
       .SetOutsideClickDismiss(true);
