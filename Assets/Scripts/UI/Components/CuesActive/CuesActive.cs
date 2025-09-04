@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using LuciReality.Audio;
 using LuciReality.Events;
@@ -17,14 +18,18 @@ namespace LuciReality.UI
     public const string className = "luci-reality--cues-active";
     private CuesActiveViewModel viewModel;
 
-    float delaySec = 10;
-    float lerpSec = 10;
-    float betweenAudioClipsSec = 10;
+    float delaySec = 5;
+
+    int cyclesToFull = 5;
+    float cycleSecs = 10;
+
+    float maxVolume = 0.2f;
+
 
     Color startColor = new(0, 0, 0);
     VisualElement visualCue;
 
-    CancellationTokenSource cancelAnimate;
+    CancellationTokenSource cancelCues;
     private EventBus eventBus;
 
 
@@ -56,28 +61,44 @@ namespace LuciReality.UI
     {
       visualCue.style.backgroundColor = startColor;
 
-      cancelAnimate?.Dispose();
-      cancelAnimate = new CancellationTokenSource();
+      cancelCues = new CancellationTokenSource();
+      var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancelCues.Token, Application.exitCancellationToken);
 
-      try
+      var cancelCuesClosure = cancelCues;
+
+      UniTask.RunOnThreadPool(async () =>
       {
-        UniTask.Void(UpdateCues, cancelAnimate.Token);
-      }
-      catch (OperationCanceledException)
-      {
-      }
+        
+        try
+        {
+          await UpdateCues(cancel.Token);
+        }
+        catch
+        {
+
+        }
+        await UniTask.SwitchToMainThread();
+
+        cancelCuesClosure.Dispose();
+        cancel.Dispose();
+      });
+    }
+
+    private void StopCues()
+    {
+      visualCue.style.backgroundColor = startColor;
+      cancelCues.Cancel();
     }
 
     private void PauseCues()
     {
-      visualCue.style.backgroundColor = startColor;
-
+      StopCues();
+      ActivateCues();
     }
 
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
     {
       Focus();
-
       visualCue.style.backgroundColor = startColor;
 
       // eventBus.LrSignalDetected += OnLrSignalDetected;
@@ -86,67 +107,88 @@ namespace LuciReality.UI
       OnLrSignalDetected(); // Debugging
     }
 
-    private async UniTaskVoid UpdateCues(CancellationToken token)
+    private async UniTask UpdateCues(CancellationToken token)
     {
-      Log.Info("[CUES] waiting for {delaySec} seconds before starting cues.", delaySec);
+      Log.Info("[{logType}] waiting for {delaySec} seconds before starting cues.", "CUES", delaySec);
       await UniTask.Delay((int)delaySec * 1000, cancellationToken: token);
-
-      if (token.IsCancellationRequested)
-      {
-        throw new OperationCanceledException();
-      }
 
       try
       {
         await UniTask.WhenAll(
-          UniTask.Create(AnimateVisualCue, token),
-          UniTask.Create(PlayAudio, token));
+          UniTask.Create(FlashVisualCue, token),
+          UniTask.Create(RampAudio, token)
+        );
       }
       catch (OperationCanceledException e)
       {
-        Log.Info("[CUES] force stopping audio clip!");
+        Log.Info("[{logType}] force stopping audio clip!", "CUES");
+        AudioSingleton.Instance.AudioSource.volume = maxVolume;
         AudioSingleton.Instance.AudioSource.Stop();
         throw e;
       }
     }
 
-    private async UniTask AnimateVisualCue(CancellationToken token)
+    private async UniTask FlashVisualCue(CancellationToken token)
     {
       await UniTask.SwitchToMainThread();
-      Log.Info("[CUES] starting cues with interpolation time of {lerpSec}", lerpSec);
+      Log.Info("[{logType}] beginning visual cues.", "CUES");
 
-      float endTime = Time.time + lerpSec;
-      float startTime = Time.time;
+      int cycles = 1;
 
-
-      while (Time.time < endTime)
-      {
-        var interpColor = Color.Lerp(startColor, viewModel.Color, (Time.time - startTime) / (endTime - startTime));
-        visualCue.style.backgroundColor = interpColor;
-        await UniTask.NextFrame(PlayerLoopTiming.Update, token);
-      }
-
-      Log.Info("[CUES] visual cue is now at full intensity.");
-    }
-
-    private async UniTask PlayAudio(CancellationToken token)
-    {
-      await UniTask.SwitchToMainThread();
       while (true)
       {
-        Log.Info("[CUES] playing audio cue clip.");
-        AudioSingleton.Instance.AudioSource.PlayOneShot(viewModel.AudioClip);
-        await UniTask.Delay((int)(betweenAudioClipsSec * 1000), cancellationToken: token);
+
+        float intensity = Math.Min(cycles / (float)cyclesToFull, 1);
+        Color cueColour = Color.Lerp(startColor, viewModel.Color, intensity);
+
+        // on cycle
+        Log.Info("[{logType}] visual cue intensity is now: {intensity}", "CUES", intensity);
+
+        bool active = true;
+        for (int i = 0; i < cycleSecs; i++)
+        {
+          if (active)
+          {
+            visualCue.style.backgroundColor = cueColour;
+          }
+          else
+          {
+            visualCue.style.backgroundColor = startColor;
+          }
+          active = !active;
+          await UniTask.Delay(1000, cancellationToken: token); // 1 second
+        }
+
+        Log.Info("[{logType}] visual cue intensity is now: {intensity}", "CUES", 0);
+        visualCue.style.backgroundColor = startColor;
+        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token); // off cycle
+
+        cycles++;
       }
+    }
+
+    private async UniTask RampAudio(CancellationToken token)
+    {
+      await UniTask.SwitchToMainThread();
+
+      int cycles = 1;
+      while (true)
+      {
+        float volume = Mathf.Lerp(0, maxVolume, cycles / (float)cyclesToFull);
+        Log.Info("[{logType}] playing audio cue clip at volume: {volume}.", "CUES", volume);
+        AudioSingleton.Instance.AudioSource.volume = volume;
+        AudioSingleton.Instance.AudioSource.PlayOneShot(viewModel.AudioClip);
+        await UniTask.Delay((int)(cycleSecs * 2 * 1000), cancellationToken: token);
+        cycles++;
+      }
+
     }
 
     public void OnExit(NavController controller, NavDestination destination, Argument[] args)
     {
       // eventBus.LrSignalDetected -= OnLrSignalDetected;
       // eventBus.MovementDetected -= OnMovementDetected;
-
-      cancelAnimate.Cancel();
-      cancelAnimate = null;
+      StopCues();
     }
   }
 }
