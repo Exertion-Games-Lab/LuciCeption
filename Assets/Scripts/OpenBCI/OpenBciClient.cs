@@ -31,6 +31,8 @@ namespace LuciReality.OpenBCI
     public event Action LrSignalDetected;
     public event Action<CalibrationResult> Calibrated;
 
+    public bool IsConnected { get; private set; }
+
     public static class ObciMessages
     {
       public const int GO_IDLE = 0;
@@ -41,8 +43,6 @@ namespace LuciReality.OpenBCI
       public const int SET_THRESHOLD = 5;
       public const int LR_SIGNAL_DETECTED = 6;
     }
-
-    
 
     // Connection Parameters
     [Range(0, 65535), SerializeField]
@@ -59,6 +59,7 @@ namespace LuciReality.OpenBCI
     {
       Disconnected += OnDisconnected;
       Connected += OnConnected;
+
       Task.Run(Connect);
     }
 
@@ -134,7 +135,6 @@ namespace LuciReality.OpenBCI
     }
 
     // Below are specific messages that can be sent to the EOG Detection server.
-
     public async Task StartCalibration() => await SendMessage(ObciMessages.START_CALIBRATION);
     public async Task EndCalibration() => await SendMessage(ObciMessages.GO_IDLE);
     public async Task StartSystem() => await SendMessage(ObciMessages.GO_ACTIVE);
@@ -246,6 +246,7 @@ namespace LuciReality.OpenBCI
     /// <summary>Called when a disconnection is detected</summary>
     void OnDisconnected()
     {
+      IsConnected = false;
       CurrentState = OpenBciClientState.DISCONNECTED;
       KillClient();
       Log.Info("[OpenBCI] Disconnected from OpenBCI server.");
@@ -262,6 +263,7 @@ namespace LuciReality.OpenBCI
     /// <summary>Called when a connection with the EOG detection server has been established</summary>
     void OnConnected()
     {
+      IsConnected = true;
       // Task.Run(StartCalibration);
     }
     #endregion

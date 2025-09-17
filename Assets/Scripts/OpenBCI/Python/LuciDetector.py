@@ -89,6 +89,7 @@ class Detector:
     """
     Apply bandpass and detrend processing to the left and right channels of the eog_data
     """
+    eog_data = eog_data * 0.04
     DataFilter.perform_bandpass(
       eog_data, self.sampling_rate, 0.5, 15, 4, FilterTypes.BUTTERWORTH.value, 0
     )
@@ -156,6 +157,29 @@ class Detector:
 
     callback(total_left, total_right, int(max_amplitude), int(min_amplitude))
     print("Calibration Finished")
+  
+  def start_detecting(self, detected_callback):
+    self.eog_buffer_left: List[float] = []
+    self.eog_buffer_right: List[float] = []
+    while True:
+      self.retry_connection()
+      time.sleep(1)
+
+      if not self.hasNewData():
+        continue
+    
+      self.update_data(self.get_buffer_size())
+
+      if (not self.should_try_detect()):
+        continue
+      
+      found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect()
+
+      if (found_left and found_right):
+        self.print_logger.print("✅ Both eyes detected LRLRLRLR pattern!")
+        detected_callback()
+      self.write_info(left_eog, detected_left, right_eog, detected_right)
+
 
   def retry_connection(self):
     """
@@ -339,7 +363,7 @@ class CytonDetector(Detector):
 
   def __init__(self):
     self.params = BrainFlowInputParams()
-    self.params.serial_port = "COM6"
+    self.params.serial_port = "COM13"
     self.board_id = BoardIds.CYTON_BOARD.value
     self.setup(self.board_id, self.params)
     

@@ -1,4 +1,3 @@
-using LuciReality.Events;
 using LuciReality.OpenBCI;
 using Unity.AppUI.MVVM;
 using Unity.AppUI.Navigation;
@@ -36,7 +35,6 @@ namespace LuciReality.UI
       // Add services here
       builder.services.AddSingleton<NavigationStoreService>();
       builder.services.AddSingleton<OpenBCIClient>();
-      builder.services.AddSingleton<EventBus>();
 
       // Add ViewModels and Views as services
       builder.services.AddSingleton<CueParametersViewModel>();

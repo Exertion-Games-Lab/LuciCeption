@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using LuciReality.Audio;
-using LuciReality.Events;
+using LuciReality.OpenBCI;
 using Unity.AppUI.Navigation;
 using Unity.Logging;
 using UnityEngine;
@@ -25,18 +25,23 @@ namespace LuciReality.UI
 
     float maxVolume = 0.2f;
 
+    bool cuesActive = false;
+
+    bool startOnConnect = false;
 
     Color startColor = new(0, 0, 0);
     VisualElement visualCue;
 
     CancellationTokenSource cancelCues;
-    private EventBus eventBus;
+    OpenBCIClient openBCIClient;
 
 
-    public CuesActive(CuesActiveViewModel viewModel)
+    public CuesActive(CuesActiveViewModel viewModel, OpenBCIClient openBCIClient)
     {
-      // this.eventBus = eventBus;
+      this.openBCIClient = openBCIClient;
       this.viewModel = viewModel;
+
+      openBCIClient.Connected += OnConnected;
 
       AddToClassList(className);
       var asset = Resources.Load<VisualTreeAsset>(VisualTreeResourcePath);
@@ -59,6 +64,7 @@ namespace LuciReality.UI
 
     private void ActivateCues()
     {
+      if (cuesActive) { return; }
       visualCue.style.backgroundColor = startColor;
 
       cancelCues = new CancellationTokenSource();
@@ -68,7 +74,7 @@ namespace LuciReality.UI
 
       UniTask.RunOnThreadPool(async () =>
       {
-        
+        cuesActive = true;
         try
         {
           await UpdateCues(cancel.Token);
@@ -81,6 +87,7 @@ namespace LuciReality.UI
 
         cancelCuesClosure.Dispose();
         cancel.Dispose();
+        cuesActive = false;
       });
     }
 
@@ -96,16 +103,6 @@ namespace LuciReality.UI
       ActivateCues();
     }
 
-    public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
-    {
-      Focus();
-      visualCue.style.backgroundColor = startColor;
-
-      // eventBus.LrSignalDetected += OnLrSignalDetected;
-      // eventBus.MovementDetected += OnMovementDetected;
-
-      OnLrSignalDetected(); // Debugging
-    }
 
     private async UniTask UpdateCues(CancellationToken token)
     {
@@ -184,11 +181,51 @@ namespace LuciReality.UI
 
     }
 
+    public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
+    {
+      Focus();
+      visualCue.style.backgroundColor = startColor;
+
+      openBCIClient.LrSignalDetected += ActivateCues;
+
+      if (openBCIClient.IsConnected)
+      {
+        UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
+        startOnConnect = false;
+      }
+      else
+      {
+        startOnConnect = true;
+      }
+
+      // eventBus.MovementDetected += OnMovementDetected;
+      // OnLrSignalDetected(); // Debugging
+    }
+
     public void OnExit(NavController controller, NavDestination destination, Argument[] args)
     {
-      // eventBus.LrSignalDetected -= OnLrSignalDetected;
+      startOnConnect = false;
+      if (openBCIClient.IsConnected)
+      {
+        UniTask.RunOnThreadPool(openBCIClient.StopSystem, cancellationToken: Application.exitCancellationToken);
+      }
+
+      openBCIClient.LrSignalDetected -= ActivateCues;
       // eventBus.MovementDetected -= OnMovementDetected;
-      StopCues();
+
+      if (cuesActive)
+      {
+        StopCues();
+      }
+    }
+
+    private void OnConnected()
+    {
+      if (startOnConnect)
+      {
+        UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
+      }
+      startOnConnect = false;
     }
   }
 }

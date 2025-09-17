@@ -12,7 +12,7 @@ import os
 from typing import Any
 import asyncio
 
-from LuciDetector import Detector, SyntheticDetector
+from LuciDetector import CytonDetector, Detector, SyntheticDetector
 
 class UnityClientMessagesTypes(IntEnum):
   GO_IDLE = 0
@@ -21,6 +21,7 @@ class UnityClientMessagesTypes(IntEnum):
   EXIT = 3
   CALIBRATION_RESULT = 4
   SET_THRESHOLD = 5
+  LR_DETECTED = 6
 
 class UnityCommunication:
   """
@@ -75,7 +76,11 @@ class UnityCommunication:
   async def receive_go_active(self):
     if self.is_active or self.is_calibrating: return
     self.is_active = True
+    print("System is ON")
+    # self.detector.perform_calibration(self.calibration_callback)
+    self.detector.start_detecting(self.lr_detected_callback)
     self.is_active = False
+    print("System is OFF")
 
   def receive_go_idle(self):
     pass
@@ -88,6 +93,11 @@ class UnityCommunication:
 
   def calibration_callback(self, left_signals: int, right_signals: int, minAmplitude: int, maxAmplitude: int):
     self.send_calibration_results(left_signals, right_signals, minAmplitude, maxAmplitude)
+
+  def lr_detected_callback(self):
+    msg = bytearray()
+    msg.extend(int(UnityClientMessagesTypes.LR_DETECTED).to_bytes(length=1, signed=True, byteorder='little'))
+    self.conn.send(msg)
 
   def receive_exit(self):
     self.exit = True
@@ -111,7 +121,7 @@ class UnityCommunication:
 
 class LuciController:
   def __init__(self, manager: SyncManager):
-    detector = SyntheticDetector()
+    detector = CytonDetector()
     server = UnityCommunication(detector)
 
 def run():
