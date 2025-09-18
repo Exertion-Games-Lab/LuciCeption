@@ -363,7 +363,7 @@ class CytonDetector(Detector):
 
   def __init__(self):
     self.params = BrainFlowInputParams()
-    self.params.serial_port = "COM13"
+    self.params.serial_port = "COM15"
     self.board_id = BoardIds.CYTON_BOARD.value
     self.setup(self.board_id, self.params)
     
