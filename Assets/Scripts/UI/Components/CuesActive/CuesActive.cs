@@ -9,6 +9,7 @@ using Unity.AppUI.Navigation;
 using Unity.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Networking;
 
 namespace LuciReality.UI
 {
@@ -35,6 +36,24 @@ namespace LuciReality.UI
     CancellationTokenSource cancelCues;
     OpenBCIClient openBCIClient;
 
+
+    const string ip = "192.168.1.183";
+    private string thermalModuleCommand(string mode, int intensity)
+    {
+      return $"http://{ip}/configure?mode={mode}&intensity={intensity}";
+    }
+
+    private async UniTask setThermalCue(string mode, int intensity)
+    {
+      UnityWebRequest request = UnityWebRequest.Get($"http://{ip}/configure?mode={mode}&intensity={intensity}");
+      await request.SendWebRequest();
+    }
+
+    private async UniTask setFanCue(int speed)
+    {
+      UnityWebRequest request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_intensity_{speed}/with/key/88IAzsMm2FG355HNDbZjq");
+      await request.SendWebRequest();
+    }
 
     public CuesActive(CuesActiveViewModel viewModel, OpenBCIClient openBCIClient)
     {
@@ -113,7 +132,9 @@ namespace LuciReality.UI
       {
         await UniTask.WhenAll(
           UniTask.Create(FlashVisualCue, token),
-          UniTask.Create(RampAudio, token)
+          UniTask.Create(RampAudio, token),
+          UniTask.Create(ThermalCue, token),
+          UniTask.Create(FanCue, token)
         );
       }
       catch (OperationCanceledException e)
@@ -121,7 +142,61 @@ namespace LuciReality.UI
         Log.Info("[{logType}] force stopping audio clip!", "CUES");
         AudioSingleton.Instance.AudioSource.volume = maxVolume;
         AudioSingleton.Instance.AudioSource.Stop();
+
+        Log.Info("[{logType}] force stopping thermal cue!", "CUES");
+        await setThermalCue("off", 0);
+
+        Log.Info("[{logType}] force stopping fan cue!", "CUES");
+        await setFanCue(1);
+
         throw e;
+      }
+    }
+
+    private async UniTask ThermalCue(CancellationToken token)
+    {
+      await UniTask.SwitchToMainThread();
+      Log.Info("[{logType}] beginning thermal cues.", "CUES");
+
+      int cycles = 1;
+
+      while (true)
+      {
+        string mode = "cool";
+        int intensity = (int)Mathf.Lerp(0, 255, cycles / (float)cyclesToFull);
+
+        await setThermalCue(mode, intensity);
+        Log.Info("[{logType}] thermal cue intensity is now: {intensity} with {mode}", "CUES", intensity, mode);
+        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
+
+        await setThermalCue("off", 0);
+        Log.Info("[{logType}] thermal cue intensity is now: {intensity} with {mode}", "CUES", 0, "off");
+        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
+
+        cycles++;
+      }
+    }
+
+    private async UniTask FanCue(CancellationToken token)
+    {
+      await UniTask.SwitchToMainThread();
+      Log.Info("[{logType}] beginning fan cue.", "CUES");
+
+      int cycles = 1;
+
+      while (true)
+      {
+        int intensity = (int)Mathf.Lerp(1, 9, cycles / (float)cyclesToFull);
+
+        await setFanCue(intensity);
+        Log.Info("[{logType}] fan cue intensity is now: {intensity}", "CUES", intensity);
+        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
+
+        await setFanCue(1);
+        Log.Info("[{logType}] fan cue intensity is now: {intensity}", "CUES", 1);
+        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
+
+        cycles++;
       }
     }
 
@@ -134,7 +209,6 @@ namespace LuciReality.UI
 
       while (true)
       {
-
         float intensity = Math.Min(cycles / (float)cyclesToFull, 1);
         Color cueColour = Color.Lerp(startColor, viewModel.Color, intensity);
 
@@ -186,20 +260,20 @@ namespace LuciReality.UI
       Focus();
       visualCue.style.backgroundColor = startColor;
 
-      openBCIClient.LrSignalDetected += ActivateCues;
+      // openBCIClient.LrSignalDetected += ActivateCues;
 
-      if (openBCIClient.IsConnected)
-      {
-        UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
-        startOnConnect = false;
-      }
-      else
-      {
-        startOnConnect = true;
-      }
+      // if (openBCIClient.IsConnected)
+      // {
+      //   UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
+      //   startOnConnect = false;
+      // }
+      // else
+      // {
+      //   startOnConnect = true;
+      // }
 
       // eventBus.MovementDetected += OnMovementDetected;
-      // OnLrSignalDetected(); // Debugging
+      OnLrSignalDetected(); // Debugging
     }
 
     public void OnExit(NavController controller, NavDestination destination, Argument[] args)
