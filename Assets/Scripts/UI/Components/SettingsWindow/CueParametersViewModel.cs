@@ -35,6 +35,9 @@ namespace LuciReality.UI
     [AlsoNotifyChangeFor(nameof(EmsIntensity))]
     [AlsoNotifyChangeFor(nameof(FanEnabled))]
     [AlsoNotifyChangeFor(nameof(FanIntensity))]
+    [AlsoNotifyChangeFor(nameof(ThermalEnabled))]
+    [AlsoNotifyChangeFor(nameof(ThermalIntensity))]
+    [AlsoNotifyChangeFor(nameof(ThermalMode))]
     private CueParametersModel _model = new();
 
     [CreateProperty]
@@ -115,6 +118,32 @@ namespace LuciReality.UI
     {
       get => _model.Fan.Intensity;
       set => SetProperty(_model.Fan.Intensity, value, _model, (u, n) => u.Fan.Intensity = n);
+    }
+
+    [CreateProperty]
+    public bool ThermalEnabled
+    {
+      get => _model.Thermal.Enabled;
+      set => SetProperty(_model.Thermal.Enabled, value, _model, (u, n) => u.Thermal.Enabled = n);
+    }
+
+    [CreateProperty]
+    public float ThermalIntensity
+    {
+      get => _model.Thermal.Intensity;
+      set => SetProperty(_model.Thermal.Intensity, value, _model, (u, n) => u.Thermal.Intensity = n);
+    }
+
+    [CreateProperty]
+    public string ThermalMode
+    {
+      get => _model.Thermal.Mode;
+      set => SetProperty(_model.Thermal.Mode, value, _model, (u, n) => u.Thermal.Mode = n);
+    }
+
+    public void SetThermalModeWithoutNotify(string mode)
+    {
+      _model.Thermal.Mode = mode;
     }
 
     [ObservableProperty]

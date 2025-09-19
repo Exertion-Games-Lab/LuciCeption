@@ -107,9 +107,24 @@ namespace LuciReality.Prompt
   public class Light
   {
     public bool Enabled;
+    public Colour Colour;
     public double Intensity;
   }
-  
+
+  public class Thermal
+  {
+    public bool Enabled;
+    public double Intensity;
+  }
+
+  [Serializable]
+  public class Colour
+  {
+    public double Red;
+    public double Blue;
+    public double Green;
+  }
+
   [Serializable]
   public class SystemParameters
   {
@@ -118,5 +133,6 @@ namespace LuciReality.Prompt
     public EMS EMS;
     public Fan Fan;
     public Light Light;
+    public Thermal Thermal;
   }
 }

@@ -16,6 +16,7 @@ namespace LuciReality
       Lra = new();
       Ems = new();
       Fan = new();
+      Thermal = new();
     }
 
     public string ReasoningText;
@@ -24,6 +25,7 @@ namespace LuciReality
     [JsonProperty("LRA")] public LraParameters Lra;
     [JsonProperty("EMS")] public EmsParameters Ems;
     [JsonProperty("Fan")] public FanParameters Fan;
+    [JsonProperty("Thermal")] public ThermalParameters Thermal;
   }
 
   [System.Serializable]
@@ -36,7 +38,7 @@ namespace LuciReality
   public class AudioParameters
   {
     public bool Enabled;
-    [JsonProperty("Intensity")] [Range(0, 1)] public float Volume;
+    [JsonProperty("Intensity")][Range(0, 1)] public float Volume;
   }
 
   [System.Serializable]
@@ -72,6 +74,14 @@ namespace LuciReality
   [System.Serializable]
   public class FanParameters
   {
+    public bool Enabled;
+    [Range(0, 1)] public float Intensity;
+  }
+
+  [System.Serializable]
+  public class ThermalParameters
+  {
+    public string Mode = "cool";
     public bool Enabled;
     [Range(0, 1)] public float Intensity;
   }

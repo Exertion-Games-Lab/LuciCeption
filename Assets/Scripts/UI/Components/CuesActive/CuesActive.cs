@@ -15,6 +15,10 @@ namespace LuciReality.UI
 {
   public class CuesActive : VisualElement, INavigationScreen
   {
+    public static readonly bool IsDebugging = true; // use the LR signal to activate
+    public static readonly bool UseApis = false; // send network requests
+    public static readonly bool UseSettings = true; // use the cue settings the user has selected
+
     public const string VisualTreeResourcePath = "CuesActive";
     public const string className = "luci-reality--cues-active";
     private CuesActiveViewModel viewModel;
@@ -36,25 +40,6 @@ namespace LuciReality.UI
     CancellationTokenSource cancelCues;
     OpenBCIClient openBCIClient;
 
-
-    const string ip = "192.168.1.183";
-    private string thermalModuleCommand(string mode, int intensity)
-    {
-      return $"http://{ip}/configure?mode={mode}&intensity={intensity}";
-    }
-
-    private async UniTask setThermalCue(string mode, int intensity)
-    {
-      UnityWebRequest request = UnityWebRequest.Get($"http://{ip}/configure?mode={mode}&intensity={intensity}");
-      await request.SendWebRequest();
-    }
-
-    private async UniTask setFanCue(int speed)
-    {
-      UnityWebRequest request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_intensity_{speed}/with/key/88IAzsMm2FG355HNDbZjq");
-      await request.SendWebRequest();
-    }
-
     public CuesActive(CuesActiveViewModel viewModel, OpenBCIClient openBCIClient)
     {
       this.openBCIClient = openBCIClient;
@@ -69,17 +54,6 @@ namespace LuciReality.UI
       visualCue = this.Q<VisualElement>("visual-cue-element");
       visualCue.dataSource = viewModel;
     }
-
-    private void OnLrSignalDetected()
-    {
-      ActivateCues();
-    }
-
-    private void OnMovementDetected()
-    {
-      PauseCues();
-    }
-
 
     private void ActivateCues()
     {
@@ -122,7 +96,7 @@ namespace LuciReality.UI
       ActivateCues();
     }
 
-
+    #region CUE UPDATES
     private async UniTask UpdateCues(CancellationToken token)
     {
       Log.Info("[{logType}] waiting for {delaySec} seconds before starting cues.", "CUES", delaySec);
@@ -139,15 +113,15 @@ namespace LuciReality.UI
       }
       catch (OperationCanceledException e)
       {
-        Log.Info("[{logType}] force stopping audio clip!", "CUES");
+        Log.Info("[{logType}] force stopping all cues!", "CUES");
+
+        await UniTask.WhenAll(
+          viewModel.SetThermalCue(false, 0, CancellationToken.None),
+          viewModel.SetFanCue(1, CancellationToken.None)
+        );
+
         AudioSingleton.Instance.AudioSource.volume = maxVolume;
         AudioSingleton.Instance.AudioSource.Stop();
-
-        Log.Info("[{logType}] force stopping thermal cue!", "CUES");
-        await setThermalCue("off", 0);
-
-        Log.Info("[{logType}] force stopping fan cue!", "CUES");
-        await setFanCue(1);
 
         throw e;
       }
@@ -156,22 +130,24 @@ namespace LuciReality.UI
     private async UniTask ThermalCue(CancellationToken token)
     {
       await UniTask.SwitchToMainThread();
+      if (!viewModel.ThermalCueActive()) { return; }
       Log.Info("[{logType}] beginning thermal cues.", "CUES");
 
       int cycles = 1;
 
       while (true)
       {
-        string mode = "cool";
         int intensity = (int)Mathf.Lerp(0, 255, cycles / (float)cyclesToFull);
 
-        await setThermalCue(mode, intensity);
-        Log.Info("[{logType}] thermal cue intensity is now: {intensity} with {mode}", "CUES", intensity, mode);
-        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
+        await UniTask.WhenAll(
+          viewModel.SetThermalCue(true, intensity, token),
+          UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token)
+        );
 
-        await setThermalCue("off", 0);
-        Log.Info("[{logType}] thermal cue intensity is now: {intensity} with {mode}", "CUES", 0, "off");
-        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
+        await UniTask.WhenAll(
+          viewModel.SetThermalCue(false, 0, token),
+          UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token)
+        );
 
         cycles++;
       }
@@ -180,6 +156,7 @@ namespace LuciReality.UI
     private async UniTask FanCue(CancellationToken token)
     {
       await UniTask.SwitchToMainThread();
+      if (!viewModel.FanCueActive()) { return; }
       Log.Info("[{logType}] beginning fan cue.", "CUES");
 
       int cycles = 1;
@@ -188,12 +165,10 @@ namespace LuciReality.UI
       {
         int intensity = (int)Mathf.Lerp(1, 9, cycles / (float)cyclesToFull);
 
-        await setFanCue(intensity);
-        Log.Info("[{logType}] fan cue intensity is now: {intensity}", "CUES", intensity);
+        await viewModel.SetFanCue(intensity, token);
         await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
 
-        await setFanCue(1);
-        Log.Info("[{logType}] fan cue intensity is now: {intensity}", "CUES", 1);
+        await viewModel.SetFanCue(0, token);
         await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
 
         cycles++;
@@ -203,6 +178,7 @@ namespace LuciReality.UI
     private async UniTask FlashVisualCue(CancellationToken token)
     {
       await UniTask.SwitchToMainThread();
+      if (!viewModel.VisualCueActive()) { return; }
       Log.Info("[{logType}] beginning visual cues.", "CUES");
 
       int cycles = 1;
@@ -213,14 +189,14 @@ namespace LuciReality.UI
         Color cueColour = Color.Lerp(startColor, viewModel.Color, intensity);
 
         // on cycle
-        Log.Info("[{logType}] visual cue intensity is now: {intensity}", "CUES", intensity);
+        Log.Info("[{logType}] visual cue intensity is now: {intensity}", "CUES", intensity * viewModel.VisualCueIntensity());
 
         bool active = true;
         for (int i = 0; i < cycleSecs; i++)
         {
           if (active)
           {
-            visualCue.style.backgroundColor = cueColour;
+            visualCue.style.backgroundColor = viewModel.GetScaledColour(cueColour);
           }
           else
           {
@@ -241,56 +217,67 @@ namespace LuciReality.UI
     private async UniTask RampAudio(CancellationToken token)
     {
       await UniTask.SwitchToMainThread();
+      if (!viewModel.AuditoryCueActive()) { return; }
+      Log.Info("[{logType}] beginning auditory cues.", "CUES");
 
       int cycles = 1;
       while (true)
       {
         float volume = Mathf.Lerp(0, maxVolume, cycles / (float)cyclesToFull);
-        Log.Info("[{logType}] playing audio cue clip at volume: {volume}.", "CUES", volume);
-        AudioSingleton.Instance.AudioSource.volume = volume;
-        AudioSingleton.Instance.AudioSource.PlayOneShot(viewModel.AudioClip);
+        viewModel.PlayAudio(volume);
         await UniTask.Delay((int)(cycleSecs * 2 * 1000), cancellationToken: token);
         cycles++;
       }
-
     }
+    #endregion
 
+    #region CALLBACKS
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
     {
       Focus();
       visualCue.style.backgroundColor = startColor;
 
-      // openBCIClient.LrSignalDetected += ActivateCues;
+      if (CuesActive.IsDebugging)
+      {
+        OnLrSignalDetected();
+        return;
+      }
 
-      // if (openBCIClient.IsConnected)
-      // {
-      //   UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
-      //   startOnConnect = false;
-      // }
-      // else
-      // {
-      //   startOnConnect = true;
-      // }
-
-      // eventBus.MovementDetected += OnMovementDetected;
-      OnLrSignalDetected(); // Debugging
+      openBCIClient.LrSignalDetected += ActivateCues;
+      if (openBCIClient.IsConnected)
+      {
+        UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
+        startOnConnect = false;
+      }
+      else
+      {
+        startOnConnect = true;
+      }
     }
 
     public void OnExit(NavController controller, NavDestination destination, Argument[] args)
     {
       startOnConnect = false;
-      if (openBCIClient.IsConnected)
-      {
-        UniTask.RunOnThreadPool(openBCIClient.StopSystem, cancellationToken: Application.exitCancellationToken);
-      }
 
-      openBCIClient.LrSignalDetected -= ActivateCues;
-      // eventBus.MovementDetected -= OnMovementDetected;
+      if (!IsDebugging)
+      {
+        if (openBCIClient.IsConnected)
+        {
+          UniTask.RunOnThreadPool(openBCIClient.StopSystem, cancellationToken: Application.exitCancellationToken);
+        }
+
+        openBCIClient.LrSignalDetected -= ActivateCues;
+      }
 
       if (cuesActive)
       {
         StopCues();
       }
+    }
+
+    private void OnLrSignalDetected()
+    {
+      ActivateCues();
     }
 
     private void OnConnected()
@@ -302,4 +289,5 @@ namespace LuciReality.UI
       startOnConnect = false;
     }
   }
+  #endregion
 }

@@ -64,7 +64,7 @@
               </appui:ExVisualElement>
           </ui:VisualElement>
           <ui:VisualElement class="cue-module-row">
-              <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
+              <!-- <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
                   <appui:Heading text="Haptic Vibrations" size="s" />
                   <appui:InputLabel direction="Horizontal" label="Intensity">
                       <appui:SliderFloat name="lra-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
@@ -72,6 +72,20 @@
                   <ui:VisualElement style="flex-grow: 1;" />
                   <appui:InputLabel label="Enabled">
                       <appui:Toggle name="lra-cue-enabled" class="cue-module-toggle" />
+                  </appui:InputLabel>
+              </appui:ExVisualElement> -->
+              <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
+                  <appui:Heading text="Thermal" size="s" />
+                  <appui:ActionGroup selection-type="Single" allow-no-selection="false" justified="true" compact="true" name="thermal-mode-selector">
+                      <appui:ActionButton label="Cold" />
+                      <appui:ActionButton label="Hot" />
+                  </appui:ActionGroup>
+                  <appui:InputLabel direction="Horizontal" label="Intensity">
+                      <appui:SliderFloat name="thermal-cue-intensity" size="S" filled="true" tick-count="10" inline-value="End" low-value="0" high-value="1" value="0" track="On" />
+                  </appui:InputLabel>
+                  <ui:VisualElement style="flex-grow: 1;" />
+                  <appui:InputLabel label="Enabled">
+                      <appui:Toggle name="thermal-cue-enabled" class="cue-module-toggle" />
                   </appui:InputLabel>
               </appui:ExVisualElement>
               <appui:ExVisualElement class="cue-settings-card cue-settings-card-right">
@@ -85,7 +99,7 @@
                   </appui:InputLabel>
               </appui:ExVisualElement>
           </ui:VisualElement>
-          <ui:VisualElement class="cue-module-row">
+          <!-- <ui:VisualElement class="cue-module-row">
               <appui:ExVisualElement class="cue-settings-card cue-settings-card-left">
                   <appui:Heading text="EMS" size="s" />
                   <appui:InputLabel direction="Horizontal" label="Intensity">
@@ -96,18 +110,7 @@
                       <appui:Toggle name="ems-cue-enabled" class="cue-module-toggle" />
                   </appui:InputLabel>
               </appui:ExVisualElement>
-              <appui:ExVisualElement class="cue-settings-card cue-settings-card-right">
-                  <appui:Heading text="Olfactory" size="s" />
-                  <appui:ActionGroup selection-type="Single" justified="true" compact="true">
-                      <appui:ActionButton label="Pleasant" />
-                      <appui:ActionButton label="Unpleasant" />
-                  </appui:ActionGroup>
-                  <ui:VisualElement style="flex-grow: 1;" />
-                  <appui:InputLabel label="Enabled">
-                      <appui:Toggle name="olfactory-cue-enabled" class="cue-module-toggle" />
-                  </appui:InputLabel>
-              </appui:ExVisualElement>
-          </ui:VisualElement>
+          </ui:VisualElement> -->
           <ui:VisualElement class="cue-module-row">
             <appui:ExVisualElement class="cue-settings-card cue-settings-card-left" style="flex-grow: 1;">
                 <appui:Heading text="System" size="s" />
@@ -121,7 +124,7 @@
                 </appui:ActionGroup>
                 <appui:ActionGroup>
                     <appui:Button name="start-system-button" title="Start System" variant="Accent" />
-                    <appui:Button title="Test Cues" />
+                    <appui:Button name="test-cues-button" title="Test Cues" />
                 </appui:ActionGroup>
             </appui:ExVisualElement>
             <appui:ExVisualElement class="cue-settings-card cue-settings-card-right" style="flex-grow: 1;">

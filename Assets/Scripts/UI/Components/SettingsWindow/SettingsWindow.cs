@@ -49,6 +49,14 @@ namespace LuciReality.UI
 
     private void SetupActions()
     {
+      var testCues = this.Q<Unity.AppUI.UI.Button>("test-cues-button");
+      testCues.clicked += () =>
+      {
+        string mode = cueParametersViewModel.ThermalMode == "cool" ? "hot" : "cool";
+        cueParametersViewModel.ThermalMode = mode;
+      };
+
+
       var promptPane = this.Query<Pane>().First();
       var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
       imageFromPrompt.clicked += async () =>
@@ -227,29 +235,29 @@ namespace LuciReality.UI
         Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", audioCueEnabled.name, evt.previousValue, evt.newValue);
       });
 
-      var lraCueIntensity = this.Q<SliderFloat>("lra-cue-intensity");
-      var lraCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("lra-cue-enabled");
-      lraCueIntensity.RegisterValueChangedCallback((evt) =>
-      {
-        UpdateToggleForSlider(evt, lraCueEnabled);
-        Log.Info("[{logType}]: The user set {sliderName} from {previousValue} to {newValue}", "USER_INTERFACE", lraCueIntensity.name, evt.previousValue, evt.newValue);
-      });
-      lraCueEnabled.RegisterValueChangedCallback((evt) =>
-      {
-        Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", lraCueEnabled.name, evt.previousValue, evt.newValue);
-      });
+      // var lraCueIntensity = this.Q<SliderFloat>("lra-cue-intensity");
+      // var lraCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("lra-cue-enabled");
+      // lraCueIntensity.RegisterValueChangedCallback((evt) =>
+      // {
+      //   UpdateToggleForSlider(evt, lraCueEnabled);
+      //   Log.Info("[{logType}]: The user set {sliderName} from {previousValue} to {newValue}", "USER_INTERFACE", lraCueIntensity.name, evt.previousValue, evt.newValue);
+      // });
+      // lraCueEnabled.RegisterValueChangedCallback((evt) =>
+      // {
+      //   Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", lraCueEnabled.name, evt.previousValue, evt.newValue);
+      // });
 
-      var emsCueIntensity = this.Q<SliderFloat>("ems-cue-intensity");
-      var emsCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("ems-cue-enabled");
-      emsCueIntensity.RegisterValueChangedCallback((evt) =>
-      {
-        UpdateToggleForSlider(evt, emsCueEnabled);
-        Log.Info("[{logType}]: The user set {sliderName} from {previousValue} to {newValue}", "USER_INTERFACE", emsCueIntensity.name, evt.previousValue, evt.newValue);
-      });
-      emsCueEnabled.RegisterValueChangedCallback((evt) =>
-      {
-        Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", emsCueEnabled.name, evt.previousValue, evt.newValue);
-      });
+      // var emsCueIntensity = this.Q<SliderFloat>("ems-cue-intensity");
+      // var emsCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("ems-cue-enabled");
+      // emsCueIntensity.RegisterValueChangedCallback((evt) =>
+      // {
+      //   UpdateToggleForSlider(evt, emsCueEnabled);
+      //   Log.Info("[{logType}]: The user set {sliderName} from {previousValue} to {newValue}", "USER_INTERFACE", emsCueIntensity.name, evt.previousValue, evt.newValue);
+      // });
+      // emsCueEnabled.RegisterValueChangedCallback((evt) =>
+      // {
+      //   Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", emsCueEnabled.name, evt.previousValue, evt.newValue);
+      // });
 
       var fanCueIntensity = this.Q<SliderFloat>("fan-cue-intensity");
       var fanCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("fan-cue-enabled");
@@ -261,6 +269,18 @@ namespace LuciReality.UI
       fanCueEnabled.RegisterValueChangedCallback((evt) =>
       {
         Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", fanCueEnabled.name, evt.previousValue, evt.newValue);
+      });
+
+      var thermalCueIntensity = this.Q<SliderFloat>("thermal-cue-intensity");
+      var thermalCueEnabled = this.Q<Unity.AppUI.UI.Toggle>("thermal-cue-enabled");
+      thermalCueIntensity.RegisterValueChangedCallback((evt) =>
+      {
+        UpdateToggleForSlider(evt, thermalCueEnabled);
+        Log.Info("[{logType}]: The user set {sliderName} from {previousValue} to {newValue}", "USER_INTERFACE", thermalCueIntensity.name, evt.previousValue, evt.newValue);
+      });
+      thermalCueEnabled.RegisterValueChangedCallback((evt) =>
+      {
+        Log.Info("[{logType}]: The user set {toggleName} from {previousValue} to {newValue}", "USER_INTERFACE", thermalCueEnabled.name, evt.previousValue, evt.newValue);
       });
     }
 
@@ -304,10 +324,34 @@ namespace LuciReality.UI
         bindingMode = BindingMode.ToTarget,
       });
 
+
       CreateEnabledBindings(promptPane);
 
       var cuePane = this.Query<Pane>().AtIndex(1);
       cuePane.dataSource = cueParametersViewModel;
+
+      var thermalModeSelector = cuePane.Q<ActionGroup>("thermal-mode-selector");
+
+      thermalModeSelector.selectionChanged += (IEnumerable<int> selection) =>
+      {
+        var list = selection.ToList();
+        var mode = list[0] == 0 ? "cool" : "hot";
+        cueParametersViewModel.SetThermalModeWithoutNotify(mode);
+        Log.Info("[{logType}]: The user set {selectorName} to {newValue}", "USER_INTERFACE", thermalModeSelector.name, mode);
+      };
+
+      cueParametersViewModel.PropertyChanged += (a, b) =>
+      {
+        if (b.PropertyName != nameof(cueParametersViewModel.ThermalMode)) { return; }
+        var mode = (a as CueParametersViewModel).ThermalMode;
+
+        int[] Cool = new int[] { 0 };
+        int[] Hot = new int[] { 1 };
+
+        thermalModeSelector.SetSelectionWithoutNotify(mode == "cool" ? Cool : Hot);
+      };
+
+      // thermalModeSelector.
 
       CreateProgressIndicatorBindings(promptPane, cuePane);
 
@@ -318,9 +362,10 @@ namespace LuciReality.UI
         {
           (cuePane.Q<Unity.AppUI.UI.Toggle>("visual-cue-enabled"), nameof(CueParametersViewModel.LightsEnabled)),
           (cuePane.Q<Unity.AppUI.UI.Toggle>("audio-cue-enabled"), nameof(CueParametersViewModel.AudioEnabled)),
-          (cuePane.Q<Unity.AppUI.UI.Toggle>("lra-cue-enabled"), nameof(CueParametersViewModel.LraEnabled)),
-          (cuePane.Q<Unity.AppUI.UI.Toggle>("ems-cue-enabled"), nameof(CueParametersViewModel.EmsEnabled)),
+          // (cuePane.Q<Unity.AppUI.UI.Toggle>("lra-cue-enabled"), nameof(CueParametersViewModel.LraEnabled)),
+          // (cuePane.Q<Unity.AppUI.UI.Toggle>("ems-cue-enabled"), nameof(CueParametersViewModel.EmsEnabled)),
           (cuePane.Q<Unity.AppUI.UI.Toggle>("fan-cue-enabled"), nameof(CueParametersViewModel.FanEnabled)),
+          (cuePane.Q<Unity.AppUI.UI.Toggle>("thermal-cue-enabled"), nameof(CueParametersViewModel.ThermalEnabled)),
         }
       );
 
@@ -329,9 +374,10 @@ namespace LuciReality.UI
         {
           (cuePane.Q<SliderFloat>("visual-cue-intensity"), nameof(CueParametersViewModel.LightsIntensity)),
           (cuePane.Q<SliderFloat>("audio-cue-volume"), nameof(CueParametersViewModel.AudioVolume)),
-          (cuePane.Q<SliderFloat>("lra-cue-intensity"), nameof(CueParametersViewModel.LraIntensity)),
-          (cuePane.Q<SliderFloat>("ems-cue-intensity"), nameof(CueParametersViewModel.EmsIntensity)),
+          // (cuePane.Q<SliderFloat>("lra-cue-intensity"), nameof(CueParametersViewModel.LraIntensity)),
+          // (cuePane.Q<SliderFloat>("ems-cue-intensity"), nameof(CueParametersViewModel.EmsIntensity)),
           (cuePane.Q<SliderFloat>("fan-cue-intensity"), nameof(CueParametersViewModel.FanIntensity)),
+          (cuePane.Q<SliderFloat>("thermal-cue-intensity"), nameof(CueParametersViewModel.ThermalIntensity)),
         }
       );
 
