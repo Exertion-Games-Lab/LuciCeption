@@ -11,17 +11,8 @@ import time
 import os
 from typing import Any
 import asyncio
-
+from UnityMessageEnums import UnityClientMessagesTypes
 from LuciDetector import CytonDetector, Detector, SyntheticDetector
-
-class UnityClientMessagesTypes(IntEnum):
-  GO_IDLE = 0
-  START_CALIBRATION = 1
-  GO_ACTIVE = 2
-  EXIT = 3
-  CALIBRATION_RESULT = 4
-  SET_THRESHOLD = 5
-  LR_DETECTED = 6
 
 class UnityCommunication:
   """
@@ -63,6 +54,13 @@ class UnityCommunication:
       self.process_message(conn, data)
 
     conn.close()
+
+  # TODO: These should automatically handle a detected disconnection.
+  def receive_data(self, size: int):
+    pass
+
+  def send_data(self):
+    pass
 
   def process_message(self, conn: socket.socket, message: UnityClientMessagesTypes):
     if message == UnityClientMessagesTypes.GO_ACTIVE: asyncio.run(self.receive_go_active())

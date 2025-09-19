@@ -51,8 +51,6 @@ def update_plots(ax, min_bandpass, max_bandpass, vertical, horizontal, line_vert
   line_vertical.set_ydata(v)
   line_horizontal.set_ydata(h)
 
-  v_peaks, _ = sig.find_peaks(v, height = 5, distance = fs * 0.1)
-
   v_low_smooth = uniform_filter1d((abs(v) < 10).astype(float), size=int(fs * 0.5))
   valid_region_mask = v_low_smooth > 0.99
   valid_region_mask = binary_dilation(valid_region_mask, iterations=10)
@@ -72,10 +70,10 @@ class TestPlots:
   def __init__(self):
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    left_samples = np.genfromtxt(os.path.join(current_dir, "results/left.csv"), delimiter=",")
-    right_samples = np.genfromtxt(os.path.join(current_dir, "results/right.csv"), delimiter=",")
-    up_samples = np.genfromtxt(os.path.join(current_dir, "results/up.csv"), delimiter=",")
-    down_samples = np.genfromtxt(os.path.join(current_dir, "results/down.csv"), delimiter=",")
+    left_samples = np.genfromtxt(os.path.join(current_dir, "left.csv"), delimiter=",")
+    right_samples = np.genfromtxt(os.path.join(current_dir, "right.csv"), delimiter=",")
+    up_samples = np.genfromtxt(os.path.join(current_dir, "up.csv"), delimiter=",")
+    down_samples = np.genfromtxt(os.path.join(current_dir, "down.csv"), delimiter=",")
 
     horizontal = (left_samples - right_samples) * 0.04
     vertical = (up_samples - down_samples) * 0.04
