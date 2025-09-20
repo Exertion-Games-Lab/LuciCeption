@@ -49,9 +49,9 @@ namespace LuciReality
 
     // Allow for deserialisation but not serialisation
     [JsonProperty("Colour")]
-    private Color ColourSetter
+    private ColourParams ColourSetter
     {
-      set { Colour = value; }
+      set { Colour = new Color(value.Red, value.Blue, value.Green); }
     }
 
     [Range(0, 1)] public float Intensity;
@@ -84,5 +84,13 @@ namespace LuciReality
     public string Mode = "cool";
     public bool Enabled;
     [Range(0, 1)] public float Intensity;
+  }
+
+  [System.Serializable]
+  public class ColourParams
+  {
+    public float Red;
+    public float Green;
+    public float Blue;
   }
 }

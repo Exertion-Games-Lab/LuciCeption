@@ -8,13 +8,33 @@
           "type": "boolean"
         },
         "Intensity": {
-          "type": "number"
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "Colour": {
+          "type": "object",
+          "properties": {
+            "Red": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "Green": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "Blue": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": ["Red", "Green", "Blue"]
         }
       },
-      "required": [
-        "Enabled",
-        "Intensity"
-      ]
+      "required": ["Enabled", "Intensity", "Colour"]
     },
     "Audio": {
       "type": "object",
@@ -23,43 +43,30 @@
           "type": "boolean"
         },
         "Intensity": {
-          "type": "number"
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       },
-      "required": [
-        "Enabled",
-        "Intensity"
-      ]
+      "required": ["Enabled", "Intensity"]
     },
-    "EMS": {
+    "Thermal": {
       "type": "object",
       "properties": {
         "Enabled": {
           "type": "boolean"
         },
         "Intensity": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "Enabled",
-        "Intensity"
-      ]
-    },
-    "LRA": {
-      "type": "object",
-      "properties": {
-        "Enabled": {
-          "type": "boolean"
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         },
-        "Intensity": {
-          "type": "number"
+        "Mode": {
+          "type": "string",
+          "enum": ["cool", "hot"]
         }
       },
-      "required": [
-        "Enabled",
-        "Intensity"
-      ]
+      "required": ["Enabled", "Intensity", "Mode"]
     },
     "Fan": {
       "type": "object",
@@ -68,20 +75,13 @@
           "type": "boolean"
         },
         "Intensity": {
-          "type": "number"
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       },
-      "required": [
-        "Enabled",
-        "Intensity"
-      ]
+      "required": ["Enabled", "Intensity"]
     }
   },
-  "required": [
-    "Light",
-    "Audio",
-    "EMS",
-    "LRA",
-    "Fan"
-  ]
+  "required": ["Light", "Audio", "Thermal", "Fan"]
 }
