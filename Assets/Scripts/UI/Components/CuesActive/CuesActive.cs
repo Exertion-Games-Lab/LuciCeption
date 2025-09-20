@@ -27,23 +27,30 @@ namespace LuciReality.UI
 
     int cyclesToFull = 5;
     float cycleSecs = 10;
-
-    float maxVolume = 0.2f;
-
     bool cuesActive = false;
-
     bool startOnConnect = false;
 
-    Color startColor = new(0, 0, 0);
-    VisualElement visualCue;
+    int activationsCount = 0;
 
+    Color startColor = new(0, 0, 0);
+    VisualElement visualCueUiElement;
     CancellationTokenSource cancelCues;
     OpenBCIClient openBCIClient;
+    AuditoryCueLogic auditoryCue;
+    VisualCueLogic visualCue;
+    ThermalCueLogic thermalCueLogic;
+    FanCueLogic fanCueLogic;
+
 
     public CuesActive(CuesActiveViewModel viewModel, OpenBCIClient openBCIClient)
     {
       this.openBCIClient = openBCIClient;
       this.viewModel = viewModel;
+
+      auditoryCue = new AuditoryCueLogic();
+      visualCue = new VisualCueLogic();
+      thermalCueLogic = new ThermalCueLogic();
+      fanCueLogic = new FanCueLogic();
 
       openBCIClient.Connected += OnConnected;
 
@@ -51,50 +58,65 @@ namespace LuciReality.UI
       var asset = Resources.Load<VisualTreeAsset>(VisualTreeResourcePath);
       asset.CloneTree(this);
 
-      visualCue = this.Q<VisualElement>("visual-cue-element");
-      visualCue.dataSource = viewModel;
+      visualCueUiElement = this.Q<VisualElement>("visual-cue-element");
+      visualCueUiElement.dataSource = viewModel;
     }
 
     private void ActivateCues()
     {
       if (cuesActive) { return; }
-      visualCue.style.backgroundColor = startColor;
+      activationsCount++;
+      visualCueUiElement.style.backgroundColor = startColor;
+
+      Log.Info("[{logType}] Activating the system. Total activations: {activationsCount}", "CUES", activationsCount);
+
+      // Create the token which lets us cancel the cues.
 
       cancelCues = new CancellationTokenSource();
       var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancelCues.Token, Application.exitCancellationToken);
-
       var cancelCuesClosure = cancelCues;
 
       UniTask.RunOnThreadPool(async () =>
       {
         cuesActive = true;
-        try
-        {
-          await UpdateCues(cancel.Token);
-        }
-        catch
-        {
-
-        }
+        visualCue.Activate(
+          viewModel.VisualCueActive(),
+          viewModel.VisualCueIntensity(),
+          cyclesToFull,
+          cycleSecs,
+          visualCueUiElement,
+          viewModel.Color
+        );
+        auditoryCue.Activate(
+          viewModel.AuditoryCueActive(),
+          viewModel.AuditoryCueIntensity(),
+          cyclesToFull,
+          cycleSecs,
+          await viewModel.GetAudioClip(cancel.Token)
+        );
+        thermalCueLogic.Activate(
+          viewModel.ThermalCueActive(),
+          viewModel.ThermalCueIntensity(),
+          cyclesToFull,
+          cycleSecs,
+          viewModel.ThermalCueMode()
+        );
+        fanCueLogic.Activate(
+          viewModel.FanCueActive(),
+          viewModel.FanCueIntensity(),
+          cyclesToFull,
+          cycleSecs
+        );
+        try { await UpdateCues(cancel.Token); }
+        catch { }
         await UniTask.SwitchToMainThread();
-
         cancelCuesClosure.Dispose();
         cancel.Dispose();
         cuesActive = false;
       });
     }
 
-    private void StopCues()
-    {
-      visualCue.style.backgroundColor = startColor;
-      cancelCues.Cancel();
-    }
-
-    private void PauseCues()
-    {
-      StopCues();
-      ActivateCues();
-    }
+    private void StopCues() => cancelCues.Cancel();
 
     #region CUE UPDATES
     private async UniTask UpdateCues(CancellationToken token)
@@ -105,10 +127,10 @@ namespace LuciReality.UI
       try
       {
         await UniTask.WhenAll(
-          UniTask.Create(FlashVisualCue, token),
-          UniTask.Create(RampAudio, token),
-          UniTask.Create(ThermalCue, token),
-          UniTask.Create(FanCue, token)
+          UniTask.Create(visualCue.Run, token),
+          UniTask.Create(auditoryCue.Run, token),
+          UniTask.Create(thermalCueLogic.Run, token),
+          UniTask.Create(fanCueLogic.Run, token)
         );
       }
       catch (OperationCanceledException e)
@@ -116,117 +138,13 @@ namespace LuciReality.UI
         Log.Info("[{logType}] force stopping all cues!", "CUES");
 
         await UniTask.WhenAll(
-          viewModel.SetThermalCue(false, 0, CancellationToken.None),
-          viewModel.SetFanCue(1, CancellationToken.None)
+          visualCue.Stop(),
+          auditoryCue.Stop(),
+          thermalCueLogic.Stop(),
+          fanCueLogic.Stop()
         );
-
-        AudioSingleton.Instance.AudioSource.volume = maxVolume;
-        AudioSingleton.Instance.AudioSource.Stop();
 
         throw e;
-      }
-    }
-
-    private async UniTask ThermalCue(CancellationToken token)
-    {
-      await UniTask.SwitchToMainThread();
-      if (!viewModel.ThermalCueActive()) { return; }
-      Log.Info("[{logType}] beginning thermal cues.", "CUES");
-
-      int cycles = 1;
-
-      while (true)
-      {
-        int intensity = (int)Mathf.Lerp(0, 255, cycles / (float)cyclesToFull);
-
-        await UniTask.WhenAll(
-          viewModel.SetThermalCue(true, intensity, token),
-          UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token)
-        );
-
-        await UniTask.WhenAll(
-          viewModel.SetThermalCue(false, 0, token),
-          UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token)
-        );
-
-        cycles++;
-      }
-    }
-
-    private async UniTask FanCue(CancellationToken token)
-    {
-      await UniTask.SwitchToMainThread();
-      if (!viewModel.FanCueActive()) { return; }
-      Log.Info("[{logType}] beginning fan cue.", "CUES");
-
-      int cycles = 1;
-
-      while (true)
-      {
-        int intensity = (int)Mathf.Lerp(1, 9, cycles / (float)cyclesToFull);
-
-        await viewModel.SetFanCue(intensity, token);
-        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
-
-        await viewModel.SetFanCue(0, token);
-        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token);
-
-        cycles++;
-      }
-    }
-
-    private async UniTask FlashVisualCue(CancellationToken token)
-    {
-      await UniTask.SwitchToMainThread();
-      if (!viewModel.VisualCueActive()) { return; }
-      Log.Info("[{logType}] beginning visual cues.", "CUES");
-
-      int cycles = 1;
-
-      while (true)
-      {
-        float intensity = Math.Min(cycles / (float)cyclesToFull, 1);
-        Color cueColour = Color.Lerp(startColor, viewModel.Color, intensity);
-
-        // on cycle
-        Log.Info("[{logType}] visual cue intensity is now: {intensity}", "CUES", intensity * viewModel.VisualCueIntensity());
-
-        bool active = true;
-        for (int i = 0; i < cycleSecs; i++)
-        {
-          if (active)
-          {
-            visualCue.style.backgroundColor = viewModel.GetScaledColour(cueColour);
-          }
-          else
-          {
-            visualCue.style.backgroundColor = startColor;
-          }
-          active = !active;
-          await UniTask.Delay(1000, cancellationToken: token); // 1 second
-        }
-
-        Log.Info("[{logType}] visual cue intensity is now: {intensity}", "CUES", 0);
-        visualCue.style.backgroundColor = startColor;
-        await UniTask.Delay((int)(cycleSecs * 1000), cancellationToken: token); // off cycle
-
-        cycles++;
-      }
-    }
-
-    private async UniTask RampAudio(CancellationToken token)
-    {
-      await UniTask.SwitchToMainThread();
-      if (!viewModel.AuditoryCueActive()) { return; }
-      Log.Info("[{logType}] beginning auditory cues.", "CUES");
-
-      int cycles = 1;
-      while (true)
-      {
-        float volume = Mathf.Lerp(0, maxVolume, cycles / (float)cyclesToFull);
-        viewModel.PlayAudio(volume);
-        await UniTask.Delay((int)(cycleSecs * 2 * 1000), cancellationToken: token);
-        cycles++;
       }
     }
     #endregion
@@ -235,7 +153,7 @@ namespace LuciReality.UI
     public void OnEnter(NavController controller, NavDestination destination, Argument[] args)
     {
       Focus();
-      visualCue.style.backgroundColor = startColor;
+      visualCueUiElement.style.backgroundColor = startColor;
 
       if (CuesActive.IsDebugging)
       {
