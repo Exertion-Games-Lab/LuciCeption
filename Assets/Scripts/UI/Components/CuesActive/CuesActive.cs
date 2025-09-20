@@ -29,12 +29,15 @@ namespace LuciReality.UI
     float cycleSecs = 10;
     bool cuesActive = false;
     bool startOnConnect = false;
+    bool motionDetected = false;
 
     int activationsCount = 0;
+
 
     Color startColor = new(0, 0, 0);
     VisualElement visualCueUiElement;
     CancellationTokenSource cancelCues;
+    CancellationTokenSource cancelPause;
     OpenBCIClient openBCIClient;
     AuditoryCueLogic auditoryCue;
     VisualCueLogic visualCue;
@@ -187,6 +190,9 @@ namespace LuciReality.UI
         openBCIClient.LrSignalDetected -= ActivateCues;
       }
 
+      cancelPause?.Cancel();
+      motionDetected = false;
+
       if (cuesActive)
       {
         StopCues();
@@ -195,7 +201,24 @@ namespace LuciReality.UI
 
     private void OnLrSignalDetected()
     {
+      if (motionDetected) { return; }
       ActivateCues();
+    }
+
+    private async UniTask OnMotionDetected()
+    {
+      if (!cuesActive) { return; }
+      await UniTask.SwitchToMainThread();
+      motionDetected = true;
+      Log.Info("[{logType}] pausing for motion detection!", "CUES");
+      cancelPause = new CancellationTokenSource();
+      var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancelPause.Token, Application.exitCancellationToken);
+      StopCues();
+      await UniTask.Delay(5 * 60 * 1000, cancellationToken: cancel.Token); // 5 minutes
+      Log.Info("[{logType}] resuming system after motion detection period over", "CUES");
+      motionDetected = false;
+      cancelPause.Dispose();
+      cancel.Dispose();
     }
 
     private void OnConnected()
