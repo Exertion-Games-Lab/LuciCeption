@@ -10,6 +10,8 @@ using Unity.Logging;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LuciReality.UI
 {
@@ -23,15 +25,16 @@ namespace LuciReality.UI
     public const string className = "luci-reality--cues-active";
     private CuesActiveViewModel viewModel;
 
-    float delaySec = 5;
+    float delaySec = 5; // how long before cues should start.
+    int cyclesToFull = 5; // how many cycles to full intensity.
+    int motionDetectedPause = 5 * 60 * 1000; // how long should the system pause on motion detected.
+    float cycleSecs = 10; // how long a cycle takes.
+    int activationsCount = 0; // keeps track of how many times the cues have activated.
 
-    int cyclesToFull = 5;
-    float cycleSecs = 10;
     bool cuesActive = false;
     bool startOnConnect = false;
     bool motionDetected = false;
 
-    int activationsCount = 0;
 
 
     Color startColor = new(0, 0, 0);
@@ -43,7 +46,6 @@ namespace LuciReality.UI
     VisualCueLogic visualCue;
     ThermalCueLogic thermalCueLogic;
     FanCueLogic fanCueLogic;
-
 
     public CuesActive(CuesActiveViewModel viewModel, OpenBCIClient openBCIClient)
     {
@@ -118,8 +120,34 @@ namespace LuciReality.UI
         cuesActive = false;
       });
     }
-
     private void StopCues() => cancelCues.Cancel();
+
+    private async UniTask DetectMotion(CancellationToken token)
+    {
+      await UniTask.SwitchToMainThread();
+
+      while (true)
+      {
+        Log.Info("[{logType}] Sending motion detection get request", "MOTION");
+        UnityWebRequest request = new($"http://170.64.229.86:8080/get_motion_detected?key=xglluciception&participant=p1", "GET");
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.downloadHandler = new DownloadHandlerBuffer();
+        await request.SendWebRequest().WithCancellation(token);
+        var text = request.downloadHandler.text;
+
+        JObject motionState = JObject.Parse(text);
+        bool isDetected = (bool)motionState["value"];
+
+        Log.Debug("[{logType}] motion detection state: {isDetected}", "MOTION", isDetected);
+        if (isDetected)
+        {
+          await OnMotionDetected();
+        }
+
+        await UniTask.Delay(10 * 1000, cancellationToken: token);
+      }
+
+    }
 
     #region CUE UPDATES
     private async UniTask UpdateCues(CancellationToken token)
@@ -133,7 +161,8 @@ namespace LuciReality.UI
           UniTask.Create(visualCue.Run, token),
           UniTask.Create(auditoryCue.Run, token),
           UniTask.Create(thermalCueLogic.Run, token),
-          UniTask.Create(fanCueLogic.Run, token)
+          UniTask.Create(fanCueLogic.Run, token),
+          UniTask.Create(DetectMotion, token)
         );
       }
       catch (OperationCanceledException e)
@@ -214,11 +243,17 @@ namespace LuciReality.UI
       cancelPause = new CancellationTokenSource();
       var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancelPause.Token, Application.exitCancellationToken);
       StopCues();
-      await UniTask.Delay(5 * 60 * 1000, cancellationToken: cancel.Token); // 5 minutes
+      await UniTask.Delay(10 * 1000, cancellationToken: cancel.Token); // 5 minutes
       Log.Info("[{logType}] resuming system after motion detection period over", "CUES");
       motionDetected = false;
+
+      UnityWebRequest request = new UnityWebRequest($"http://170.64.229.86:8080/set_motion_detected?key=xglluciception&participant=p1&value=false", "GET");
+      var res = await request.SendWebRequest().WithCancellation(cancel.Token);
+      Log.Info("[{logType}] set motion detected state to false", "CUES");
+
       cancelPause.Dispose();
       cancel.Dispose();
+      ActivateCues();
     }
 
     private void OnConnected()
