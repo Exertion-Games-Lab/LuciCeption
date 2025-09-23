@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Unity.Logging;
@@ -15,6 +16,8 @@ namespace LuciReality.UI
     string mode;
 
     public ThermalCueLogic() { }
+
+    TimeoutController timeoutController = new TimeoutController();
 
     public void Activate(
       bool enabled,
@@ -68,8 +71,15 @@ namespace LuciReality.UI
 
       if (CuesActive.UseApis)
       {
-        UnityWebRequest request = UnityWebRequest.Get($"http://192.168.1.183/configure?mode={activeMode}&intensity={intensity}");
-        await request.SendWebRequest().WithCancellation(token);
+        try
+        {
+          UnityWebRequest request = UnityWebRequest.Get($"http://192.168.1.183/configure?mode={activeMode}&intensity={intensity}");
+          await request.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(2)));
+        }
+        catch (Exception ex)
+        {
+          Debug.Log(ex);
+        }
       }
     }
 

@@ -1,5 +1,5 @@
 // This file is auto-generated. Do not edit it directly.
-// Date: 2025-08-26 18:41:46
+// Date: 2025-09-23 14:50:19
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +14,7 @@ namespace Unity.AppUI.Navigation.Generated
         public const string calibration_to_menu = "calibration_to_menu";
         public const string settings_to_cues_active = "settings_to_cues_active";
         public const string cues_active_to_settings = "cues_active_to_settings";
+        public const string settings_to_test_cues = "settings_to_test_cues";
     }
     public static partial class Destinations
     {

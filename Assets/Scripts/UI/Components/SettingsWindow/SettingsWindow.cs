@@ -29,6 +29,7 @@ namespace LuciReality.UI
     private List<string> savedFiles;
 
     private Action CuesActiveOnClick;
+    private Action TestSystemOnClick;
 
     public SettingsWindow(CueParametersViewModel cueParametersViewModel, PromptViewModel promptViewModel)
     {
@@ -49,14 +50,6 @@ namespace LuciReality.UI
 
     private void SetupActions()
     {
-      var testCues = this.Q<Unity.AppUI.UI.Button>("test-cues-button");
-      testCues.clicked += () =>
-      {
-        string mode = cueParametersViewModel.ThermalMode == "cool" ? "hot" : "cool";
-        cueParametersViewModel.ThermalMode = mode;
-      };
-
-
       var promptPane = this.Query<Pane>().First();
       var imageFromPrompt = promptPane.Q<ActionButton>("image-from-prompt-button");
       imageFromPrompt.clicked += async () =>
@@ -498,6 +491,11 @@ namespace LuciReality.UI
       var startSystem = this.Q<Unity.AppUI.UI.Button>("start-system-button");
       CuesActiveOnClick = () => controller.Navigate(Actions.settings_to_cues_active);
       startSystem.clicked += CuesActiveOnClick;
+
+      var testSystem = this.Q<Unity.AppUI.UI.Button>("test-cues-button");
+      TestSystemOnClick = () => controller.Navigate(Actions.settings_to_test_cues);
+      testSystem.clicked += TestSystemOnClick;
+      
     }
 
     public void OnExit(NavController controller, NavDestination destination, Argument[] args)
@@ -507,6 +505,9 @@ namespace LuciReality.UI
 
       var startSystem = this.Q<Unity.AppUI.UI.Button>("start-system-button");
       startSystem.clicked -= CuesActiveOnClick;
+
+      var testSystem = this.Q<Unity.AppUI.UI.Button>("test-cues-button");
+      testSystem.clicked -= TestSystemOnClick;
     }
   }
 }

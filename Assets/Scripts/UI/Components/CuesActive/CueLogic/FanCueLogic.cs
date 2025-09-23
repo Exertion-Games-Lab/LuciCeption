@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Unity.Logging;
@@ -12,6 +13,8 @@ namespace LuciReality.UI
     private float intensity;
     int cyclesToFullIntensity;
     float cycleLengthSecs;
+
+    TimeoutController timeoutController = new TimeoutController();
 
     public FanCueLogic() { }
 
@@ -61,11 +64,18 @@ namespace LuciReality.UI
     private async UniTask SetFanCue(int speed, CancellationToken token)
     {
       Log.Info("[{logType}:{cueType}] fan cue speed is now: {intensity}", "CUES", "FAN", speed);
-      
+
       if (CuesActive.UseApis)
       {
-        UnityWebRequest request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_speed_{speed}/with/key/88IAzsMm2FG355HNDbZjq");
-        await request.SendWebRequest().WithCancellation(token);
+        try
+        {
+          UnityWebRequest request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_speed_{speed}/with/key/88IAzsMm2FG355HNDbZjq");
+          await request.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(2)));
+        }
+        catch (Exception ex)
+        {
+          Debug.Log(ex);
+        }
       }
     }
 
