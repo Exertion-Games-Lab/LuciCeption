@@ -82,6 +82,13 @@ namespace LuciReality.UI
       UniTask.RunOnThreadPool(async () =>
       {
         cuesActive = true;
+        AudioClip audioClip = null;
+        try
+        {
+          audioClip = await viewModel.GetAudioClip();
+        }
+        catch { }
+
         visualCue.Activate(
           viewModel.VisualCueActive(),
           viewModel.VisualCueIntensity(),
@@ -95,7 +102,7 @@ namespace LuciReality.UI
           viewModel.AuditoryCueIntensity(),
           cyclesToFull,
           cycleSecs,
-          await viewModel.GetAudioClip(cancel.Token)
+          audioClip
         );
         thermalCueLogic.Activate(
           viewModel.ThermalCueActive(),

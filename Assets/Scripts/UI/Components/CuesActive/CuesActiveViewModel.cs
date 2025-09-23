@@ -8,6 +8,7 @@ using Unity.Properties;
 using System.Threading;
 using Unity.Logging;
 using LuciReality.Audio;
+using System;
 
 namespace LuciReality.UI
 {
@@ -47,11 +48,13 @@ namespace LuciReality.UI
     [ObservableProperty]
     private AudioClip _audioClip;
 
-    public async UniTask<AudioClip> GetAudioClip(CancellationToken token)
+    private TimeoutController timeoutController = new TimeoutController();
+
+    public async UniTask<AudioClip> GetAudioClip()
     {
       await UniTask.SwitchToMainThread();
       var req = UnityWebRequestMultimedia.GetAudioClip(AudioFile, AudioType.WAV);
-      await req.SendWebRequest().WithCancellation(token);
+      await req.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(1)));
       return DownloadHandlerAudioClip.GetContent(req);
     }
 
