@@ -121,7 +121,7 @@ namespace LuciReality.UI
         if (listView.selectedIndex == -1) { return; }
         
         var clip = ((FileDescriptor)listView.selectedItem).Path;
-        viewModel.SelectedAudioFile = clip;
+        viewModel.AudioClipFile = clip;
         Log.Info("[{logType}]: Selected audio clip {audioClip}", "USER_INTERFACE", clip);
       };
 

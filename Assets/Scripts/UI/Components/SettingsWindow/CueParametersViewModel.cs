@@ -38,6 +38,7 @@ namespace LuciReality.UI
     [AlsoNotifyChangeFor(nameof(ThermalEnabled))]
     [AlsoNotifyChangeFor(nameof(ThermalIntensity))]
     [AlsoNotifyChangeFor(nameof(ThermalMode))]
+    [AlsoNotifyChangeFor(nameof(AudioClipFile))]
     private CueParametersModel _model = new();
 
     [CreateProperty]
@@ -146,8 +147,12 @@ namespace LuciReality.UI
       _model.Thermal.Mode = mode;
     }
 
-    [ObservableProperty]
-    private string _selectedAudioFile;
+    [CreateProperty]
+    public string AudioClipFile
+    {
+      get => _model.Audio.AudioClipFile;
+      set => SetProperty(_model.Audio.AudioClipFile, value, _model, (u, n) => u.Audio.AudioClipFile = n);
+    }
 
     // Commands
 

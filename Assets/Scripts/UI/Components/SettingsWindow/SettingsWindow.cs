@@ -406,7 +406,7 @@ namespace LuciReality.UI
     {
       var audioClipSelectorBinding = new DataBinding
       {
-        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.SelectedAudioFile))
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.AudioClipFile))
       };
       audioClipSelectorBinding.sourceToUiConverters.AddConverter<string, string>(ConvertFilenameToClipSelectorSubtitle);
 
