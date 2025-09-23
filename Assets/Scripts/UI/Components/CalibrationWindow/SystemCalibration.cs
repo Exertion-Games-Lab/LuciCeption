@@ -55,7 +55,7 @@ namespace LuciReality.UI
         }
         if (e.newValue == -1)
         {
-          viewModel.IncrementThresholdAsyncCommand.Execute(Application.exitCancellationToken);
+          viewModel.DecrementThresholdAsyncCommand.Execute(Application.exitCancellationToken);
         }
       });
 
