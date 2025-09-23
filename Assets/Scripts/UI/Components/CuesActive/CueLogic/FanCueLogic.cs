@@ -64,7 +64,7 @@ namespace LuciReality.UI
       
       if (CuesActive.UseApis)
       {
-        UnityWebRequest request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_intensity_{speed}/with/key/88IAzsMm2FG355HNDbZjq");
+        UnityWebRequest request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_speed_{speed}/with/key/88IAzsMm2FG355HNDbZjq");
         await request.SendWebRequest().WithCancellation(token);
       }
     }

@@ -17,8 +17,8 @@ namespace LuciReality.UI
 {
   public class CuesActive : VisualElement, INavigationScreen
   {
-    public static readonly bool IsDebugging = true; // use the LR signal to activate
-    public static readonly bool UseApis = false; // send network requests
+    public static readonly bool IsDebugging = false; // use the LR signal to activate
+    public static readonly bool UseApis = true; // send network requests
     public static readonly bool UseSettings = true; // use the cue settings the user has selected
 
     public const string VisualTreeResourcePath = "CuesActive";
@@ -27,15 +27,13 @@ namespace LuciReality.UI
 
     float delaySec = 5; // how long before cues should start.
     int cyclesToFull = 5; // how many cycles to full intensity.
-    int motionDetectedPause = 5 * 60 * 1000; // how long should the system pause on motion detected.
+    int motionDetectedPause = 1 * 10 * 1000; // how long should the system pause on motion detected.
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
 
     bool cuesActive = false;
     bool startOnConnect = false;
     bool motionDetected = false;
-
-
 
     Color startColor = new(0, 0, 0);
     VisualElement visualCueUiElement;
@@ -243,7 +241,7 @@ namespace LuciReality.UI
       cancelPause = new CancellationTokenSource();
       var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancelPause.Token, Application.exitCancellationToken);
       StopCues();
-      await UniTask.Delay(10 * 1000, cancellationToken: cancel.Token); // 5 minutes
+      await UniTask.Delay(motionDetectedPause, cancellationToken: cancel.Token);
       Log.Info("[{logType}] resuming system after motion detection period over", "CUES");
       motionDetected = false;
 
