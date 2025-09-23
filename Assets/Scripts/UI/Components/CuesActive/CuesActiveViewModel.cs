@@ -61,12 +61,12 @@ namespace LuciReality.UI
     public string ThermalCueMode() => cueParameters.ThermalMode;
     public float VisualCueIntensity() => CuesActive.UseSettings ? cueParameters.LightsIntensity : 1;
     public float AuditoryCueIntensity() => CuesActive.UseSettings ? cueParameters.AudioVolume : 1;
-    public float ThermalCueIntensity() => CuesActive.UseSettings ? 1 : 1;
+    public float ThermalCueIntensity() => CuesActive.UseSettings ? cueParameters.ThermalIntensity : 1;
     public float FanCueIntensity() => CuesActive.UseSettings ? cueParameters.FanIntensity : 1;
     
     public bool VisualCueActive() => !CuesActive.UseSettings || cueParameters.LightsEnabled;
     public bool FanCueActive() => !CuesActive.UseSettings || cueParameters.FanEnabled;
-    public bool ThermalCueActive() => true;
+    public bool ThermalCueActive() => !CuesActive.UseSettings || cueParameters.ThermalEnabled;
     public bool AuditoryCueActive() => !CuesActive.UseSettings || cueParameters.AudioEnabled;
   }
 
