@@ -8,6 +8,7 @@ using Unity.Properties;
 using System.Threading;
 using Unity.Logging;
 using LuciReality.Audio;
+using System;
 
 namespace LuciReality.UI
 {
@@ -47,23 +48,25 @@ namespace LuciReality.UI
     [ObservableProperty]
     private AudioClip _audioClip;
 
-    public async UniTask<AudioClip> GetAudioClip(CancellationToken token)
+    private TimeoutController timeoutController = new TimeoutController();
+
+    public async UniTask<AudioClip> GetAudioClip()
     {
       await UniTask.SwitchToMainThread();
       var req = UnityWebRequestMultimedia.GetAudioClip(AudioFile, AudioType.WAV);
-      await req.SendWebRequest().WithCancellation(token);
+      await req.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(1)));
       return DownloadHandlerAudioClip.GetContent(req);
     }
 
     public string ThermalCueMode() => cueParameters.ThermalMode;
     public float VisualCueIntensity() => CuesActive.UseSettings ? cueParameters.LightsIntensity : 1;
     public float AuditoryCueIntensity() => CuesActive.UseSettings ? cueParameters.AudioVolume : 1;
-    public float ThermalCueIntensity() => CuesActive.UseSettings ? 1 : 1;
+    public float ThermalCueIntensity() => CuesActive.UseSettings ? cueParameters.ThermalIntensity : 1;
     public float FanCueIntensity() => CuesActive.UseSettings ? cueParameters.FanIntensity : 1;
     
     public bool VisualCueActive() => !CuesActive.UseSettings || cueParameters.LightsEnabled;
     public bool FanCueActive() => !CuesActive.UseSettings || cueParameters.FanEnabled;
-    public bool ThermalCueActive() => true;
+    public bool ThermalCueActive() => !CuesActive.UseSettings || cueParameters.ThermalEnabled;
     public bool AuditoryCueActive() => !CuesActive.UseSettings || cueParameters.AudioEnabled;
   }
 
