@@ -5,6 +5,9 @@ using Unity.Logging;
 using UnityEngine;
 using UnityEngine.Networking;
 
+//serial connection
+using System.IO.Ports;
+
 namespace LuciReality.UI
 {
   public class ThermalCueLogic
@@ -15,7 +18,25 @@ namespace LuciReality.UI
     float cycleLengthSecs;
     string mode;
 
-    public ThermalCueLogic() { }
+    // Add SerialPort field
+    private SerialPort serialPort;
+    private readonly string portName = "COM8"; // Adjust to your Arduino's port
+    private readonly int baudRate = 9600; // Match your Arduino's baud rate
+
+    public ThermalCueLogic()
+    {
+      // Initialize serial port
+      try
+      {
+        serialPort = new SerialPort(portName, baudRate);
+        serialPort.Open();
+        Log.Info("[{logType}:{cueType}] Serial port opened: {portName}", "CUES", "THERMAL", portName);
+      }
+      catch (Exception ex)
+      {
+        Log.Error("[{logType}:{cueType}] Failed to open serial port: {error}", "CUES", "THERMAL", ex.Message);
+      }
+    }
 
     TimeoutController timeoutController = new TimeoutController();
 
@@ -64,25 +85,63 @@ namespace LuciReality.UI
       );
     }
 
+
+    //wifi thermal cue
+    // private async UniTask SetThermalCue(bool on, int setIntensity, CancellationToken token)
+    // {
+    //   string activeMode = on ? mode : "off";
+    //   Log.Info("[{logType}:{cueType}] thermal cue intensity is now: {intensity} with {mode}", "CUES", "THERMAL", setIntensity, activeMode);
+
+    //   if (CuesActive.UseApis)
+    //   {
+    //     try
+    //     {
+    //       UnityWebRequest request = UnityWebRequest.Get($"http://192.168.1.193/configure?mode={activeMode}&intensity={setIntensity}");
+    //       await request.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(2)));
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //       Debug.Log(ex);
+    //     }
+    //   }
+    // }
+
+    //serial thermal cue
     private async UniTask SetThermalCue(bool on, int setIntensity, CancellationToken token)
     {
       string activeMode = on ? mode : "off";
       Log.Info("[{logType}:{cueType}] thermal cue intensity is now: {intensity} with {mode}", "CUES", "THERMAL", setIntensity, activeMode);
 
-      if (CuesActive.UseApis)
+      if (CuesActive.UseApis && serialPort != null && serialPort.IsOpen)
       {
         try
         {
-          UnityWebRequest request = UnityWebRequest.Get($"http://192.168.1.183/configure?mode={activeMode}&intensity={intensity}");
-          await request.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(2)));
+          // Send command to Arduino via serial
+          string command = $"{activeMode},{setIntensity}";
+          await UniTask.RunOnThreadPool(() => serialPort.WriteLine(command));
+          Log.Debug("[{logType}:{cueType}] Sent command to Arduino: {command}", "CUES", "THERMAL", command.Trim());
         }
         catch (Exception ex)
         {
-          Debug.Log(ex);
+          Log.Error("[{logType}:{cueType}] Serial communication error: {error}", "CUES", "THERMAL", ex.Message);
         }
       }
     }
 
-    public async UniTask Stop() => await SetThermalCue(false, 0, CancellationToken.None);
+    //wifi thermal cue stop
+    // public async UniTask Stop() => await SetThermalCue(false, 0, CancellationToken.None);
+
+
+    //serial thermal cue stop
+    public async UniTask Stop() 
+    {
+      await SetThermalCue(false, 0, CancellationToken.None);
+    }
+
+    void OnApplicationQuit()
+    {
+        if (serialPort.IsOpen)
+            serialPort.Close();
+    }
   }
 }
