@@ -51,7 +51,8 @@ namespace LuciReality
     [JsonProperty("Colour")]
     private ColourParams ColourSetter
     {
-      set { Colour = new Color(value.Red, value.Blue, value.Green); }
+      set { Colour = new Color(value.Red, value.Green, value.Blue); }
+      // get { return new ColourParams { Red = Colour.r, Green = Colour.g, Blue = Colour.b }; }
     }
 
     [Range(0, 1)] public float Intensity;
