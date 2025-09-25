@@ -55,7 +55,7 @@ namespace LuciReality.UI
       Log.Info("[{logType}:{cueType}] playing audio cue clip at volume: {volume}.", "CUES", "AUDITORY", volume);
       AudioSingleton.Instance.AudioSource.volume = volume;
       AudioSingleton.Instance.AudioSource.PlayOneShot(audioClip);
-      await UniTask.Delay((int)(cycleLengthSecs * 2 * 1000), cancellationToken: token);
+      await UniTask.Delay((int)(cycleLengthSecs * 2 * 1000), ignoreTimeScale: true, cancellationToken: token);
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously

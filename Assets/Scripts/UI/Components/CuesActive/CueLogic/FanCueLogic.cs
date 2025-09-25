@@ -52,12 +52,12 @@ namespace LuciReality.UI
 
       await UniTask.WhenAll(
         SetFanCue(speed, token),
-        UniTask.Delay((int)(cycleLengthSecs * 1000), cancellationToken: token)
+        UniTask.Delay((int)(cycleLengthSecs * 1000), ignoreTimeScale: true, cancellationToken: token)
       );
 
       await UniTask.WhenAll(
         SetFanCue(1, token),
-        UniTask.Delay((int)(cycleLengthSecs * 1000), cancellationToken: token)
+        UniTask.Delay((int)(cycleLengthSecs * 1000), ignoreTimeScale: true, cancellationToken: token)
       );
     }
 

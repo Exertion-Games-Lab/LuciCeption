@@ -76,12 +76,12 @@ namespace LuciReality.UI
 
       await UniTask.WhenAll(
         SetThermalCue(true, setIntensity, token),
-        UniTask.Delay((int)(cycleLengthSecs * 1000), cancellationToken: token)
+        UniTask.Delay((int)(cycleLengthSecs * 1000), ignoreTimeScale: true, cancellationToken: token)
       );
 
       await UniTask.WhenAll(
         SetThermalCue(false, 0, token),
-        UniTask.Delay((int)(cycleLengthSecs * 1000), cancellationToken: token)
+        UniTask.Delay((int)(cycleLengthSecs * 1000), ignoreTimeScale: true, cancellationToken: token)
       );
     }
 

@@ -67,7 +67,7 @@ namespace LuciReality.UI
       {
         visualCue.style.backgroundColor = active ? color : offColor;
         active = !active;
-        await UniTask.Delay(1000, cancellationToken: token); // 1 second
+        await UniTask.Delay(1000, ignoreTimeScale: true, cancellationToken: token); // 1 second
       }
 
       Log.Info(
@@ -77,7 +77,7 @@ namespace LuciReality.UI
       );
 
       visualCue.style.backgroundColor = offColor;
-      await UniTask.Delay((int)(cycleLengthSecs * 1000), cancellationToken: token);
+      await UniTask.Delay((int)(cycleLengthSecs * 1000), ignoreTimeScale: true, cancellationToken: token);
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
