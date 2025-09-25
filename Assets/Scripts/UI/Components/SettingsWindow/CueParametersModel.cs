@@ -46,15 +46,17 @@ namespace LuciReality
   public class LightParameters
   {
     public bool Enabled;
-    [JsonIgnore] public Color Colour;
 
-    // Allow for deserialisation but not serialisation
-    [JsonProperty("Colour")]
-    private ColourParams ColourSetter
-    {
-      set { Colour = new Color(value.Red, value.Green, value.Blue); }
-      // get { return new ColourParams { Red = Colour.r, Green = Colour.g, Blue = Colour.b }; }
-    }
+    [JsonConverter(typeof(ColourJsonConverter))]
+    public Color Colour;
+
+    // // Allow for deserialisation but not serialisation
+    // [JsonProperty("Colour")]
+    // private ColourParams ColourSetter
+    // {
+    //   set { Colour = new Color(value.Red, value.Green, value.Blue); }
+    //   // get { return new ColourParams { Red = Colour.r, Green = Colour.g, Blue = Colour.b }; }
+    // }
 
     [Range(0, 1)] public float Intensity;
   }
