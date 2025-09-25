@@ -127,6 +127,7 @@ namespace LuciReality.UI
         label = "Open Clips Folder"
       };
       openClipsFolder.style.width = new StyleLength(140);
+      openClipsFolder.clicked += () => Application.OpenURL(_path);
 
       footerGroup.Add(selectButton);
       footerGroup.Add(openClipsFolder);
