@@ -67,14 +67,13 @@ namespace LuciReality.OpenBCI
     /// Will attempt to re-connect if it disconnects.</summary>
     private async Task Connect()
     {
+      Log.Debug("[OpenBCI] Attempting to connect to python server.");
       // Loop until we successfully (re-)connect to the server.
       while (CurrentState != OpenBciClientState.CONNECTED)
       {
         // (Re-)create the client so we can connect to the server.
         if (client is not null) { KillClient(); }
         client = new Socket(SocketType.Stream, ProtocolType.Tcp);
-
-        Log.Debug("[OpenBCI] Connecting...");
 
         Task<bool> timeout = ConnectionTimeout();
         try { client.Connect(IPAddress.Loopback, port); }

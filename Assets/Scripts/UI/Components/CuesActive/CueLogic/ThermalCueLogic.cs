@@ -137,11 +137,5 @@ namespace LuciReality.UI
     {
       await SetThermalCue(false, 0, CancellationToken.None);
     }
-
-    void OnApplicationQuit()
-    {
-        if (serialPort.IsOpen)
-            serialPort.Close();
-    }
   }
 }

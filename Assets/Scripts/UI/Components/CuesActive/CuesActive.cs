@@ -25,11 +25,12 @@ namespace LuciReality.UI
     public const string className = "luci-reality--cues-active";
     private CuesActiveViewModel viewModel;
 
-    float StartDelaySeconds { get => IsTesting ? 1 : 5; } // how long before cues should start.
+    float StartDelaySeconds { get => IsTesting ? 1 : 20; } // how long before cues should start.
     int CyclesToFull { get => IsTesting ? 1 : 5; } // how many cycles to full intensity.
     int motionDetectedPause = 1 * 10 * 1000; // how long should the system pause on motion detected.
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
+    TimeSpan AlwaysStartSystemDelay = TimeSpan.FromHours(5);
 
     bool cuesActive = false;
     bool startOnConnect = false;
@@ -39,6 +40,8 @@ namespace LuciReality.UI
     VisualElement visualCueUiElement;
     CancellationTokenSource cancelCues;
     CancellationTokenSource cancelPause;
+    CancellationTokenSource cancelStart;
+
     OpenBCIClient openBCIClient;
     AuditoryCueLogic auditoryCue;
     VisualCueLogic visualCue;
@@ -123,7 +126,7 @@ namespace LuciReality.UI
         catch (OperationCanceledException e) { Debug.Log(e); }
         finally
         {
-          Debug.Log("cleanup cues");
+          Debug.Log("Disposing cancellation tokens.");
           await UniTask.SwitchToMainThread();
           cancelCuesClosure.Dispose();
           cancel.Dispose();
@@ -165,7 +168,7 @@ namespace LuciReality.UI
           await OnMotionDetected();
         }
 
-        await UniTask.Delay(10 * 1000, cancellationToken: token);
+        await UniTask.Delay(10 * 1000, ignoreTimeScale: true, cancellationToken: token);
       }
 
     }
@@ -173,9 +176,6 @@ namespace LuciReality.UI
     #region CUE UPDATES
     private async UniTask UpdateCues(CancellationToken token)
     {
-      Log.Info("[{logType}] waiting for {delaySec} seconds before starting cues.", "CUES", StartDelaySeconds);
-      await UniTask.Delay((int)StartDelaySeconds * 1000, cancellationToken: token);
-
       try
       {
         await UniTask.WhenAll(
@@ -217,11 +217,48 @@ namespace LuciReality.UI
         return;
       }
 
-      openBCIClient.LrSignalDetected += ActivateCues;
+
+      cancelStart = new CancellationTokenSource();
+      var cancelStartDetection = CancellationTokenSource.CreateLinkedTokenSource(cancelStart.Token, Application.exitCancellationToken);
+      UniTask.RunOnThreadPool(async () =>
+      {
+        // await start delay
+
+        Log.Info("[{logType}] waiting for {delaySec} seconds before allowing LR signal detection to start the cues.", "CUES", StartDelaySeconds);
+
+        try
+        {
+          await UniTask.Delay(TimeSpan.FromSeconds(StartDelaySeconds), ignoreTimeScale: true, cancellationToken: cancelStartDetection.Token);
+
+        Log.Info("[{logType}] LR signal detection will now start the cues.", "CUES");
+          openBCIClient.LrSignalDetected += ActivateCues;
+        }
+        catch (OperationCanceledException ex)
+        {
+          Log.Debug(ex);
+        }
+
+        cancelStart.Dispose();
+        cancelStartDetection.Dispose();
+      });
+
+      UniTask.RunOnThreadPool(async () =>
+      {
+        try
+        {
+          await UniTask.Delay(AlwaysStartSystemDelay, ignoreTimeScale: true, cancellationToken: cancelStartDetection.Token);
+          ActivateCues();
+        }
+        catch (OperationCanceledException ex)
+        {
+          Log.Debug(ex);
+        }
+      });
+      
+      // Start LR signal detection on python server.
       if (openBCIClient.IsConnected)
       {
-        UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
-        startOnConnect = false;
+        StartDetection();
       }
       else
       {
@@ -268,7 +305,7 @@ namespace LuciReality.UI
       cancelPause = new CancellationTokenSource();
       var cancel = CancellationTokenSource.CreateLinkedTokenSource(cancelPause.Token, Application.exitCancellationToken);
       StopCues();
-      await UniTask.Delay(motionDetectedPause, cancellationToken: cancel.Token);
+      await UniTask.Delay(motionDetectedPause, ignoreTimeScale: true, cancellationToken: cancel.Token);
       Log.Info("[{logType}] resuming system after motion detection period over", "CUES");
       motionDetected = false;
 
@@ -276,6 +313,7 @@ namespace LuciReality.UI
 
       cancelPause.Dispose();
       cancel.Dispose();
+      cancelStart.Dispose();
       cancelPause = null;
 
       ActivateCues();
@@ -285,8 +323,13 @@ namespace LuciReality.UI
     {
       if (startOnConnect)
       {
-        UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
+        StartDetection();
       }
+    }
+
+    private void StartDetection()
+    {
+      UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
       startOnConnect = false;
     }
   }
