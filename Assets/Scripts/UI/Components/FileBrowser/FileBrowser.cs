@@ -142,6 +142,8 @@ namespace LuciReality.UI
 
     public void OnAttachToPanel(AttachToPanelEvent e)
     {
+      files.Clear();
+      PopulateFileList();
       Log.Info("[{logType}]: File browser opened", "USER_INTERFACE");
     }
 
