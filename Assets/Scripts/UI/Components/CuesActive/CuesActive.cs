@@ -25,12 +25,12 @@ namespace LuciReality.UI
     public const string className = "luci-reality--cues-active";
     private CuesActiveViewModel viewModel;
 
-    float StartDelaySeconds { get => IsTesting ? 1 : 20; } // how long before cues should start.
+    float StartDelaySeconds { get => IsTesting ? 1 : 10; } // how long before cues should start.
     int CyclesToFull { get => IsTesting ? 1 : 5; } // how many cycles to full intensity.
-    int motionDetectedPause = 1 * 10 * 1000; // how long should the system pause on motion detected.
+    int motionDetectedPause = 2 * 10 * 1000; // how long should the system pause on motion detected.
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
-    TimeSpan AlwaysStartSystemDelay = TimeSpan.FromHours(5);
+    TimeSpan AlwaysStartSystemDelay = TimeSpan.FromSeconds(6000);
 
     bool cuesActive = false;
     bool startOnConnect = false;

@@ -19,7 +19,7 @@ namespace LuciReality.UI
     string mode;
 
     // Add SerialPort field
-    private SerialPort serialPort;
+    private static SerialPort _serialPort;
     private readonly string portName = "COM8"; // Adjust to your Arduino's port
     private readonly int baudRate = 9600; // Match your Arduino's baud rate
 
@@ -28,8 +28,22 @@ namespace LuciReality.UI
       // Initialize serial port
       try
       {
-        serialPort = new SerialPort(portName, baudRate);
-        serialPort.Open();
+        if ( _serialPort != null && _serialPort.IsOpen)
+        {
+          _serialPort.Close();
+          Log.Info("[{logType}:{cueType}] Serial port closed for reinitialization.", "CUES", "THERMAL");
+        }
+        Log.Info("[Serial] Available: " + string.Join(", ", SerialPort.GetPortNames()));
+        _serialPort = new SerialPort(portName, baudRate)
+        {
+            DtrEnable   = true,           // <— important
+            RtsEnable   = true,           // <— important
+            Handshake   = Handshake.None,
+            NewLine     = "\n",
+            ReadTimeout = 1000,
+            WriteTimeout= 1000
+        };
+        _serialPort.Open();
         Log.Info("[{logType}:{cueType}] Serial port opened: {portName}", "CUES", "THERMAL", portName);
       }
       catch (Exception ex)
@@ -112,19 +126,23 @@ namespace LuciReality.UI
       string activeMode = on ? mode : "off";
       Log.Info("[{logType}:{cueType}] thermal cue intensity is now: {intensity} with {mode}", "CUES", "THERMAL", setIntensity, activeMode);
 
-      if (CuesActive.UseApis && serialPort != null && serialPort.IsOpen)
+      if (CuesActive.UseApis && _serialPort != null && _serialPort.IsOpen)
       {
         try
         {
           // Send command to Arduino via serial
           string command = $"{activeMode},{setIntensity}";
-          await UniTask.RunOnThreadPool(() => serialPort.WriteLine(command));
+          await UniTask.RunOnThreadPool(() => _serialPort.WriteLine(command));
           Log.Debug("[{logType}:{cueType}] Sent command to Arduino: {command}", "CUES", "THERMAL", command.Trim());
         }
         catch (Exception ex)
         {
           Log.Error("[{logType}:{cueType}] Serial communication error: {error}", "CUES", "THERMAL", ex.Message);
         }
+      }
+      else
+      {
+        Log.Warning("[{logType}:{cueType}] Serial port not available.", "CUES", "THERMAL");
       }
     }
 

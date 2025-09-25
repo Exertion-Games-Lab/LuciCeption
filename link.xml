@@ -1,0 +1,24 @@
+<linker>
+  <!-- SerialPort lives in System.dll for .NET 4.x -->
+  <assembly fullname="System">
+    <type fullname="System.IO.Ports.SerialPort" preserve="all" />
+    <type fullname="System.IO.Ports.SerialDataReceivedEventArgs" preserve="all" />
+    <type fullname="System.IO.Ports.SerialDataReceivedEventHandler" preserve="all" />
+    <type fullname="System.IO.Ports.SerialErrorReceivedEventArgs" preserve="all" />
+    <type fullname="System.IO.Ports.SerialPinChangedEventArgs" preserve="all" />
+    <type fullname="System.IO.Ports.SerialErrorReceivedEventHandler" preserve="all" />
+    <type fullname="System.IO.Ports.SerialPinChangedEventHandler" preserve="all" />
+  </assembly>
+
+  <!-- Some Unity/Mono setups ship a separate System.IO.Ports.dll.
+       Keeping both blocks is harmless and improves portability. -->
+  <assembly fullname="System.IO.Ports">
+    <type fullname="System.IO.Ports.SerialPort" preserve="all" />
+    <type fullname="System.IO.Ports.SerialDataReceivedEventArgs" preserve="all" />
+    <type fullname="System.IO.Ports.SerialDataReceivedEventHandler" preserve="all" />
+    <type fullname="System.IO.Ports.SerialErrorReceivedEventArgs" preserve="all" />
+    <type fullname="System.IO.Ports.SerialPinChangedEventArgs" preserve="all" />
+    <type fullname="System.IO.Ports.SerialErrorReceivedEventHandler" preserve="all" />
+    <type fullname="System.IO.Ports.SerialPinChangedEventHandler" preserve="all" />
+  </assembly>
+</linker>
