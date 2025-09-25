@@ -49,9 +49,6 @@ namespace LuciReality.UI
       AddToClassList("lucireality--file-browser");
       Extensions = new List<string> {
         "wav",
-        "aiff",
-        "mp3",
-        "ogg"
       };
       files = new List<FileDescriptor>();
       
