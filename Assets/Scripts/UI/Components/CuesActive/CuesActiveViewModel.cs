@@ -9,6 +9,7 @@ using System.Threading;
 using Unity.Logging;
 using LuciReality.Audio;
 using System;
+using System.IO;
 
 namespace LuciReality.UI
 {
@@ -53,9 +54,23 @@ namespace LuciReality.UI
     public async UniTask<AudioClip> GetAudioClip()
     {
       await UniTask.SwitchToMainThread();
-      var req = UnityWebRequestMultimedia.GetAudioClip(AudioFile, AudioType.WAV);
+      var req = UnityWebRequestMultimedia.GetAudioClip(AudioFile, GetAudioType(AudioFile));
       await req.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(1)));
       return DownloadHandlerAudioClip.GetContent(req);
+
+      AudioType GetAudioType(string path)
+      { 
+        var extension = Path.GetExtension(path).ToLower();
+        switch (extension)
+        {
+            case ".mp3":
+                return AudioType.MPEG;
+            case ".wav":
+                return AudioType.WAV;
+            default: 
+                return AudioType.WAV;
+        }
+      }
     }
 
     public string ThermalCueMode() => cueParameters.ThermalMode;
