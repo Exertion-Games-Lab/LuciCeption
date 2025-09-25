@@ -89,6 +89,8 @@ namespace LuciReality.UI
         }
         catch { }
 
+        await ResetMotionDetector(cancel.Token);
+
         visualCue.Activate(
           viewModel.VisualCueActive(),
           viewModel.VisualCueIntensity(),
@@ -131,6 +133,14 @@ namespace LuciReality.UI
         }
       });
     }
+
+    private static async UniTask ResetMotionDetector(CancellationToken cancel)
+    {
+      UnityWebRequest request = new UnityWebRequest($"http://170.64.229.86:8080/set_motion_detected?key=xglluciception&participant=p1&value=false", "GET");
+      var res = await request.SendWebRequest().WithCancellation(cancel);
+      Log.Info("[{logType}] Cleared motion detected flag.", "CUES");
+    }
+
     private void StopCues() => cancelCues.Cancel();
 
     private async UniTask DetectMotion(CancellationToken token)
@@ -262,9 +272,7 @@ namespace LuciReality.UI
       Log.Info("[{logType}] resuming system after motion detection period over", "CUES");
       motionDetected = false;
 
-      UnityWebRequest request = new UnityWebRequest($"http://170.64.229.86:8080/set_motion_detected?key=xglluciception&participant=p1&value=false", "GET");
-      var res = await request.SendWebRequest().WithCancellation(cancel.Token);
-      Log.Info("[{logType}] set motion detected state to false", "CUES");
+      await ResetMotionDetector(CancellationToken.None);
 
       cancelPause.Dispose();
       cancel.Dispose();
