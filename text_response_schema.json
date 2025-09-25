@@ -81,7 +81,11 @@
         }
       },
       "required": ["Enabled", "Intensity"]
+    },
+    "DreamInductionScript": {
+      "type": "string",
+      "description": "A short narrative text (approx. 10 seconds spoken) to guide the user into their dream."
     }
   },
-  "required": ["Light", "Audio", "Thermal", "Fan"]
+  "required": ["Light", "Audio", "Thermal", "Fan", "DreamInductionScript"]
 }

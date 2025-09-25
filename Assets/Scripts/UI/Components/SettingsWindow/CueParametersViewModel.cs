@@ -39,6 +39,7 @@ namespace LuciReality.UI
     [AlsoNotifyChangeFor(nameof(ThermalIntensity))]
     [AlsoNotifyChangeFor(nameof(ThermalMode))]
     [AlsoNotifyChangeFor(nameof(AudioClipFile))]
+    [AlsoNotifyChangeFor(nameof(DreamInductionScript))]
     private CueParametersModel _model = new();
 
     [CreateProperty]
@@ -140,6 +141,13 @@ namespace LuciReality.UI
     {
       get => _model.Thermal.Mode;
       set => SetProperty(_model.Thermal.Mode, value, _model, (u, n) => u.Thermal.Mode = n);
+    }
+
+    [CreateProperty]
+    public string DreamInductionScript
+    {
+      get => _model.DreamInductionScript;
+      set => SetProperty(_model.DreamInductionScript, value, _model, (u, n) => u.DreamInductionScript = n);
     }
 
     public void SetThermalModeWithoutNotify(string mode)

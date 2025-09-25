@@ -410,7 +410,11 @@ namespace LuciReality.UI
       };
       audioClipSelectorBinding.sourceToUiConverters.AddConverter<string, string>(ConvertFilenameToClipSelectorSubtitle);
 
-
+      var voiceScriptTextArea = this.Q<TextArea>("voice-script-text");
+      voiceScriptTextArea.SetBinding("value", new DataBinding
+      {
+        dataSourcePath = PropertyPath.FromName(nameof(cueParametersViewModel.DreamInductionScript))
+      });
       var audioClipSelector = this.Q<Unity.AppUI.UI.Button>("audio-clip-selector");
       audioClipSelector.SetBinding("subtitle", audioClipSelectorBinding);
     }

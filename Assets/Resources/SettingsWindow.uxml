@@ -52,6 +52,7 @@
                       <appui:ActionButton label="Generated Voice" />
                       <appui:ActionButton label="Clip" />
                   </appui:ActionGroup>
+                  <appui:TextArea name="voice-script-text" value="" leading-icon-name="info"/>
                   <appui:Dropdown size="M" style="display: none"/>
                   <appui:Button name="audio-clip-selector" title="Select Audio" subtitle="No Clip Selected" trailing-icon="caret-right"/>
                   <appui:InputLabel direction="Horizontal" label="Volume">
