@@ -26,7 +26,7 @@ namespace LuciReality.UI
     private CuesActiveViewModel viewModel;
 
     float StartDelaySeconds { get => IsTesting ? 1 : 5; } // how long before cues should start.
-    int cyclesToFull = 5; // how many cycles to full intensity.
+    int CyclesToFull { get => IsTesting ? 1 : 5; } // how many cycles to full intensity.
     int motionDetectedPause = 1 * 10 * 1000; // how long should the system pause on motion detected.
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
@@ -92,7 +92,7 @@ namespace LuciReality.UI
         visualCue.Activate(
           viewModel.VisualCueActive(),
           viewModel.VisualCueIntensity(),
-          cyclesToFull,
+          CyclesToFull,
           cycleSecs,
           visualCueUiElement,
           viewModel.Color
@@ -100,21 +100,21 @@ namespace LuciReality.UI
         auditoryCue.Activate(
           viewModel.AuditoryCueActive(),
           viewModel.AuditoryCueIntensity(),
-          cyclesToFull,
+          CyclesToFull,
           cycleSecs,
           audioClip
         );
         thermalCueLogic.Activate(
           viewModel.ThermalCueActive(),
           viewModel.ThermalCueIntensity(),
-          cyclesToFull,
+          CyclesToFull,
           cycleSecs,
           viewModel.ThermalCueMode()
         );
         fanCueLogic.Activate(
           viewModel.FanCueActive(),
           viewModel.FanCueIntensity(),
-          cyclesToFull,
+          CyclesToFull,
           cycleSecs
         );
         try { await UpdateCues(cancel.Token); }

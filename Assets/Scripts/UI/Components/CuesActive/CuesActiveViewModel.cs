@@ -23,7 +23,7 @@ namespace LuciReality.UI
       cueParameters = cueParametersViewModel;
 
       Color = cueParametersViewModel.LightsColour;
-      AudioFile = cueParametersViewModel.SelectedAudioFile;
+      AudioFile = cueParametersViewModel.AudioClipFile;
 
       cueParameters.PropertyChanged += (_, evt) =>
       {
@@ -32,9 +32,9 @@ namespace LuciReality.UI
           Color = cueParameters.LightsColour;
         }
 
-        if (evt.PropertyName == nameof(CueParametersViewModel.SelectedAudioFile))
+        if (evt.PropertyName == nameof(CueParametersViewModel.AudioClipFile))
         {
-          AudioFile = cueParametersViewModel.SelectedAudioFile;
+          AudioFile = cueParametersViewModel.AudioClipFile;
         }
       };
     }

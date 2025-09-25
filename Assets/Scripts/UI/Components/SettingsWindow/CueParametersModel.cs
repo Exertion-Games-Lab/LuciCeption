@@ -39,6 +39,7 @@ namespace LuciReality
   {
     public bool Enabled;
     [JsonProperty("Intensity")][Range(0, 1)] public float Volume;
+    public string AudioClipFile;
   }
 
   [System.Serializable]
