@@ -26,6 +26,7 @@ namespace LuciReality
     [JsonProperty("EMS")] public EmsParameters Ems;
     [JsonProperty("Fan")] public FanParameters Fan;
     [JsonProperty("Thermal")] public ThermalParameters Thermal;
+    [JsonProperty("DreamInductionScript")] public string DreamInductionScript;
   }
 
   [System.Serializable]
