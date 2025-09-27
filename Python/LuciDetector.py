@@ -1,5 +1,7 @@
 import argparse
 import os
+from queue import Queue
+import threading
 import time
 import socket
 from datetime import date, datetime, timedelta
@@ -96,7 +98,30 @@ class Detector:
     self.LR_count = 0
     self.T_count = 0
     self.LR_count_perm = 0
-  
+
+    # Add async writing setup
+    self._write_queue = Queue()
+    self._writer_thread = threading.Thread(target=self._async_writer, daemon=True)
+    self._writer_thread.start()
+
+  def _async_writer(self):
+    """Background thread for writing data"""
+    
+    while True:
+        try:
+            data = self._write_queue.get(timeout=1)
+            if data is None:  # Shutdown signal
+                break
+
+            left_eog, right_eog = data
+
+            # Update logger
+            for l, r in zip(left_eog, right_eog):
+                self.OPENBCI_logger.update([l, r])
+                
+        except:
+            continue
+
   def setup_timeout_counter(self):
     self.timeoutCnt = 0
     self.TIMEOUT_THRESHOLD = 600
@@ -330,12 +355,16 @@ class Detector:
     return (found_left, found_right, left_eog, right_eog, detected_left, detected_right)
 
   def write_info(self, raw_left_eog, left_eog, detected_left, raw_right_eog, right_eog, detected_right):
-    self.plotter.plot(
-      left_eog,
-      detected_left,
-      right_eog,
-      detected_right,
-    )
+    # Fast plotting (keep this synchronous for real-time feedback)
+    if not hasattr(self, '_plot_counter'):
+        self._plot_counter = 0
+    
+    self._plot_counter += 1
+    if self._plot_counter % 2 == 0:  # Plot every 2nd call
+        self.plotter.plot(left_eog, detected_left, right_eog, detected_right)
+
+    # Queue the heavy I/O operations
+    self._write_queue.put((left_eog, right_eog))
 
     # current_dir = os.path.dirname(os.path.abspath(__file__))
     # self.time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -354,8 +383,8 @@ class Detector:
     #   right_eog,
     #   delimiter=",",
     # )
-    for l,r in zip(raw_left_eog, raw_right_eog):
-      self.OPENBCI_logger.update([l, r])
+    # for l,r in zip(raw_left_eog, raw_right_eog):
+    #   self.OPENBCI_logger.update([l, r])
 
 
   def convert_to_microvolt(self, raw_data):
