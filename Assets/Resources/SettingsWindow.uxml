@@ -47,11 +47,11 @@
                   </appui:InputLabel>
               </appui:ExVisualElement>
               <appui:ExVisualElement class="cue-settings-card cue-settings-card-right">
-                  <appui:Heading text="Auditory" size="s" />
-                  <appui:ActionGroup selection-type="Single" justified="true" compact="true">
-                      <appui:ActionButton label="Generated Voice" />
-                      <appui:ActionButton label="Clip" />
-                  </appui:ActionGroup>
+                  <ui:VisualElement class="heading-row-container">
+                      <appui:Heading text="Auditory" size="s" />
+                      <appui:IconButton name="auditory-info" icon="info" />
+                  </ui:VisualElement>
+                  <appui:Text text="Suggested sentence to record:" class="content-text"/>
                   <appui:TextArea name="voice-script-text" value="" leading-icon-name="info"/>
                   <appui:Dropdown size="M" style="display: none"/>
                   <appui:Button name="audio-clip-selector" title="Select Audio" subtitle="No Clip Selected" trailing-icon="caret-right"/>
