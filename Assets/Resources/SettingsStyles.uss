@@ -62,6 +62,10 @@ ui-content-container {
   background-color: var(--appui-primary-200);
 }
 
+.content-text {
+  font-size: 15px;
+}
+
 FileBrowser .unity-multi-column-view__header-container
 {
   border-width: 0;

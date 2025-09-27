@@ -87,6 +87,11 @@ namespace LuciReality.UI
       dreamImageInfo.clicked += () =>
         cueParametersViewModel.OpenImageHelpCommand.Execute(dreamImageInfo);
 
+      // Show auditory section help tooltip
+      var auditoryInfo = this.Q<IconButton>("auditory-info");
+            auditoryInfo.clicked += () =>
+        cueParametersViewModel.OpenAuditoryHelpCommand.Execute(auditoryInfo);
+
       // Open reasoning window
       var viewReasoningButton = this.Q<Unity.AppUI.UI.Button>();
       viewReasoningButton.clicked += () =>

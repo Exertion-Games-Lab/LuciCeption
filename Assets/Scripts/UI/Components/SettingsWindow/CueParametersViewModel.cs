@@ -15,6 +15,16 @@ namespace LuciReality.UI
   {
     public const string PROMPT_TOOLTIP_TEXT = "This section generates an image using AI.\nDescribe what you would like to dream about in the text area, and clicking the button will prompt the AI to generate an image based on it.";
     public const string IMAGE_TOOLTIP_TEXT = "Once you are happy with the image that the AI generated, click the generate cues button.\nThis will configure the cues using your text prompt and selected image.\nAfter the cues have been generated, you are free to customise them as you wish.";
+    public const string AUDITORY_TOOLTIP_TEXT = @"Please select an audio file for your auditory cue.
+    The auditory cue should be a sound that reminds you of your dream environment. You may either find an audio file online or record one yourself.
+
+Restrictions:
+    Length: 8-10 seconds (no longer than 10 seconds)
+    Format: MP3 or WAV
+    Language: If using a voice recording, we suggest using your first language (either your own voice or someone else's).
+
+Suggested sentence to record:
+    If the provided sentence feels too complex, you may instead simply repeat the core concept of your dream environment for about 10 seconds.";
 
     [ObservableProperty]
     private bool _generatingCues = false;
@@ -175,6 +185,12 @@ namespace LuciReality.UI
     [ICommand]
     public void OpenPromptHelp(VisualElement dreamPromptInfo) =>
       MakeTooltipPopover(dreamPromptInfo, PROMPT_TOOLTIP_TEXT);
+
+    /// <summary>Opens a tooltip in the "auditory" section of the interface explaining how it works</summary>
+    /// <param name="auditoryInfo">The element that the tooltip should be attached to</param>
+    [ICommand]
+    public void OpenAuditoryHelp(VisualElement auditoryInfo)
+      => MakeTooltipPopover(auditoryInfo, AUDITORY_TOOLTIP_TEXT);
 
     [ICommand]
     public void OpenReasoning(VisualElement target) => MakeReasoningWindow(target);
