@@ -21,7 +21,7 @@ import math
 from LiveEOGPlotter import EogPlotter, PlotterProcess
 
 # import OpenBCIStyleLogger
-# from OpenBCIStyleLogger import OpenBCIStyleLogger
+from OpenBCIStyleLogger import OpenBCIStyleLogger
 from PrintLogger import PrintLogger
 
 class Detector:
@@ -44,9 +44,25 @@ class Detector:
     self.plotter = EogPlotter()
 
   def setup_logger(self):
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    self.print_logger = PrintLogger(
-      filename=os.path.join(current_dir, "results/printLog.txt")
+
+    self.BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    self.time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    self.RUN_DIR = os.path.join(self.BASE_DIR, "results", f"Run_{self.time_str}")
+    os.makedirs(self.RUN_DIR, exist_ok=True)
+
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
+    # date_str = datetime.now().strftime("%Y-%m-%d")
+    print_logger_filename=os.path.join(self.RUN_DIR, f"{self.time_str}_printLog.txt")
+    self.print_logger = PrintLogger(filename=print_logger_filename)
+    # self.print_logger = PrintLogger(
+    #   filename=os.path.join(current_dir, "results/printLog.txt")
+    # )
+
+    OPENBCI_logger_filename=os.path.join(self.RUN_DIR, f"{self.time_str}_OpenBCI_Formatted.txt")
+    self.OPENBCI_logger = OpenBCIStyleLogger(
+        filename=OPENBCI_logger_filename,
+        channel_names=["EOG Left", "EOG Right"],
+        sampling_rate=self.sampling_rate
     )
 
   def setup_board(self):
@@ -89,7 +105,8 @@ class Detector:
     """
     Apply bandpass and detrend processing to the left and right channels of the eog_data
     """
-    eog_data = eog_data * 0.04
+    eog_data = self.convert_to_microvolt(eog_data)
+    # eog_data = eog_data * 0.04
     DataFilter.perform_bandpass(
       eog_data, self.sampling_rate, 0.5, 15, 4, FilterTypes.BUTTERWORTH.value, 0
     )
@@ -108,7 +125,7 @@ class Detector:
     """
     
     self.retry_connection()
-    calibration_interval: int = 10
+    calibration_interval: int = 10 
 
     self.eog_buffer_left: List[float] = []
     self.eog_buffer_right: List[float] = []
@@ -117,19 +134,21 @@ class Detector:
     total_right: int = 0
     max_amplitude = -math.inf
     min_amplitude = math.inf
+    detecting_pattern = "LRLRLRLRLRLR"
 
     calibration_iterations = 0
 
     while calibration_iterations <= calibration_interval:
       if not self.hasNewData():
         continue
-    
-      self.update_data(self.get_buffer_size())
+
+      new_eog_left, new_eog_right = self.update_data(self.get_buffer_size())
 
       if (not self.should_try_detect()):
         continue
       
-      found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect()
+      found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect(detecting_pattern)
+      # found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect()
 
       max_amplitude = max(
         max_amplitude,
@@ -143,13 +162,15 @@ class Detector:
         np.min(right_eog),
       )
 
+      self.write_info(new_eog_left, left_eog, detected_left, new_eog_right, right_eog, detected_right)
+
       if (found_left and found_right):
-        self.print_logger.print("✅ Both eyes detected LRLRLRLR pattern!")
-        self.write_info(left_eog, detected_left, right_eog, detected_right)
+        self.print_logger.print(f"✅ Both eyes detected {detecting_pattern} pattern!")
+        # self.write_info(new_eog_left, left_eog, detected_left, new_eog_right, right_eog, detected_right)
         total_left += len(detected_left)
         total_right += len(detected_right)
       else:
-        self.print_logger.print("❌ Not both eyes detected LRLRLRLR pattern.")
+        self.print_logger.print(f"❌ Not both eyes detected {detecting_pattern} pattern.")
 
       calibration_iterations = calibration_iterations + 1
       print("Calibrating")
@@ -168,17 +189,19 @@ class Detector:
       if not self.hasNewData():
         continue
     
-      self.update_data(self.get_buffer_size())
+      new_eog_left, new_eog_right = self.update_data(self.get_buffer_size())
 
       if (not self.should_try_detect()):
         continue
+
+      detecting_pattern = "LRLRLRLRLRLR"
       
-      found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect()
+      found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect(detecting_pattern)
 
       if (found_left and found_right):
-        self.print_logger.print("✅ Both eyes detected LRLRLRLR pattern!")
+        self.print_logger.print(f"✅ Both eyes detected {detecting_pattern} pattern!")
         detected_callback()
-      self.write_info(left_eog, detected_left, right_eog, detected_right)
+      self.write_info(new_eog_left,left_eog, detected_left, new_eog_right, right_eog, detected_right)
 
 
   def retry_connection(self):
@@ -221,6 +244,8 @@ class Detector:
       self.eog_buffer_left = self.eog_buffer_left[-buffer_size:]
     if len(self.eog_buffer_right) > buffer_size:
       self.eog_buffer_right = self.eog_buffer_right[-buffer_size:]
+    
+    return new_eog_left, new_eog_right
 
   def hasNewData(self):
     return self.board.get_board_data_count() > 0
@@ -233,7 +258,7 @@ class Detector:
   def detect_lr_pattern(
     self,
     eog_signal,
-    detecting_pattern="LRLRLRLRLR",
+    detecting_pattern="LRLRLRLRLRLR",
     min_peak_distance_ms=200,
     max_interval_ms=3000,
     peak_threshold=5,
@@ -273,8 +298,8 @@ class Detector:
     return False, sequence, seq_indices[-len(detecting_pattern) :]
   
   # Detects LR patterns in either channel
-  def try_detect(self) -> Tuple[bool, bool, np.ndarray, np.ndarray, List[int], List[int]]:
-    detecting_pattern = "LRLRLRLR"
+  def try_detect(self, detecting_pattern = "LRLRLRLR") -> Tuple[bool, bool, np.ndarray, np.ndarray, List[int], List[int]]:
+    # detecting_pattern = "LRLRLRLR"
 
     left_eog: np.ndarray = np.array(self.eog_buffer_left, dtype=np.float64)
     # left_eog = self.convert_to_microvolt(left_eog)
@@ -304,7 +329,7 @@ class Detector:
 
     return (found_left, found_right, left_eog, right_eog, detected_left, detected_right)
 
-  def write_info(self, left_eog, detected_left, right_eog, detected_right):
+  def write_info(self, raw_left_eog, left_eog, detected_left, raw_right_eog, right_eog, detected_right):
     self.plotter.plot(
       left_eog,
       detected_left,
@@ -312,18 +337,27 @@ class Detector:
       detected_right,
     )
 
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    np.savetxt(
-      os.path.join(current_dir, "results/eog_raw_data_left.csv"),
-      self.eog_buffer_left,
-      delimiter=",",
-    )
-    np.savetxt(
-      os.path.join(current_dir, "results/eog_raw_data_right.csv"),
-      self.eog_buffer_right,
-      delimiter=",",
-    )
-  
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
+    # self.time_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # self.RUN_DIR = os.path.join(self.current_dir, "results", f"Run_{self.time_str}")
+
+    # Save data to directory
+    # os.makedirs(self.RUN_DIR, exist_ok=True)
+
+    # np.savetxt(
+    #   os.path.join(current_dir, f"results/{date_str}_{time_str}_eog_raw_data_left_.csv"),
+    #   left_eog,
+    #   delimiter=",",
+    # )
+    # np.savetxt(
+    #   os.path.join(current_dir, f"results/{date_str}_{time_str}_eog_raw_data_right.csv"),
+    #   right_eog,
+    #   delimiter=",",
+    # )
+    for l,r in zip(raw_left_eog, raw_right_eog):
+      self.OPENBCI_logger.update([l, r])
+
+
   def convert_to_microvolt(self, raw_data):
     Vref = 4.5      # Volts
     gain = 24       # Default Cyton gain
