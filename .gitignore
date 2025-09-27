@@ -83,4 +83,4 @@ crashlytics-build.properties
 [Aa]ssets/[Ll]ogs/*
 [Aa]ssets/[Ss]cripts/OpenBCI/Python/results/*
 /Python/results
-/Python/results
+/Python/__pycache__
