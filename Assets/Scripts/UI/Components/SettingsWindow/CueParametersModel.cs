@@ -17,6 +17,7 @@ namespace LuciReality
       Ems = new();
       Fan = new();
       Thermal = new();
+      DelayTime = new();
     }
 
     public string ReasoningText;
@@ -26,6 +27,7 @@ namespace LuciReality
     [JsonProperty("EMS")] public EmsParameters Ems;
     [JsonProperty("Fan")] public FanParameters Fan;
     [JsonProperty("Thermal")] public ThermalParameters Thermal;
+    [JsonProperty("DelayTime")] public DelayTimeParameters DelayTime;
     [JsonProperty("DreamInductionScript")] public string DreamInductionScript;
   }
 
@@ -97,5 +99,13 @@ namespace LuciReality
     public float Red;
     public float Green;
     public float Blue;
+  }
+
+  [System.Serializable]
+  public class DelayTimeParameters
+  {
+    public int DelayHours;
+    public int DelayMinutes;
+    public int DelaySeconds;
   }
 }

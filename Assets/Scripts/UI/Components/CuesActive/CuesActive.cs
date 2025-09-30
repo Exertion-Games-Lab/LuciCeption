@@ -30,7 +30,6 @@ namespace LuciReality.UI
     int motionDetectedPause = 5 * 60 * 1000; // how long should the system pause on motion detected.
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
-    TimeSpan AlwaysStartSystemDelay = TimeSpan.FromSeconds(60*60);
 
     bool cuesActive = false;
     bool startOnConnect = false;
@@ -134,7 +133,7 @@ namespace LuciReality.UI
 
           throw new OperationCanceledException();
         }
-      });
+      }).Forget();
     }
 
     private static async UniTask ResetMotionDetector(CancellationToken cancel)
@@ -240,20 +239,20 @@ namespace LuciReality.UI
 
         cancelStart.Dispose();
         cancelStartDetection.Dispose();
-      });
+      }).Forget();
 
       UniTask.RunOnThreadPool(async () =>
       {
         try
         {
-          await UniTask.Delay(AlwaysStartSystemDelay, ignoreTimeScale: true, cancellationToken: cancelStartDetection.Token);
+          await UniTask.Delay(GetDelayTimeSpan(), ignoreTimeScale: true, cancellationToken: cancelStartDetection.Token);
           ActivateCues();
         }
         catch (OperationCanceledException ex)
         {
           Log.Debug(ex);
         }
-      });
+      }).Forget();
       
       // Start LR signal detection on python server.
       if (openBCIClient.IsConnected)
@@ -329,8 +328,18 @@ namespace LuciReality.UI
 
     private void StartDetection()
     {
-      UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken);
+      UniTask.RunOnThreadPool(openBCIClient.StartSystem, cancellationToken: Application.exitCancellationToken).Forget();
       startOnConnect = false;
+    }
+
+    private TimeSpan GetDelayTimeSpan()
+    {
+        var hours = viewModel.DelayHours;
+        var minutes = viewModel.DelayMinutes;
+        var seconds = viewModel.DelaySeconds;
+        var totalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+        return TimeSpan.FromSeconds(totalSeconds);
     }
   }
   #endregion

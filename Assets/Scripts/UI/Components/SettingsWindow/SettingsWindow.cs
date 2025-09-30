@@ -380,6 +380,7 @@ namespace LuciReality.UI
       );
 
       CreateAudioClipSelectorBindings();
+      CreateDelayTimeBinding();
     }
 
     // Whether certain buttons should be enabled.
@@ -461,6 +462,35 @@ namespace LuciReality.UI
         if (visualCueColor.value == viewModel.LightsColour) { return; }
 
         visualCueColor.SetValueWithoutNotify(viewModel.LightsColour);
+      };
+    }
+
+    private void CreateDelayTimeBinding()
+    {      
+      var delayHours = this.Q<IntField>("delay-hours");
+      var delayMinutes = this.Q<IntField>("delay-minutes");
+      var delaySeconds = this.Q<IntField>("delay-seconds");
+      delayHours.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().DelayHours = evt.newValue);
+      delayMinutes.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().DelayMinutes = evt.newValue);
+      delaySeconds.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().DelaySeconds = evt.newValue);
+      cueParametersViewModel.PropertyChanged += (v, evt) =>
+      {
+        if (v is not CueParametersViewModel viewModel) { return; }
+        if (evt.PropertyName == nameof(CueParametersViewModel.DelayHours))
+        {
+          delayHours.SetValueWithoutNotify(viewModel.DelayHours);
+          return;
+        }
+        if (evt.PropertyName == nameof(CueParametersViewModel.DelayMinutes))
+        { 
+          delayMinutes.SetValueWithoutNotify(viewModel.DelayMinutes);
+          return;
+        }
+        if (evt.PropertyName == nameof(CueParametersViewModel.DelaySeconds))
+        { 
+          delaySeconds.SetValueWithoutNotify(viewModel.DelaySeconds);
+          return;
+        }
       };
     }
 

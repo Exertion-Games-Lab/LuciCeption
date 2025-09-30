@@ -50,6 +50,9 @@ Suggested sentence to record:
     [AlsoNotifyChangeFor(nameof(ThermalMode))]
     [AlsoNotifyChangeFor(nameof(AudioClipFile))]
     [AlsoNotifyChangeFor(nameof(DreamInductionScript))]
+    [AlsoNotifyChangeFor(nameof(DelayHours))]
+    [AlsoNotifyChangeFor(nameof(DelayMinutes))]
+    [AlsoNotifyChangeFor(nameof(DelaySeconds))]
     private CueParametersModel _model = new();
 
     [CreateProperty]
@@ -170,6 +173,27 @@ Suggested sentence to record:
     {
       get => _model.Audio.AudioClipFile;
       set => SetProperty(_model.Audio.AudioClipFile, value, _model, (u, n) => u.Audio.AudioClipFile = n);
+    }
+
+    [CreateProperty]
+    public int DelayHours
+    {
+      get => _model.DelayTime.DelayHours;
+      set => SetProperty(_model.DelayTime.DelayHours, value, _model, (u, n) => u.DelayTime.DelayHours = n);
+    }
+
+    [CreateProperty]
+    public int DelayMinutes
+    {
+      get => _model.DelayTime.DelayMinutes;
+      set => SetProperty(_model.DelayTime.DelayMinutes, value, _model, (u, n) => u.DelayTime.DelayMinutes = n);
+    }
+
+    [CreateProperty]
+    public int DelaySeconds
+    {
+      get => _model.DelayTime.DelaySeconds;
+      set => SetProperty(_model.DelayTime.DelaySeconds, value, _model, (u, n) => u.DelayTime.DelaySeconds = n);
     }
 
     // Commands
