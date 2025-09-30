@@ -190,12 +190,12 @@ class Detector:
       self.write_info(new_eog_left, left_eog, detected_left, new_eog_right, right_eog, detected_right)
 
       if (found_left and found_right):
-        self.print_logger.print(f"✅ Both eyes detected {detecting_pattern} pattern!")
+        self.print_logger.print(f"YES: Both eyes detected {detecting_pattern} pattern!")
         # self.write_info(new_eog_left, left_eog, detected_left, new_eog_right, right_eog, detected_right)
         total_left += len(detected_left)
         total_right += len(detected_right)
       else:
-        self.print_logger.print(f"❌ Not both eyes detected {detecting_pattern} pattern.")
+        self.print_logger.print(f"NO: Not both eyes detected {detecting_pattern} pattern.")
 
       calibration_iterations = calibration_iterations + 1
       print("Calibrating")
@@ -224,7 +224,7 @@ class Detector:
       found_left, found_right, left_eog, right_eog, detected_left, detected_right = self.try_detect(detecting_pattern)
 
       if (found_left and found_right):
-        self.print_logger.print(f"✅ Both eyes detected {detecting_pattern} pattern!")
+        self.print_logger.print(f"YES: Both eyes detected {detecting_pattern} pattern!")
         detected_callback()
       self.write_info(new_eog_left,left_eog, detected_left, new_eog_right, right_eog, detected_right)
 
@@ -356,12 +356,13 @@ class Detector:
 
   def write_info(self, raw_left_eog, left_eog, detected_left, raw_right_eog, right_eog, detected_right):
     # Fast plotting (keep this synchronous for real-time feedback)
-    if not hasattr(self, '_plot_counter'):
-        self._plot_counter = 0
+    # if not hasattr(self, '_plot_counter'):
+    #     self._plot_counter = 0
     
-    self._plot_counter += 1
-    if self._plot_counter % 2 == 0:  # Plot every 2nd call
-        self.plotter.plot(left_eog, detected_left, right_eog, detected_right)
+    # self._plot_counter += 1
+    # if self._plot_counter % 2 == 0:  # Plot every 2nd call
+    #     self.plotter.plot(left_eog, detected_left, right_eog, detected_right)
+    self.plotter.plot(left_eog, detected_left, right_eog, detected_right)
 
     # Queue the heavy I/O operations
     self._write_queue.put((left_eog, right_eog))
