@@ -25,9 +25,11 @@ namespace LuciReality.UI
     public const string className = "luci-reality--cues-active";
     private CuesActiveViewModel viewModel;
 
-    float StartDelaySeconds { get => IsTesting ? 1 : 10*60; } // how long before cues should start.
+    // float StartDelaySeconds { get => IsTesting ? 1 : 10*60; } // how long before cues should start.
+    //for demo, set delay to 10 seconds
+    float StartDelaySeconds { get => IsTesting ? 1 : 10; } // how long before cues should start.
     int CyclesToFull { get => IsTesting ? 1 : 10; } // how many cycles to full intensity.
-    int motionDetectedPause = 5 * 60 * 1000; // how long should the system pause on motion detected.
+    int motionDetectedPause { get => IsTesting ? 20*1000 : 10*60*1000; } // how long should the system pause on motion detected.
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
 
