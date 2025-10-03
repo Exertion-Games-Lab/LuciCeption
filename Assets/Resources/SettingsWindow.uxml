@@ -115,13 +115,13 @@
           <ui:VisualElement class="cue-module-row">
             <appui:ExVisualElement class="cue-settings-card cue-settings-card-left" style="flex-grow: 1;">
                 <appui:Heading text="System" size="s" />
-                <appui:ActionGroup>
-                    <appui:Text text="Delay" />
-                    <appui:IntField size="S" unit="h" />
+                <appui:Text text="The system will be activated without LR signal after" />
+                <appui:ActionGroup style="margin-top:10px;margin-bottom:10px;">
+                    <appui:IntField size="S" unit="h" name="delay-hours"/>
                     <appui:Text text=":" />
-                    <appui:IntField size="S" unit="m" />
+                    <appui:IntField size="S" unit="m" name="delay-minutes"/>
                     <appui:Text text=":" />
-                    <appui:IntField size="S" unit="s" />
+                    <appui:IntField size="S" unit="s" name="delay-seconds"/>
                 </appui:ActionGroup>
                 <appui:ActionGroup>
                     <appui:Button name="start-system-button" title="Start System" variant="Accent" />
