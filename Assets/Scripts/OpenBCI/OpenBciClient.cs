@@ -46,7 +46,8 @@ namespace LuciReality.OpenBCI
 
     // Connection Parameters
     [Range(0, 65535), SerializeField]
-    private ushort port = 8080;
+    // private ushort port = 8080;
+    private ushort port = 50007;
 
     [SerializeField]
     private bool loopback = true;

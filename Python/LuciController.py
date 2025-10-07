@@ -29,7 +29,7 @@ class UnityCommunication:
     self.is_active = False
 
     host = "127.0.0.1"
-    port = 8080
+    port = 50007
 
     self.socket.bind((host, port))
     self.socket.listen()
