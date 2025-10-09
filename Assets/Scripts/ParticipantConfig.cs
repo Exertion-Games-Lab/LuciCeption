@@ -42,7 +42,11 @@ public static class ParticipantConfig
     }
     else if (Participant == ParticipantId.P2)
     {
+<<<<<<< HEAD
       return $"http://170.64.229.86:8080/set_motion_detected?key=xglluciception&participant=p2&value=false";
+=======
+      return $"http://170.64.229.86:8080/set_motion_detected?key=xglluciception&participant=p1&value=false";
+>>>>>>> d835c7b7c240e7d583cff78cffcf1b778b7b8a88
     }
     return "";
   }
