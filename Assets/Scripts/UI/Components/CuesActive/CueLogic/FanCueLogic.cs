@@ -69,7 +69,7 @@ namespace LuciReality.UI
       {
         try
         {
-          UnityWebRequest request = UnityWebRequest.Get($"https://maker.ifttt.com/trigger/fan_speed_{speed}/with/key/88IAzsMm2FG355HNDbZjq");
+          UnityWebRequest request = UnityWebRequest.Get(ParticipantConfig.GetFanCommand(speed));
           await request.SendWebRequest().WithCancellation(timeoutController.Timeout(TimeSpan.FromSeconds(2)));
         }
         catch (Exception ex)
