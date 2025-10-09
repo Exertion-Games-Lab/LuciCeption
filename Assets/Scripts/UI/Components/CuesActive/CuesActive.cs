@@ -29,7 +29,8 @@ namespace LuciReality.UI
     //for demo, set delay to 10 seconds
     float StartDelaySeconds { get => IsTesting ? 1 : 10; } // how long before cues should start.
     int CyclesToFull { get => IsTesting ? 1 : 10; } // how many cycles to full intensity.
-    int motionDetectedPause { get => IsTesting ? 20*1000 : 10*60*1000; } // how long should the system pause on motion detected.
+    int motionDetectedPause { get => IsTesting ? 20 * 1000 : 10 * 60 * 1000; } // how long should the system pause on motion detected.
+    TimeSpan autoCancelDelay => IsTesting ? TimeSpan.FromSeconds(30) : TimeSpan.FromMinutes(10);
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
 
@@ -175,6 +176,12 @@ namespace LuciReality.UI
     }
 
     #region CUE UPDATES
+    public async UniTask StopAfterTime(CancellationToken token)
+    {
+      await UniTask.SwitchToMainThread();
+      await UniTask.Delay(autoCancelDelay, ignoreTimeScale: true, cancellationToken: token);
+      cancelCues.Cancel();
+    }
     private async UniTask UpdateCues(CancellationToken token)
     {
       try
@@ -184,7 +191,8 @@ namespace LuciReality.UI
           UniTask.Create(auditoryCue.Run, token),
           UniTask.Create(thermalCueLogic.Run, token),
           UniTask.Create(fanCueLogic.Run, token),
-          UniTask.Create(DetectMotion, token)
+          UniTask.Create(DetectMotion, token),
+          UniTask.Create(StopAfterTime, token)
         );
       }
       catch (OperationCanceledException e)
