@@ -140,7 +140,7 @@ namespace LuciReality.UI
 
     private static async UniTask ResetMotionDetector(CancellationToken cancel)
     {
-      UnityWebRequest request = new UnityWebRequest($"http://170.64.229.86:8080/set_motion_detected?key=xglluciception&participant=p1&value=false", "GET");
+      UnityWebRequest request = new UnityWebRequest(ParticipantConfig.SetMotionCommand(), "GET");
       var res = await request.SendWebRequest().WithCancellation(cancel);
       Log.Info("[{logType}] Cleared motion detected flag.", "CUES");
     }
@@ -154,7 +154,7 @@ namespace LuciReality.UI
       while (true)
       {
         Log.Info("[{logType}] Sending motion detection get request", "MOTION");
-        UnityWebRequest request = new($"http://170.64.229.86:8080/get_motion_detected?key=xglluciception&participant=p1", "GET");
+        UnityWebRequest request = new(ParticipantConfig.GetMotionCommand(), "GET");
         request.SetRequestHeader("Content-Type", "application/json");
         request.downloadHandler = new DownloadHandlerBuffer();
         await request.SendWebRequest().WithCancellation(token);
