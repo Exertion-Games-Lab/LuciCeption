@@ -50,12 +50,23 @@ namespace LuciReality.UI
 
     private async UniTask RunOnce(int cycles, CancellationToken token)
     {
+      float volume = CalculateVolume(cycles);
+      PlayClip(volume);
+      await UniTask.Delay((int)(cycleLengthSecs * 2 * 1000), ignoreTimeScale: true, cancellationToken: token);
+    }
+
+    private float CalculateVolume(int cycles)
+    {
       cycles = Mathf.Min(cycles, cyclesToFullIntensity);
       float volume = Mathf.Lerp(0, maxVolume * intensity, cycles / (float)cyclesToFullIntensity);
+      return volume;
+    }
+
+    private void PlayClip(float volume)
+    {
       Log.Info("[{logType}:{cueType}] playing audio cue clip at volume: {volume}.", "CUES", "AUDITORY", volume);
       AudioSingleton.Instance.AudioSource.volume = volume;
       AudioSingleton.Instance.AudioSource.PlayOneShot(audioClip);
-      await UniTask.Delay((int)(cycleLengthSecs * 2 * 1000), ignoreTimeScale: true, cancellationToken: token);
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
