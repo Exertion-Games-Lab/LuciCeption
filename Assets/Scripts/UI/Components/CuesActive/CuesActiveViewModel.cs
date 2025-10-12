@@ -78,6 +78,10 @@ namespace LuciReality.UI
     public int DelaySeconds => cueParameters.DelaySeconds;
 
     public string ThermalCueMode() => cueParameters.ThermalMode;
+    public int CancelHours => cueParameters.CancelHours;
+    public int CancelMinutes => cueParameters.CancelMinutes;
+    public int CancelSeconds => cueParameters.CancelSeconds;
+
     public float VisualCueIntensity() => CuesActive.UseSettings ? cueParameters.LightsIntensity : 1;
     public float AuditoryCueIntensity() => CuesActive.UseSettings ? cueParameters.AudioVolume : 1;
     public float ThermalCueIntensity() => CuesActive.UseSettings ? cueParameters.ThermalIntensity : 1;

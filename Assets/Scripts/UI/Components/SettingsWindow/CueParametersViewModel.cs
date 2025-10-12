@@ -178,22 +178,43 @@ Suggested sentence to record:
     [CreateProperty]
     public int DelayHours
     {
-      get => _model.DelayTime.DelayHours;
-      set => SetProperty(_model.DelayTime.DelayHours, value, _model, (u, n) => u.DelayTime.DelayHours = n);
+      get => _model.DelayTime.Hours;
+      set => SetProperty(_model.DelayTime.Hours, value, _model, (u, n) => u.DelayTime.Hours = n);
     }
 
     [CreateProperty]
     public int DelayMinutes
     {
-      get => _model.DelayTime.DelayMinutes;
-      set => SetProperty(_model.DelayTime.DelayMinutes, value, _model, (u, n) => u.DelayTime.DelayMinutes = n);
+      get => _model.DelayTime.Minutes;
+      set => SetProperty(_model.DelayTime.Minutes, value, _model, (u, n) => u.DelayTime.Minutes = n);
     }
 
     [CreateProperty]
     public int DelaySeconds
     {
-      get => _model.DelayTime.DelaySeconds;
-      set => SetProperty(_model.DelayTime.DelaySeconds, value, _model, (u, n) => u.DelayTime.DelaySeconds = n);
+      get => _model.DelayTime.Seconds;
+      set => SetProperty(_model.DelayTime.Seconds, value, _model, (u, n) => u.DelayTime.Seconds = n);
+    }
+
+    [CreateProperty]
+    public int CancelHours
+    {
+      get => _model.CancelTime.Hours;
+      set => SetProperty(_model.CancelTime.Hours, value, _model, (u, n) => u.CancelTime.Hours = n);
+    }
+
+    [CreateProperty]
+    public int CancelMinutes
+        {
+      get => _model.CancelTime.Minutes;
+      set => SetProperty(_model.CancelTime.Minutes, value, _model, (u, n) => u.CancelTime.Minutes = n);
+    }
+
+    [CreateProperty]
+    public int CancelSeconds
+        {
+      get => _model.CancelTime.Seconds;
+      set => SetProperty(_model.CancelTime.Seconds, value, _model, (u, n) => u.CancelTime.Seconds = n);
     }
 
     // Commands

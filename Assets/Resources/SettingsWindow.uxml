@@ -117,11 +117,19 @@
                 <appui:Heading text="System" size="s" />
                 <appui:Text text="The system will be activated without LR signal after" />
                 <appui:ActionGroup style="margin-top:10px;margin-bottom:10px;">
-                    <appui:IntField size="S" unit="h" name="delay-hours"/>
+                    <appui:IntField size="S" unit="h" name="delay-hours" value="7"/>
                     <appui:Text text=":" />
-                    <appui:IntField size="S" unit="m" name="delay-minutes"/>
+                    <appui:IntField size="S" unit="m" name="delay-minutes" value="0"/>
                     <appui:Text text=":" />
-                    <appui:IntField size="S" unit="s" name="delay-seconds"/>
+                    <appui:IntField size="S" unit="s" name="delay-seconds" value="0"/>
+                </appui:ActionGroup>
+                <appui:Text text="The system will be activated for" />
+                <appui:ActionGroup style="margin-top:10px;margin-bottom:10px;">
+                    <appui:IntField size="S" unit="h" name="cancel-hours" value="1"/>
+                    <appui:Text text=":" />
+                    <appui:IntField size="S" unit="m" name="cancel-minutes" value="0"/>
+                    <appui:Text text=":" />
+                    <appui:IntField size="S" unit="s" name="cancel-seconds" value="0"/>
                 </appui:ActionGroup>
                 <appui:ActionGroup>
                     <appui:Button name="start-system-button" title="Start System" variant="Accent" />

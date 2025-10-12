@@ -381,6 +381,7 @@ namespace LuciReality.UI
 
       CreateAudioClipSelectorBindings();
       CreateDelayTimeBinding();
+      CreateCancelTimeBinding();
     }
 
     // Whether certain buttons should be enabled.
@@ -489,6 +490,35 @@ namespace LuciReality.UI
         if (evt.PropertyName == nameof(CueParametersViewModel.DelaySeconds))
         { 
           delaySeconds.SetValueWithoutNotify(viewModel.DelaySeconds);
+          return;
+        }
+      };
+    }
+
+    private void CreateCancelTimeBinding()
+    {      
+      var cancelHours = this.Q<IntField>("cancel-hours");
+      var cancelMinutes = this.Q<IntField>("cancel-minutes");
+      var cancelSeconds = this.Q<IntField>("cancel-seconds");
+      cancelHours.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().CancelHours = evt.newValue);
+      cancelMinutes.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().CancelMinutes = evt.newValue);
+      cancelSeconds.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().CancelSeconds = evt.newValue);
+      cueParametersViewModel.PropertyChanged += (v, evt) =>
+      {
+        if (v is not CueParametersViewModel viewModel) { return; }
+        if (evt.PropertyName == nameof(CueParametersViewModel.CancelHours))
+        {
+          cancelHours.SetValueWithoutNotify(viewModel.CancelHours);
+          return;
+        }
+        if (evt.PropertyName == nameof(CueParametersViewModel.CancelMinutes))
+        { 
+          cancelMinutes.SetValueWithoutNotify(viewModel.CancelMinutes);
+          return;
+        }
+        if (evt.PropertyName == nameof(CueParametersViewModel.CancelSeconds))
+        { 
+          cancelSeconds.SetValueWithoutNotify(viewModel.CancelSeconds);
           return;
         }
       };
