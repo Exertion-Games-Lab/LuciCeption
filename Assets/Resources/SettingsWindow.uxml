@@ -123,7 +123,7 @@
                     <appui:Text text=":" />
                     <appui:IntField size="S" unit="s" name="delay-seconds" value="0"/>
                 </appui:ActionGroup>
-                <appui:Text text="The system will be activated for" />
+                <appui:Text text="Once activated, the cues will stop after" />
                 <appui:ActionGroup style="margin-top:10px;margin-bottom:10px;">
                     <appui:IntField size="S" unit="h" name="cancel-hours" value="1"/>
                     <appui:Text text=":" />

@@ -30,7 +30,7 @@ namespace LuciReality.UI
     float StartDelaySeconds { get => IsTesting ? 1 : 10*60; } // how long before cues should start.
     int CyclesToFull { get => IsTesting ? 1 : 10; } // how many cycles to full intensity.
     int motionDetectedPause { get => IsTesting ? 20 * 1000 : 10 * 60 * 1000; } // how long should the system pause on motion detected.
-    TimeSpan autoCancelDelay => IsTesting ? TimeSpan.FromSeconds(30) : GetCancelTimeSpan();
+    TimeSpan autoCancelDelay => IsTesting ? GetCancelTimeSpan() : GetCancelTimeSpan();
     float cycleSecs = 10; // how long a cycle takes.
     int activationsCount = 0; // keeps track of how many times the cues have activated.
 
