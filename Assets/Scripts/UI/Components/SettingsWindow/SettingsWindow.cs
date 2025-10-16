@@ -471,6 +471,9 @@ namespace LuciReality.UI
       var delayHours = this.Q<IntField>("delay-hours");
       var delayMinutes = this.Q<IntField>("delay-minutes");
       var delaySeconds = this.Q<IntField>("delay-seconds");
+      GetViewModel().DelayHours = delayHours.value;
+      GetViewModel().DelayMinutes = delayMinutes.value;
+      GetViewModel().DelaySeconds = delaySeconds.value;
       delayHours.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().DelayHours = evt.newValue);
       delayMinutes.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().DelayMinutes = evt.newValue);
       delaySeconds.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().DelaySeconds = evt.newValue);
@@ -500,6 +503,10 @@ namespace LuciReality.UI
       var cancelHours = this.Q<IntField>("cancel-hours");
       var cancelMinutes = this.Q<IntField>("cancel-minutes");
       var cancelSeconds = this.Q<IntField>("cancel-seconds");
+      GetViewModel().CancelHours = cancelHours.value;
+      GetViewModel().CancelMinutes = cancelMinutes.value;
+      GetViewModel().CancelSeconds = cancelSeconds.value;
+
       cancelHours.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().CancelHours = evt.newValue);
       cancelMinutes.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().CancelMinutes = evt.newValue);
       cancelSeconds.RegisterCallback<ChangeEvent<int>>((evt) => GetViewModel().CancelSeconds = evt.newValue);
