@@ -119,7 +119,8 @@ class UnityCommunication:
 
 class LuciController:
   def __init__(self, manager: SyncManager):
-    detector = CytonDetector()
+    # detector = CytonDetector()
+    detector = SyntheticDetector()
     server = UnityCommunication(detector)
 
 def run():

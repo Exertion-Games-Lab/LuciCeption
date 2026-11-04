@@ -31,6 +31,18 @@ The generated image is a visual reference in the interface; the visual cue itsel
 
 ## Getting Started
 
+
+## Configuration and Hardware Notes
+
+- **Gemini API key:** Unity's Gemini API calls use `ApiKeys.Gemini` in `Assets/Scripts/ApiKeys.cs`. The key is currently read from a source-code field. Before publishing or sharing the project, move it to a secure local configuration and revoke or rotate any key that has already been committed. Do not put keys in version control or publicly distributed builds.
+- **EOG detection:** `Python/LuciController.py` uses `SyntheticDetector` by default, so it can start without a physical EEG/EOG board, but it will not represent real sensor data. An OpenBCI Cyton detector is also available. To use physical hardware, select that detector, configure the correct serial port (the current default is `COM7`), and ensure the electrodes and hardware are connected properly.
+- **Cue devices:** Thermal control currently uses serial port `COM8` at 9600 baud. Fan control and motion detection depend on external services configured in the project with IFTTT commands (see readme in respective folders). Before use, verify that the devices, serial ports, service endpoints, and network match your environment. Test at low intensity or without connected hardware first.
+- **Audio:** To use audio cues, select an MP3 or WAV file in the interface.
+- **Other modules:** BLE/EMS and some signal-training code are experimental. The presence of models or test programs does not mean they are connected to the active cue workflow.
+
+
+
+
 ### Run from the Unity Editor
 
 1. Install Unity 6000.2.7f2 using Unity Hub and open the repository with that version.
@@ -46,16 +58,10 @@ The generated image is a visual reference in the interface; the visual cue itsel
    The Python server listens for Unity connections on `127.0.0.1:50007`. Start Python before using Unity features that require EOG detection.
 
 ### Run the Windows Build
+Once everything runs well in Unity, you can build the executable (`Build/LuciCeption.exe`) and use the `start_LuciCeption.bat` for further use.
+The batch file starts the build and the Python application, but its Python executable path is an absolute path specific to the computer. Before running it on another computer, update that path to a valid Python 3.11 executable, or use the manual launch instructions above.
 
-The repository includes `Build/LuciCeption.exe` and the `start_LuciCeption.bat` launch script. The batch file starts the build and the Python application, but its Python executable path is an absolute path specific to one computer. Before running it on another computer, update that path to a valid Python 3.11 executable, or use the manual launch instructions above.
 
-## Configuration and Hardware Notes
-
-- **Gemini API key:** Unity's Gemini API calls use `ApiKeys.Gemini` in `Assets/Scripts/ApiKeys.cs`. The key is currently read from a source-code field. Before publishing or sharing the project, move it to a secure local configuration and revoke or rotate any key that has already been committed. Do not put keys in version control or publicly distributed builds.
-- **EOG detection:** `Python/LuciController.py` uses `SyntheticDetector` by default, so it can start without a physical EEG/EOG board, but it will not represent real sensor data. An OpenBCI Cyton detector is also available. To use physical hardware, select that detector, configure the correct serial port (the current default is `COM7`), and ensure the electrodes and hardware are connected properly.
-- **Cue devices:** Thermal control currently uses serial port `COM8` at 9600 baud. Fan control and motion detection depend on external services configured in the project. Before use, verify that the devices, serial ports, service endpoints, and network match your environment. Test at low intensity or without connected hardware first.
-- **Audio:** To use audio cues, select an MP3 or WAV file in the interface.
-- **Other modules:** BLE/EMS and some signal-training code are experimental. The presence of models or test programs does not mean they are connected to the active cue workflow.
 
 ## Key Directories
 

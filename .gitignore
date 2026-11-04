@@ -77,7 +77,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Api Keys
-/[Aa]ssets/[Ss]cripts/ApiKeys.cs
+#/[Aa]ssets/[Ss]cripts/ApiKeys.cs
 
 # Logs
 [Aa]ssets/[Ll]ogs/*
